@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+Tag-Spark: Tag-based Recommendation Tool
 
-## Project info
+A web application that recommends online novels based on selected tags. Built with React, Vite, TypeScript, Tailwind, and shadcn/ui.
 
-**URL**: https://lovable.dev/projects/e41f3dee-c270-4984-a39d-7d6f3fe602c1
+Live site: kwkrecom.vercel.app
 
-## How can I edit this code?
+Features
+	•	태그 검색 (including aliases) and selection by category
+	•	Complete Match Recommendations: Works that contain all selected tags appear at the top
+	•	Similar Recommendations: Up to 10 works based on similarity in tags, aliases, and categories
+	•	Tag Chips: Selected tags displayed as chips on the results page
+	•	Direct Links: Clicking a title opens the original link
+	•	Catalog View: Searchable/filterable table showing title, author, and tags
+	•	Navigation Menu: Links for viewing recommendations, adding works, and requesting tag edits
 
-There are several ways of editing your application.
+Tech Stack
 
-**Use Lovable**
+React 18
+Vite
+TypeScript
+React Router
+Tailwind CSS
+shadcn/ui
+Deployment: Vercel
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e41f3dee-c270-4984-a39d-7d6f3fe602c1) and start prompting.
+Folder Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+src/
+components/ (Header.tsx, WorkCard.tsx, ui/)
+data/ (tags.ts, works.ts, workTags.ts)
+lib/ (reco.ts)
+pages/ (Index.tsx, Loading.tsx, Recommendations.tsx, CatalogSheet.tsx)
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Getting Started
+	1.	Install dependencies
+npm ci
+	2.	Start development server
 npm run dev
-```
+	3.	Optional type checking
+npm run typecheck
 
-**Edit a file directly in GitHub**
+Build & Deploy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Deploy to Vercel
+	1.	Push the repository to GitHub
+	2.	On Vercel dashboard: Add New → Project → Select your repository
+	3.	Framework: Vite
+	4.	Build command: npm run build
+	5.	Output directory: dist
+	6.	Set Production Branch to main
+	7.	Deploy — every push to main will trigger automatic deployment
 
-**Use GitHub Codespaces**
+Force deploy from CLI
+npx vercel login
+npx vercel link
+npx vercel –prod
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Data Structure
 
-## What technologies are used for this project?
+1. Tags (src/data/tags.ts)
+{id: number, name: string, category: “배경/시대” | “관계” | “분위기” | “장르” | “세계관” | “분량”, aliases?: string[]}
 
-This project is built with:
+2. Works (src/data/works.ts)
+{id: number, title: string, author: string, source_url: string}
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+3. Tag Mapping (src/data/workTags.ts)
+{work_id: number, tag_id: number, weight: 1.0 | 2.0}
 
-## How can I deploy this project?
+Recommendation Logic
 
-Simply open [Lovable](https://lovable.dev/projects/e41f3dee-c270-4984-a39d-7d6f3fe602c1) and click on Share -> Publish.
+Complete Match: Includes all selected tags + sorted by total weight
+Similar Match: Based on similarity in tags, aliases, and categories, limited to top 10 results
 
-## Can I connect a custom domain to my Lovable project?
+Routes
 
-Yes, you can!
+/ — Tag selection
+/loading — Loading screen
+/recommendations?tags=… — Recommendation results
+/catalog-sheet — Catalog of all registered works
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+SEO & Social Preview
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Edit index.html to change title, description, and og:image
+Update preview using Facebook Sharing Debugger, Twitter Card Validator, or Kakao Link Scraper
+
+Common Issues
+
+Changes not reflected after push → Check Vercel Production Branch or trigger force deployment
+Commit email mismatch → Use git commit --amend --reset-author --no-edit then push
+Dev server errors → Run npm ci then npm run dev
+
+License
+
+Free for personal/non-commercial use. For commercial use, contact the repository owner.
