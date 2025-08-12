@@ -60,7 +60,7 @@ const Index = () => {
       <main className="container pt-20 pb-16">
         <section aria-labelledby="hero">
           <h1 id="hero" className="text-2xl font-semibold tracking-tight">키워드를 골라 내 취향에 맞는 포타를 감상하세요</h1>
-          <p className="mt-2 text-muted-foreground">선택한 키워드를 기반으로 </p>
+          <p className="mt-2 text-muted-foreground">* 선택한 키워드와 가장 유사한 작품이 우선 순위로 추천됩니다.</p>
         </section>
 
         <section aria-labelledby="tags" className="mt-6">
