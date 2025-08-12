@@ -56,7 +56,7 @@ export const tags: Tag[] = [
   { id: 317, name: "여름", category: "분위기", aliases: ["계절"] },
   { id: 318, name: "가을", category: "분위기", aliases: ["계절"] },
   { id: 319, name: "겨울", category: "분위기", aliases: ["계절"] },
-  { id: 320, name: "칼짝윈", category: "관계", aliases: ["짝사랑"] },
+  { id: 322, name: "칼짝윈", category: "관계", aliases: ["짝사랑"] },
   { id: 321, name: "윈짝칼", category: "관계", aliases: ["짝사랑"] },
   { id: 401, name: "로판", category: "장르", aliases: ["로맨틱 판타지"] },
   { id: 402, name: "판타지", category: "장르" },
