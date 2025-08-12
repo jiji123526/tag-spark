@@ -204,7 +204,7 @@ const similar = useMemo(() => {
         <div className="mt-8 flex justify-center">
           <Button asChild variant="secondary" size="sm">
             <a
-              href="https://forms.gle/pBuhYS7b4aUmU5Uo8" // ← 여기를 실제 폼 URL로 변경하세요
+              href="https://forms.gle/pBuhYS7b4aUmU5Uo8" 
               target="_blank"
               rel="noopener noreferrer"
             >

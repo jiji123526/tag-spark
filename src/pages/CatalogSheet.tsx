@@ -61,7 +61,7 @@ export default function CatalogSheet() {
   }, [q, rows]);
 
   useEffect(() => {
-    document.title = "현재 등록된 추천작 (시트)";
+    document.title = "현재 등록된 추천작";
   }, []);
 
   return (
@@ -78,7 +78,7 @@ export default function CatalogSheet() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="제목 / 작가 / 태그 검색…"
+            placeholder="제목 / 작가 / 키워드 검색…"
             className="w-64 md:w-80"
             aria-label="검색"
           />
@@ -102,7 +102,7 @@ export default function CatalogSheet() {
                 </th>
                 {/* 태그: 나머지 영역 */}
                 <th className="px-3 py-2 font-medium w-[45%]">
-                  태그
+                  키워드
                 </th>
               </tr>
             </thead>
@@ -174,7 +174,7 @@ export default function CatalogSheet() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              태그 수정 요청
+              키워드 수정 요청
             </a>
           </Button>
         </div>

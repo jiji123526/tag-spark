@@ -13,6 +13,7 @@ const CATEGORIES: Tag["category"][] = [
   "장르",
   "세계관",
   "분량",
+  "완결여부", 
 ];
 
 const LABELS: Record<Tag["category"], string> = {
@@ -22,6 +23,7 @@ const LABELS: Record<Tag["category"], string> = {
   장르: "장르",
   세계관: "세계관",
   분량: "분량",
+  완결여부: "완결여부",
 };
 
 const formatCategory = (c: Tag["category"]) => LABELS[c];
@@ -65,6 +67,7 @@ const Index = () => {
         장르: [],
         세계관: [],
         분량: [],
+        완결여부: [],
       }
     );
   }, [filteredTags]);
@@ -86,7 +89,7 @@ const Index = () => {
           <p className="mt-2 text-muted-foreground">
             * 키워드를 골라 취향에 맞는 포타를 추천받으세요. <br />
             * 선택한 키워드와 가장 유사한 작품이 우선 순위로 추천됩니다.<br />
-            * 단편 = 1편, 중편 = 2-10편, 장편 = 10편 이상으로 분류됩니다.
+            * 단편: 1 - 4편, 중편: 5 - 9편, 장편: 10편 이상으로 분류됩니다.
           </p>
         </section>
 
