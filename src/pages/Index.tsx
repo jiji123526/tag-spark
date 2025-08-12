@@ -59,8 +59,7 @@ const Index = () => {
       <Header />
       <main className="container pt-20 pb-16">
         <section aria-labelledby="hero">
-          <h1 id="hero" className="text-2xl font-semibold tracking-tight">키워드를 골라 
-내 취향에 맞는 포타를 감상하세요</h1>
+          <h1 id="hero" className="text-2xl font-semibold tracking-tight">키워드를 골라 내 취향에 맞는 포타를 감상하세요</h1>
           <p className="mt-2 text-muted-foreground">선택한 키워드를 기반으로 </p>
         </section>
 
