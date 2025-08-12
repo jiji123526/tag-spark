@@ -53,7 +53,7 @@ const Index = () => {
             if (!tags || tags.length === 0) return null;
             return <article key={cat} aria-labelledby={`cat-${cat}`}>
                   <h3 id={`cat-${cat}`} className="mb-2 text-sm font-medium tracking-wide text-muted-foreground">
-                    나이
+                    {formatCategory(cat)}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {tags.map(t => {
