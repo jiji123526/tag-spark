@@ -2,16 +2,18 @@ import { useMemo, useState } from "react";
 import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import WorkCard from "@/components/WorkCard";
 import { tags as allTags, Tag } from "@/data/tags";
-import { works as allWorks, Work } from "@/data/works";
-import { workTags as mappings } from "@/data/workTags";
 import { Check, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const formatCategory = (c: Tag["category"]) => c.toUpperCase();
 const Index = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const goToResults = () => {
+    const qs = selected.join(",");
+    navigate(`/loading?tags=${qs}`);
+  };
   const filteredTags = useMemo(() => {
     const q = query.trim().toLowerCase();
     return q ? allTags.filter(t => t.name.toLowerCase().includes(q)) : allTags;
@@ -30,31 +32,6 @@ const Index = () => {
   const toggleTag = (id: number) => {
     setSelected(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   };
-  const recommendations = useMemo(() => {
-    if (selected.length === 0) return allWorks;
-
-    // Build quick lookup for a work's tags
-    const tagsByWork = mappings.reduce<Record<number, Record<number, number>>>((acc, m) => {
-      acc[m.work_id] = acc[m.work_id] || {};
-      acc[m.work_id][m.tag_id] = m.weight;
-      return acc;
-    }, {});
-    const results: Array<{
-      work: Work;
-      score: number;
-    }> = [];
-    for (const w of allWorks) {
-      const tagWeights = tagsByWork[w.id] || {};
-      const hasAll = selected.every(tagId => tagId in tagWeights);
-      if (!hasAll) continue;
-      const score = selected.reduce((sum, tagId) => sum + (tagWeights[tagId] || 0), 0);
-      results.push({
-        work: w,
-        score
-      });
-    }
-    return results.sort((a, b) => b.score - a.score).map(r => r.work);
-  }, [selected]);
   return <div className="min-h-screen bg-background text-foreground">
       <Header />
       <main className="container pt-20 pb-16">
@@ -92,19 +69,12 @@ const Index = () => {
           </div>
         </section>
 
-        <section aria-labelledby="results" className="mt-8">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 id="results" className="text-lg font-semibold tracking-tight">Recommendations</h2>
-            <span className="text-sm text-muted-foreground">
-              {selected.length > 0 ? `${recommendations.length} results` : `${allWorks.length} works`}
-            </span>
+        <section aria-labelledby="proceed" className="mt-8">
+          <div className="flex items-center justify-end">
+            <Button onClick={goToResults} aria-label="See recommendations">
+              See recommendations
+            </Button>
           </div>
-
-          {recommendations.length === 0 ? <Card className="p-6 text-center text-sm text-muted-foreground">
-              No works match all selected tags.
-            </Card> : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {recommendations.map(w => <WorkCard key={w.id} work={w} />)}
-            </div>}
         </section>
       </main>
     </div>;
