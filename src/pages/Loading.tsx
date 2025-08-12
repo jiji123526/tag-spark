@@ -22,7 +22,7 @@ const Loading = () => {
       <Header />
       <main className="container flex min-h-[60vh] flex-col items-center justify-center pt-20">
         <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-muted-foreground border-t-primary" aria-label="Loading spinner" />
-        <p className="text-sm text-muted-foreground">Preparing your recommendations…</p>
+        <p className="text-sm text-muted-foreground">추천작 준비중…</p>
       </main>
     </div>
   );
