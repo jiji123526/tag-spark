@@ -311,6 +311,7 @@ export const workTags: WorkTag[] = [
   { work_id: 69, tag_id: 603, weight: 1.0 },
   { work_id: 70, tag_id: 112, weight: 1.0 },
   { work_id: 70, tag_id: 123, weight: 2.0 },
+  { work_id: 70, tag_id: 124, weight: 2.0 },
   { work_id: 70, tag_id: 138, weight: 1.0 },
   { work_id: 70, tag_id: 301, weight: 1.0 },
   { work_id: 70, tag_id: 308, weight: 1.0 },
