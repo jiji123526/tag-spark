@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import { works as allWorks } from "@/data/works";
 import { tags as allTags, Tag } from "@/data/tags";
-import { workTags as mappings } from "@/data/workTags";
+import { workTags as mappings } from "@/data/workTags.ts";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
