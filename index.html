@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>포타추천기</title>
     <meta name="description" content="오늘은 뭘 읽을까?" />
+    <meta name="theme-color" content="#ffffff" />
 
-    <!-- Canonical URL -->
+    <!-- Canonical -->
     <link rel="canonical" href="https://kwkrecom.vercel.app/" />
 
     <!-- Open Graph / Facebook / Kakao -->
@@ -15,18 +16,26 @@
     <meta property="og:description" content="오늘은 뭘 읽을까?" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://kwkrecom.vercel.app/" />
-    <meta property="og:image" content="https://kwkrecom.vercel.app/thumbnail.png" />
+    <!-- 캐시 무력화를 위한 버전 파라미터(v) -->
+    <meta property="og:image" content="https://kwkrecom.vercel.app/thumbnail.png?v=20250812-2" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="포타추천기 미리보기 썸네일" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="칼과 윈 포타 추천기" />
     <meta name="twitter:description" content="오늘은 뭘 읽을까?" />
-    <meta name="twitter:image" content="https://kwkrecom.vercel.app/thumbnail.png" />
+    <meta name="twitter:image" content="https://kwkrecom.vercel.app/thumbnail.png?v=20250812-2" />
+    <meta name="twitter:image:alt" content="포타추천기 미리보기 썸네일" />
 
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" />
+    <!-- Favicon (원하면 교체) -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Preconnect (선택) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
 
   <body>
