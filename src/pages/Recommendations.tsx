@@ -101,7 +101,7 @@ const similar = useMemo(() => {
 }, [selected, exactMatches]);
 
   useEffect(() => {
-    document.title = "Recommendations";
+    document.title = "키워드 추천 결과";
   }, []);
 
   return (
