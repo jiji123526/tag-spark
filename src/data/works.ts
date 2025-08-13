@@ -146,4 +146,6 @@ export const works: Work[] = [
   { id: 137, title: "신입사원 평가보고서", author: "왈왈", cover_url: coverPlaceholder, source_url: "https://www.postype.com/@channe1ur1/post/15682642" },
   { id: 138, title: "안 어린 신부", author: "왈왈", cover_url: coverPlaceholder, source_url: "https://www.postype.com/@channe1ur1/post/15755456" },
   { id: 139, title: "5월의 신부", author: "왈왈", cover_url: coverPlaceholder, source_url: "https://www.postype.com/@channe1ur1/post/15832711" },
+  { id: 140, title: "냥줍", author: "트소", cover_url: coverPlaceholder, source_url: "https://www.postype.com/@wktrpt/series/1370913" },
+  { id: 141, title: "드레싱", author: "트소", cover_url: coverPlaceholder, source_url: "https://www.postype.com/@wktrpt/post/18318405" },
 ];

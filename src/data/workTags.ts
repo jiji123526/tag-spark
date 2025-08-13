@@ -605,6 +605,11 @@ export const workTags = [
     "weight": 1
   },
   {
+    "work_id": 21,
+    "tag_id": 311,
+    "weight": 1
+  },
+  {
     "work_id": 22,
     "tag_id": 101,
     "weight": 1
@@ -1738,6 +1743,11 @@ export const workTags = [
     "work_id": 67,
     "tag_id": 701,
     "weight": 1
+  },
+  {
+    "work_id": 67,
+    "tag_id": 107,
+    "weight": 2
   },
   {
     "work_id": 68,
@@ -3378,5 +3388,20 @@ export const workTags = [
     "work_id": 139,
     "tag_id": 701,
     "weight": 1
-  }
+  },
+  { work_id: 140, tag_id: 504, weight: 2 }, // 수인
+  { work_id: 140, tag_id: 320, weight: 1 }, // 노딱
+  { work_id: 140, tag_id: 115, weight: 1 }, // 재벌
+  { work_id: 140, tag_id: 305, weight: 1 }, // 찌통
+  { work_id: 140, tag_id: 701, weight: 1 }, // 완결
+  { work_id: 140, tag_id: 602, weight: 1 }, // 중편
+
+  // 141 드레싱
+  { work_id: 141, tag_id: 105, weight: 1 }, // 연예계
+  { work_id: 141, tag_id: 107, weight: 2 }, // 스포츠
+  { work_id: 141, tag_id: 216, weight: 1 }, // 재회
+  { work_id: 141, tag_id: 212, weight: 1 }, // 이별
+  { work_id: 141, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 141, tag_id: 701, weight: 1 }, // 완결
+  { work_id: 141, tag_id: 601, weight: 1 }, // 단편
 ];

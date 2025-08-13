@@ -54,7 +54,7 @@ export const tags: Tag[] = [
   { id: 308, name: "쌍방삽질", category: "분위기" },
   { id: 309, name: "배틀레즈", category: "분위기", aliases: ["배틀", "혐관"] },
   { id: 310, name: "후회", category: "분위기" },
-  { id: 311, name: "똥차", category: "분위기" },
+  { id: 311, name: "쓰공/수", category: "분위기" },
   { id: 312, name: "리얼물", category: "분위기", aliases: ["리얼물"] },
   { id: 313, name: "노란장판", category: "분위기" },
   { id: 314, name: "애새끼", category: "분위기" },
@@ -89,5 +89,5 @@ export const tags: Tag[] = [
 
   // 완결 여부 (700~799)
   { id: 701, name: "완결", category: "완결여부" },
-  { id: 702, name: "미완", category: "완결여부" },
+  { id: 702, name: "연재중", category: "완결여부" },
 ];
