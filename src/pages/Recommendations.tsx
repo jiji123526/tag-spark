@@ -201,27 +201,14 @@ const Recommendations = () => {
             )}
           </div>
 
-          {/* 유사 추천: 페이지당 10개 */}
+          {/* 유사 추천: 페이지당 10개 (버튼 제거) */}
           {similar.length > 0 ? (
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-medium tracking-wide text-muted-foreground">
                   이런 포타는 어떠세요? ({similar.length})
                 </h3>
-
-                {/* 간단 페이지 네비게이션 (필요하면 스타일링해서 써도 됨) */}
-                {selected.length > 0 && (
-                  <div className="flex gap-2">
-                    <Link to={`/recommendations?tags=${selected.join(",")}&p=${Math.max(1, page - 1)}`}>
-                      <Button size="sm" variant="outline" disabled={page <= 1}>
-                        이전
-                      </Button>
-                    </Link>
-                    <Link to={`/recommendations?tags=${selected.join(",")}&p=${page + 1}`}>
-                      <Button size="sm" variant="outline">다음</Button>
-                    </Link>
-                  </div>
-                )}
+                {/* 페이지 이동 버튼 제거됨 */}
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
