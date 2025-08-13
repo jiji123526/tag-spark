@@ -2,8 +2,7 @@
 A web application that recommends online novels based on selected tags.  
 Built with **React**, **Vite**, **TypeScript**, **Tailwind**, and **shadcn/ui**.
 
-**Live site:** [kwkrecom.vercel.app](https://kwkrecom.vercel.app)
-
+**Live site:** 
 ---
 
 ## ✨ Features
