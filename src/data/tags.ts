@@ -36,7 +36,7 @@ export const tags: Tag[] = [
   { id: 207, name: "친구", category: "관계", aliases: ["친구에서연인으로", "친연"] },
   { id: 208, name: "키잡", category: "관계" },
   { id: 209, name: "역키잡", category: "관계" },
-  { id: 210, name: "근친", category: "관계" },
+  { id: 210, name: "(짭)근친", category: "관계" },
   { id: 211, name: "쌍둥이", category: "관계" },
   { id: 212, name: "이별", category: "관계" },
   { id: 214, name: "칼짝윈", category: "관계", aliases: ["짝사랑"] },
