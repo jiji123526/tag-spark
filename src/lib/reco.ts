@@ -38,9 +38,9 @@ const TAG_CLUSTERS_BY_NAME: string[][] = [
   ["부부", "육아", "이혼", "정략결혼"],
   ["오피스", "직장동료"],
   ["키잡", "역키잡", "근친", "쌍둥이"],
-  ["후회", "똥차", "찌통"],
+  ["후회", "쓰공/수", "찌통"],
   ["쌍방삽질", "청레", "친구", "윈짝칼", "칼짝윈"],
-  ["배틀레즈", "똥차", "애새끼"],
+  ["배틀레즈", "쓰공/수", "애새끼"],
   ["노란장판", "피폐", "찌통"],
   ["로판", "판타지", "SF"],
   ["누아르", "조직물"],
@@ -73,11 +73,8 @@ function buildSimilarityGraphFromClusters(allTags: Tag[]): Record<TagId, SimRow>
     const ids = cluster
       .map((name) => nameToId.get(name))
       .filter((x): x is number => Number.isFinite(x));
-    // 완전 그래프로 연결
     for (let i = 0; i < ids.length; i++) {
-      for (let j = i + 1; j < ids.length; j++) {
-        add(ids[i], ids[j], SIMILARITY_INTRA);
-      }
+      for (let j = i + 1; j < ids.length; j++) add(ids[i], ids[j], SIMILARITY_INTRA);
     }
   }
 
@@ -129,14 +126,10 @@ function getExactMatches(
     return selectedTagIds.every((id) => id in tagWeights);
   });
 
-  // 선택 태그의 weight 합으로 정렬
   return hits
     .map((w) => {
       const tagWeights = byWork[w.id] || {};
-      const score = selectedTagIds.reduce(
-        (sum, id) => sum + (tagWeights[id] || 0),
-        0
-      );
+      const score = selectedTagIds.reduce((sum, id) => sum + (tagWeights[id] || 0), 0);
       return { w, score };
     })
     .sort((a, b) => b.score - a.score)
@@ -152,7 +145,6 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
     aliasSetById.set(t.id, buildAliasSet(t.name, t.aliases));
   }
 
-  // 유사도 그래프 생성(튜플 → 완전그래프)
   const simGraph = buildSimilarityGraphFromClusters(allTags);
   const sim = makeSimLookup(simGraph);
 
@@ -178,10 +170,9 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
     const selectedByCat = new Map<Category, Set<number>>();
     const selectedAliasByCat = new Map<Category, Set<string>>();
     for (const t of selectedTags) {
-      (selectedByCat.get(t.category) ??
-        selectedByCat.set(t.category, new Set()).get(t.category))!.add(t.id);
+      (selectedByCat.get(t.category) ?? selectedByCat.set(t.category, new Set()).get(t.category))!.add(t.id);
       const selAlias = selectedAliasByCat.get(t.category) ?? new Set<string>();
-      for (const tok of aliasSetById.get(t.id) ?? []) selAlias.add(tok);
+      for (const tok of (aliasSetById.get(t.id) ?? [])) selAlias.add(tok);
       selectedAliasByCat.set(t.category, selAlias);
     }
 
@@ -231,6 +222,15 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
 }
 
 // -------------------------------------------------------------
+// 유틸: Fisher–Yates 셔플
+function shuffleInPlace<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 // 분리형: 완벽 매칭은 전부, 유사 추천은 최대 N개
 export function computeExactAndSimilar(
   selectedTagIds: number[],
@@ -240,33 +240,56 @@ export function computeExactAndSimilar(
   const tags = opts?.tags ?? ALL_TAGS;
   const similarMax = opts?.similarMax ?? 10;
 
+  // ✅ 선택 키워드가 없으면: 가중치 없이 랜덤 추천
+  if (!selectedTagIds || selectedTagIds.length === 0) {
+    const pool = [...works];
+    shuffleInPlace(pool);
+    return { exact: [] as Work[], similar: pool.slice(0, similarMax) };
+  }
+
   const indexed = buildWorkIndex(works, WORK_TAGS);
   const exact = getExactMatches(selectedTagIds, works, WORK_TAGS);
 
-  // 유사 추천 점수 계산
   const exactIds = new Set(exact.map((w) => w.id));
   const scoreWork = buildSimilarityScorer(tags, WORK_TAGS);
 
-  // “하나라도 동일 태그 들어간 작품”을 우선 노출하기 위해 두 단계로 분리
-  const withExactShare: { w: WorkWithTags; s: number }[] = [];
-  const withoutExactShare: { w: WorkWithTags; s: number }[] = [];
+  // “선택 태그와 동일하게 겹친 개수”를 우선순위 키로 사용
+  type Item = { w: WorkWithTags; s: number; overlap: number };
+
+  const buckets = new Map<number, Item[]>(); // overlapCount -> items
+  const zeroOverlap: Item[] = [];
 
   for (const w of indexed) {
-    if (exactIds.has(w.id)) continue; // 완벽매치는 제외(이미 위에 표시됨)
+    if (exactIds.has(w.id)) continue; // 완벽매치는 제외
     const s = scoreWork(w, selectedTagIds);
     if (s <= 0) continue;
 
-    // 선택 태그와 “한 개 이상” 동일한 태그 보유?
-    const hasAnyExact = w.tagIds.some((id) => selectedTagIds.includes(id));
-    (hasAnyExact ? withExactShare : withoutExactShare).push({ w, s });
+    const overlap = selectedTagIds.reduce(
+      (cnt, id) => cnt + (w.tagIds.includes(id) ? 1 : 0),
+      0
+    );
+
+    if (overlap > 0) {
+      const arr = buckets.get(overlap) ?? [];
+      arr.push({ w, s, overlap });
+      buckets.set(overlap, arr);
+    } else {
+      zeroOverlap.push({ w, s, overlap: 0 });
+    }
   }
 
-  withExactShare.sort((a, b) => b.s - a.s);
-  withoutExactShare.sort((a, b) => b.s - a.s);
+  // overlap 개수 큰 그룹부터, 그룹 내부는 유사도 점수로 정렬
+  const overlapsDesc = Array.from(buckets.keys()).sort((a, b) => b - a);
+  const ordered: Item[] = [];
+  for (const k of overlapsDesc) {
+    const group = buckets.get(k)!;
+    group.sort((a, b) => b.s - a.s);
+    ordered.push(...group);
+  }
+  zeroOverlap.sort((a, b) => b.s - a.s);
+  ordered.push(...zeroOverlap);
 
-  const similar = [...withExactShare, ...withoutExactShare]
-    .slice(0, similarMax)
-    .map((x) => x.w);
+  const similar = ordered.slice(0, similarMax).map((x) => x.w);
 
   return { exact, similar };
 }

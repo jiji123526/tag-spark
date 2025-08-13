@@ -107,5 +107,9 @@ export const works = [
   { id: 106, title: "안 어린 신부", author: "왈왈", source_url: "https://www.postype.com/@channe1ur1/post/15755456" },
   { id: 107, title: "5월의 신부", author: "왈왈", source_url: "https://www.postype.com/@channe1ur1/post/15832711" },
   { id: 108, title: "냥줍", author: "트소", source_url: "https://www.postype.com/@wktrpt/series/1370913" },
-  { id: 109, title: "드레싱", author: "트소", source_url: "https://www.postype.com/@wktrpt/post/18318405" }
+  { id: 109, title: "드레싱", author: "트소", source_url: "https://www.postype.com/@wktrpt/post/18318405" },
+  { id: 110, title: "365 247", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/19784170" },
+  { id: 111, title: "렛츠 런 다크호스", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/19394661" },
+  { id: 112, title: "줄수록 냠냠", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/18916875" },
+  { id: 113, title: "PAstel Emotion REport", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/16014409" }
 ];

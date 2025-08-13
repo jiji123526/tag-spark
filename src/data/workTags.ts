@@ -661,6 +661,20 @@ export const workTags = [
   { work_id: 109, tag_id: 301, weight: 1 },
   { work_id: 109, tag_id: 601, weight: 1 },
   { work_id: 109, tag_id: 701, weight: 1 },
+  { work_id: 110, tag_id: 105, weight: 1.0 }, 
+  { work_id: 110, tag_id: 111, weight: 1.0 }, 
+  { work_id: 110, tag_id: 301, weight: 1.0 }, 
+  { work_id: 110, tag_id: 303, weight: 1.0 },
+  { work_id: 111, tag_id: 107, weight: 2.0 },
+  { work_id: 112, tag_id: 102, weight: 1.0 }, 
+  { work_id: 112, tag_id: 202, weight: 1.0 }, 
+  { work_id: 112, tag_id: 301, weight: 1.0 }, 
+  { work_id: 112, tag_id: 215, weight: 1.0 }, 
+  { work_id: 112, tag_id: 320, weight: 1.0 },
+  { work_id: 113, tag_id: 504, weight: 1.0 }, 
+  { work_id: 113, tag_id: 301, weight: 1.0 }, 
+  { work_id: 113, tag_id: 303, weight: 1.0 }, 
+
 ];
 
 // Unmatched tag names (check tags.ts aliases): nan, 쓰공/수, 연재중

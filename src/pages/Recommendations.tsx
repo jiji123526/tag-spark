@@ -87,18 +87,19 @@ const Recommendations = () => {
     return scored;
   }, [selected]);
 
-  // 유사 추천: 별칭/부분일치/카테고리 기반 (정확 일치 제외)
-  // 유사 추천: 별칭/부분일치/카테고리 기반 (정확 일치 제외)
-const similar = useMemo(() => {
-  if (selected.length === 0) return allWorks.slice(0, 10); // 전체일 때도 10개 제한
-  const recos = computeRecommendations(selected, {
-    works: allWorks,
-    tags: allTags,
-  });
-  if (exactMatches.length === 0) return recos.slice(0, 10);
-  const exactIds = new Set(exactMatches.map((w) => w.id));
-  return recos.filter((w) => !exactIds.has(w.id)).slice(0, 10);
-}, [selected, exactMatches]);
+  // ✅ 유사 추천: 태그 없어도 computeRecommendations를 타서 무작위 10개
+  const similar = useMemo(() => {
+    const recos = computeRecommendations(selected, {
+      works: allWorks,
+      tags: allTags,
+      similarMax: 10, // 빈 선택일 때도 랜덤 10개 반환
+    });
+
+    // 정확 매치가 있으면 similar에서 제거
+    if (exactMatches.length === 0) return recos.slice(0, 10);
+    const exactIds = new Set(exactMatches.map((w) => w.id));
+    return recos.filter((w) => !exactIds.has(w.id)).slice(0, 10);
+  }, [selected, exactMatches]);
 
   useEffect(() => {
     document.title = "키워드 추천 결과";
@@ -204,7 +205,7 @@ const similar = useMemo(() => {
         <div className="mt-8 flex justify-center">
           <Button asChild variant="secondary" size="sm">
             <a
-              href="https://forms.gle/pBuhYS7b4aUmU5Uo8" 
+              href="https://forms.gle/pBuhYS7b4aUmU5Uo8"
               target="_blank"
               rel="noopener noreferrer"
             >
