@@ -9,8 +9,26 @@ import { Link, useSearchParams } from "react-router-dom";
 import { computeRecommendations } from "@/lib/reco";
 import { Check } from "lucide-react";
 
+const PAGE_SIZE = 10;
+
+// 아주 간단한 셔플(선택 없음일 때 무작위 10개)
+function shuffle<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 const Recommendations = () => {
   const [searchParams] = useSearchParams();
+
+  // 페이지 번호 (?p=2 같은)
+  const page = useMemo(() => {
+    const p = parseInt((searchParams.get("p") || "1").trim(), 10);
+    return Number.isFinite(p) && p > 0 ? p : 1;
+  }, [searchParams]);
 
   // 쿼리에서 선택 태그 id 추출
   const selected = useMemo(() => {
@@ -53,7 +71,7 @@ const Recommendations = () => {
     return out;
   }, []);
 
-  // 정확 일치: 선택한 모든 태그 포함 작품
+  // 정확 일치: 선택한 모든 태그 포함 작품 (→ “전부” 보여줌)
   const exactMatches = useMemo(() => {
     if (selected.length === 0) return [] as typeof allWorks;
     // work_id -> {tag_id: weight} 맵
@@ -71,8 +89,8 @@ const Recommendations = () => {
       return selected.every((id) => id in tagWeights);
     });
 
-    // 중요 태그 합산으로 정렬(선택 태그들만 합산)
-    const scored = hits
+    // 선택 태그들의 weight 합산으로 정렬
+    return hits
       .map((w) => {
         const tagWeights = byWork[w.id] || {};
         const score = selected.reduce(
@@ -83,23 +101,30 @@ const Recommendations = () => {
       })
       .sort((a, b) => b.score - a.score)
       .map((x) => x.w);
-
-    return scored;
   }, [selected]);
 
-  // ✅ 유사 추천: 태그 없어도 computeRecommendations를 타서 무작위 10개
+  // 유사 추천: “완벽 매치 전부 표시 + 유사 추천은 페이지당 10개만”
   const similar = useMemo(() => {
+    // 선택한 태그가 하나도 없으면 “무작위 10개”
+    if (selected.length === 0) {
+      return shuffle(allWorks).slice(0, PAGE_SIZE);
+    }
+
     const recos = computeRecommendations(selected, {
       works: allWorks,
       tags: allTags,
-      similarMax: 10, // 빈 선택일 때도 랜덤 10개 반환
     });
 
-    // 정확 매치가 있으면 similar에서 제거
-    if (exactMatches.length === 0) return recos.slice(0, 10);
+    // computeRecommendations는 [exact..., similar...] 순이므로
+    // 완벽 매치(위에 이미 전부 표시)는 제외하고 유사분만 페이지닝
     const exactIds = new Set(exactMatches.map((w) => w.id));
-    return recos.filter((w) => !exactIds.has(w.id)).slice(0, 10);
-  }, [selected, exactMatches]);
+    const onlySimilar = recos.filter((w) => !exactIds.has(w.id));
+
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+
+    return onlySimilar.slice(start, end);
+  }, [selected, page, exactMatches]);
 
   useEffect(() => {
     document.title = "키워드 추천 결과";
@@ -151,7 +176,7 @@ const Recommendations = () => {
             </div>
           )}
 
-          {/* 완벽 매치 섹션: 0개여도 헤더 + 안내 표시 */}
+          {/* 완벽 매치: 항상 “모두” 표시 */}
           <div className="mb-6">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-sm font-medium tracking-wide text-muted-foreground">
@@ -176,14 +201,29 @@ const Recommendations = () => {
             )}
           </div>
 
-          {/* 유사 추천 섹션 */}
+          {/* 유사 추천: 페이지당 10개 */}
           {similar.length > 0 ? (
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-medium tracking-wide text-muted-foreground">
                   이런 포타는 어떠세요? ({similar.length})
                 </h3>
+
+                {/* 간단 페이지 네비게이션 (필요하면 스타일링해서 써도 됨) */}
+                {selected.length > 0 && (
+                  <div className="flex gap-2">
+                    <Link to={`/recommendations?tags=${selected.join(",")}&p=${Math.max(1, page - 1)}`}>
+                      <Button size="sm" variant="outline" disabled={page <= 1}>
+                        이전
+                      </Button>
+                    </Link>
+                    <Link to={`/recommendations?tags=${selected.join(",")}&p=${page + 1}`}>
+                      <Button size="sm" variant="outline">다음</Button>
+                    </Link>
+                  </div>
+                )}
               </div>
+
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {similar.map((w) => (
                   <WorkCard
@@ -201,7 +241,7 @@ const Recommendations = () => {
           ) : null}
         </section>
 
-        {/* 🔹 태그 수정 요청 버튼 (맨 아래) */}
+        {/* 🔹 태그 수정 요청 버튼 */}
         <div className="mt-8 flex justify-center">
           <Button asChild variant="secondary" size="sm">
             <a
