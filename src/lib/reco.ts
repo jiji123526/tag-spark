@@ -21,32 +21,11 @@ const CAT_WEIGHT: Record<Category, number> = {
 };
 
 // 점수 파라미터
-const EXACT = 1.0;          // 동일 태그(같은 id)
-const ALIAS = 0.9;          // 별칭/부분일치(같은 카테고리)
-const SAME_CAT = 0.35;      // 같은 카테고리(다른 태그)
-const CORE_BONUS = 0.25;    // workTags.weight=2.0 보너스
-const BASE_HIT_BOOST = 0.25;// 정확 매칭은 유사도보다 항상 살짝 유리하게
-const NORMALIZE = true;     // 태그 수 정규화
-
-// -------------------------------------------------------------
-// 선택 태그의 중요도(지정된 키워드는 2배 반영)
-const SELECTED_TAG_IMPORTANCE: Record<TagId, number> = {
-  101: 2, // 청레
-  102: 2, // 캠퍼스
-  107: 2, // 스포츠
-  111: 2, // 육아
-  117: 2, // 연반
-  214: 2, // 칼짝윈
-  215: 2, // 윈짝칼
-  312: 2, // 리얼물
-  313: 2, // 노란장판
-  503: 2, // 오메가버스
-  505: 2, // 센티넬버스
-  504: 2, // 수인
-  502: 2, // 아포칼립스
-  501: 2, // 좀아포
-};
-const importanceOf = (tagId: TagId) => SELECTED_TAG_IMPORTANCE[tagId] ?? 1;
+const EXACT = 1.0;       // 동일 태그(같은 id)
+const ALIAS = 0.9;       // 별칭/부분일치(같은 카테고리)
+const SAME_CAT = 0.35;   // 같은 카테고리(다른 태그)
+const CORE_BONUS = 0.25; // workTags.weight=2.0 보너스
+const NORMALIZE = true;  // 태그 수 정규화
 
 // -------------------------------------------------------------
 // 유사 키워드 튜플(이름으로 정의 → ID로 해석해 그래프 생성)
@@ -59,10 +38,9 @@ const TAG_CLUSTERS_BY_NAME: string[][] = [
   ["부부", "육아", "이혼", "정략결혼"],
   ["오피스", "직장동료"],
   ["키잡", "역키잡", "근친", "쌍둥이"],
-  ["후회", "쓰공/수", "찌통"],
+  ["후회", "똥차", "찌통"],
   ["쌍방삽질", "청레", "친구", "윈짝칼", "칼짝윈"],
-  ["윈짝칼", "칼짝윈"],
-  ["배틀레즈", "쓰공/수", "애새끼"],
+  ["배틀레즈", "똥차", "애새끼"],
   ["노란장판", "피폐", "찌통"],
   ["로판", "판타지", "SF"],
   ["누아르", "조직물"],
@@ -116,7 +94,10 @@ function makeSimLookup(graph: Record<TagId, SimRow>) {
 
 // -------------------------------------------------------------
 // works + workTags → tagIds 부여
-function buildWorkIndex(works = ALL_WORKS, workTags = WORK_TAGS): WorkWithTags[] {
+function buildWorkIndex(
+  works = ALL_WORKS,
+  workTags = WORK_TAGS
+): WorkWithTags[] {
   const map = new Map<number, number[]>();
   for (const wt of workTags) {
     if (!map.has(wt.work_id)) map.set(wt.work_id, []);
@@ -125,7 +106,7 @@ function buildWorkIndex(works = ALL_WORKS, workTags = WORK_TAGS): WorkWithTags[]
   return works.map((w) => ({ ...w, tagIds: map.get(w.id) ?? [] }));
 }
 
-// 선택 태그 모두 포함(완벽 매칭) 목록 + “중요도 반영 weight 합”으로 정렬
+// 선택 태그 모두 포함(완벽 매칭) 목록 + weight 합으로 정렬
 function getExactMatches(
   selectedTagIds: number[],
   works = ALL_WORKS,
@@ -148,12 +129,12 @@ function getExactMatches(
     return selectedTagIds.every((id) => id in tagWeights);
   });
 
-  // 선택 태그의 (workTags.weight * 선택태그 중요도) 합으로 정렬
+  // 선택 태그의 weight 합으로 정렬
   return hits
     .map((w) => {
       const tagWeights = byWork[w.id] || {};
       const score = selectedTagIds.reduce(
-        (sum, id) => sum + (tagWeights[id] || 0) * importanceOf(id),
+        (sum, id) => sum + (tagWeights[id] || 0),
         0
       );
       return { w, score };
@@ -197,9 +178,10 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
     const selectedByCat = new Map<Category, Set<number>>();
     const selectedAliasByCat = new Map<Category, Set<string>>();
     for (const t of selectedTags) {
-      (selectedByCat.get(t.category) ?? selectedByCat.set(t.category, new Set()).get(t.category))!.add(t.id);
+      (selectedByCat.get(t.category) ??
+        selectedByCat.set(t.category, new Set()).get(t.category))!.add(t.id);
       const selAlias = selectedAliasByCat.get(t.category) ?? new Set<string>();
-      for (const tok of (aliasSetById.get(t.id) ?? [])) selAlias.add(tok);
+      for (const tok of aliasSetById.get(t.id) ?? []) selAlias.add(tok);
       selectedAliasByCat.set(t.category, selAlias);
     }
 
@@ -212,10 +194,9 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
       const cat = wt.category;
       const cw = CAT_WEIGHT[cat] ?? 1.0;
 
-      // 1) 동일 태그(선택 태그 중요도 + 고정 부스터)
+      // 1) 동일 태그
       if (selectedByCat.get(cat)?.has(tag_id)) {
-        const imp = importanceOf(tag_id);
-        raw += ((EXACT + BASE_HIT_BOOST) + (weight === 2.0 ? CORE_BONUS : 0)) * imp * cw;
+        raw += (EXACT + (weight === 2.0 ? CORE_BONUS : 0)) * cw;
         continue;
       }
 
@@ -224,25 +205,22 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
       if (selAlias && selAlias.size > 0) {
         const workAlias = aliasSetById.get(tag_id) ?? new Set<string>();
         if (aliasOverlap(workAlias, selAlias)) {
-          const avgImp = averageImportance([...selectedByCat.get(cat)!] || []);
-          raw += (ALIAS + (weight === 2.0 ? CORE_BONUS / 2 : 0)) * avgImp * cw;
+          raw += (ALIAS + (weight === 2.0 ? CORE_BONUS / 2 : 0)) * cw;
           continue;
         }
       }
 
       // 3) 같은 카테고리(다른 태그)
       if (selectedByCat.has(cat)) {
-        const avgImp = averageImportance([...selectedByCat.get(cat)!] || []);
-        raw += (SAME_CAT + (weight === 2.0 ? CORE_BONUS / 4 : 0)) * avgImp * cw;
+        raw += (SAME_CAT + (weight === 2.0 ? CORE_BONUS / 4 : 0)) * cw;
       }
 
       // 4) 태그↔태그 유사도(튜플 기반, 카테고리 무관)
       for (const s of selectedTagIds) {
         const k = sim(s, tag_id);
         if (k > 0) {
-          const imp = importanceOf(s);
           const weightBoost = 1 + (weight === 2.0 ? CORE_BONUS / 2 : 0);
-          raw += imp * k * cw * weightBoost;
+          raw += k * cw * weightBoost;
         }
       }
     }
@@ -250,13 +228,6 @@ function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
     const denom = NORMALIZE ? Math.sqrt(entries.length) : 1;
     return raw / denom;
   };
-}
-
-function averageImportance(ids: number[]): number {
-  if (ids.length === 0) return 1;
-  let sum = 0;
-  for (const id of ids) sum += importanceOf(id);
-  return sum / ids.length;
 }
 
 // -------------------------------------------------------------
@@ -272,15 +243,28 @@ export function computeExactAndSimilar(
   const indexed = buildWorkIndex(works, WORK_TAGS);
   const exact = getExactMatches(selectedTagIds, works, WORK_TAGS);
 
-  // 유사 추천: exact 제외 후 점수순 정렬 → 최대 similarMax
+  // 유사 추천 점수 계산
   const exactIds = new Set(exact.map((w) => w.id));
   const scoreWork = buildSimilarityScorer(tags, WORK_TAGS);
 
-  const similar = indexed
-    .filter((w) => !exactIds.has(w.id))
-    .map((w) => ({ w, s: scoreWork(w, selectedTagIds) }))
-    .filter((x) => x.s > 0)
-    .sort((a, b) => b.s - a.s)
+  // “하나라도 동일 태그 들어간 작품”을 우선 노출하기 위해 두 단계로 분리
+  const withExactShare: { w: WorkWithTags; s: number }[] = [];
+  const withoutExactShare: { w: WorkWithTags; s: number }[] = [];
+
+  for (const w of indexed) {
+    if (exactIds.has(w.id)) continue; // 완벽매치는 제외(이미 위에 표시됨)
+    const s = scoreWork(w, selectedTagIds);
+    if (s <= 0) continue;
+
+    // 선택 태그와 “한 개 이상” 동일한 태그 보유?
+    const hasAnyExact = w.tagIds.some((id) => selectedTagIds.includes(id));
+    (hasAnyExact ? withExactShare : withoutExactShare).push({ w, s });
+  }
+
+  withExactShare.sort((a, b) => b.s - a.s);
+  withoutExactShare.sort((a, b) => b.s - a.s);
+
+  const similar = [...withExactShare, ...withoutExactShare]
     .slice(0, similarMax)
     .map((x) => x.w);
 
