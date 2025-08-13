@@ -7,7 +7,7 @@ const Loading = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    document.title = "Loading recommendations";
+    document.title = "추천작 준비중";
     const tags = searchParams.get("tags") || "";
 
     const id = setTimeout(() => {
