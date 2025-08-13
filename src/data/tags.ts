@@ -11,7 +11,7 @@ export const tags: Tag[] = [
   { id: 102, name: "캠퍼스", category: "설정", aliases: ["대학", "대학생", "대딩", "20대"] },
   { id: 103, name: "오피스", category: "설정", aliases: ["회사", "직장", "사내연애"] },
   { id: 104, name: "군대", category: "설정", aliases: ["군인", "군바리"] },
-  { id: 105, name: "연예계", category: "설정", aliases: ["아이돌", "배우", "앵커"] },
+  { id: 105, name: "연예인", category: "설정", aliases: ["아이돌", "배우", "앵커", "연습생", "프듀"] },
   { id: 106, name: "메디컬", category: "설정", aliases: ["병원", "의료"] },
   { id: 107, name: "스포츠", category: "설정" },
   { id: 108, name: "조직물", category: "설정", aliases: ["조폭", "마피아"] },
@@ -20,7 +20,7 @@ export const tags: Tag[] = [
   { id: 111, name: "육아", category: "설정", aliases: ["돌싱", "싱글맘"] },
   { id: 112, name: "종교", category: "설정" },
   { id: 113, name: "연프", category: "설정", aliases: ["연애 프로그램", "티비 프로그램", "프로그램", "예능"] },
-  { id: 114, name: "인외물", category: "설정", aliases: ["인외존재", "인어", "외계인"] },
+  { id: 114, name: "인외", category: "설정", aliases: ["인외존재", "인어", "외계인"] },
   { id: 115, name: "재벌", category: "설정" },
   { id: 116, name: "사제", category: "설정", aliases: ["선생님", "제자", "교수", "학생"] },
   { id: 117, name: "연반", category: "설정" },
@@ -78,8 +78,8 @@ export const tags: Tag[] = [
   { id: 504, name: "수인", category: "세계관" },
   { id: 505, name: "센티넬버스", category: "세계관", aliases: ["센티넬가이드", "가이드", "센가물"] },
   { id: 506, name: "구원", category: "세계관", aliases: ["쌍방구원"] },
-  { id: 507, name: "기타", category: "세계관", aliases: ["피스틸버스", "하나하키"] },
   { id: 508, name: "회귀", category: "세계관" },
+  { id: 507, name: "기타", category: "세계관", aliases: ["피스틸버스", "하나하키"] },
 
   // 분량 (600~699)
   { id: 601, name: "단편", category: "분량" },
