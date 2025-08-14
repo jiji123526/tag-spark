@@ -123,4 +123,5 @@ export const works = [
   { id: 123, title: "안녕, 트래블러", author: "카노", source_url: "https://posty.pe/ny2rqg" },
   { id: 124, title: "안녕하세요 똥깨예요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1426109" },
   { id: 125, title: "키워주세요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1430320" },
+  { id: 126, title: "Thirsty", author: "턱끈", source_url: "https://www.postype.com/@chinstrap/post/14359304" },
 ];

@@ -18,7 +18,7 @@ export const tags: Tag[] = [
   { id: 109, name: "시대물", category: "설정", aliases: ["과거", "조선", "옛날"] },
   { id: 110, name: "여행", category: "설정" },
   { id: 119, name: "농촌", category: "설정" },
-  { id: 111, name: "육아", category: "설정", aliases: ["돌싱", "싱글맘"] },
+  { id: 111, name: "육아", category: "설정", aliases: ["돌싱", "싱글맘", "임출육"] },
   { id: 112, name: "종교", category: "설정" },
   { id: 113, name: "연프", category: "설정", aliases: ["연애 프로그램", "티비 프로그램", "프로그램", "예능"] },
   { id: 114, name: "인외", category: "설정", aliases: ["인외존재", "인어", "외계인"] },

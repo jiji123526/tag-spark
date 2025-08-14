@@ -1,8 +1,8 @@
 import { Tag } from "@/data/tags";
-import { Work } from "@/data/works";
+import { works as Work } from "@/data/works";
 
 type Props = {
-  work: Work;
+  work: typeof Work[number];
   tagList?: Tag[]; // 작품에 포함된 태그들 (전부 표시)
 };
 
