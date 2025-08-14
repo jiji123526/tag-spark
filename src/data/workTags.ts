@@ -890,4 +890,12 @@ export const workTags: WorkTag[] = [
 { work_id: 133, tag_id: 603, weight: 1 }, // 장편
 { work_id: 133, tag_id: 701, weight: 1 }, // 완결
 
+{ work_id: 134, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 134, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 134, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 134, tag_id: 313, weight: 2 }, // 노란장판 (core)
+{ work_id: 134, tag_id: 316, weight: 1 }, // 여름
+{ work_id: 134, tag_id: 320, weight: 1 }, // 노딱
+{ work_id: 134, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 134, tag_id: 701, weight: 1 }, // 완결
 ];

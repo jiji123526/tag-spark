@@ -131,4 +131,5 @@ export const works = [
   { id: 131, title: "피히테의 망각법", author: "새달", source_url: "https://www.postype.com/@newmoondong/post/12084747" },
   { id: 132, title: "미완의 마침표", author: "윙터레스트", source_url: "https://posty.pe/109uc4" },
   { id: 133, title: "도깨비불", author: "발베니", source_url: "https://posty.pe/soh30jt" },
+  { id: 134, title: "아가미호흡", author: "발베니", source_url: "https://posty.pe/mrey8h" },
 ];
