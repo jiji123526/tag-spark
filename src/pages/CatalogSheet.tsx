@@ -30,7 +30,15 @@ export default function CatalogSheet() {
       byWork.set(m.work_id, list);
     }
 
-    return allWorks.map((w) => ({
+    // Helper: check if first char is Hangul syllable (U+AC00–U+D7A3)
+    function isKoreanName(name: string): boolean {
+      if (!name || name.length === 0) return false;
+      const ch = name[0];
+      const code = ch.charCodeAt(0);
+      return code >= 0xac00 && code <= 0xd7a3;
+    }
+
+    const arr = allWorks.map((w) => ({
       id: w.id,
       title: w.title,
       author: w.author,
@@ -39,6 +47,21 @@ export default function CatalogSheet() {
         a.name.localeCompare(b.name)
       ),
     }));
+
+    // Sort: Korean authors first (Korean alphabetical order), then others (English alphabetical order)
+    arr.sort((a, b) => {
+      const aIsKo = isKoreanName(a.author);
+      const bIsKo = isKoreanName(b.author);
+      if (aIsKo && !bIsKo) return -1;
+      if (!aIsKo && bIsKo) return 1;
+      if (aIsKo && bIsKo) {
+        // Both Korean: sort by Korean alphabetical order
+        return a.author.localeCompare(b.author, "ko");
+      }
+      // Both non-Korean: sort by English alphabetical order
+      return a.author.localeCompare(b.author, "en");
+    });
+    return arr;
   }, []);
 
   // 검색(제목/작가/태그/별칭)
@@ -180,7 +203,7 @@ export default function CatalogSheet() {
         </div>
       </main>
       <footer className="py-4 text-center text-sm text-muted-foreground border-t">
-        © 모든 문의는 트위터(X) @cxwdxggy 로 디엠 주세요.
+      © 2025 @cxwdxggy <br /> 문의는 메뉴 탭의 요청 폼 또는 트위터(X) 디엠 주세요.
       </footer>
     </div>
   );
