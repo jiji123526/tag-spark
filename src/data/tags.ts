@@ -49,7 +49,7 @@ export const tags: Tag[] = [
   { id: 302, name: "힐링", category: "분위기", aliases: ["치유", "따뜻함"] },
   { id: 303, name: "달달", category: "분위기", aliases: ["달달물"] },
   { id: 304, name: "풋풋", category: "분위기" },
-  { id: 305, name: "찌통", category: "분위기", aliases: ["짠내", "애절"] },
+  { id: 305, name: "찌통", category: "분위기", aliases: ["짠내", "애절", "아련", "먹먹"] },
   { id: 306, name: "피폐", category: "분위기" },
   { id: 307, name: "새드", category: "분위기", aliases: ["새드엔딩"] },
   { id: 308, name: "쌍방삽질", category: "분위기" },

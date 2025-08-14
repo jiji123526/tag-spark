@@ -898,4 +898,28 @@ export const workTags: WorkTag[] = [
 { work_id: 134, tag_id: 320, weight: 1 }, // 노딱
 { work_id: 134, tag_id: 601, weight: 1 }, // 단편
 { work_id: 134, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 135 ---
+{ work_id: 135, tag_id: 313, weight: 2 }, // 노란장판
+{ work_id: 135, tag_id: 108, weight: 1 }, // 조직물
+{ work_id: 135, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 135, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 135, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 135, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 136 ---
+{ work_id: 136, tag_id: 106, weight: 1 }, // 메디컬
+{ work_id: 136, tag_id: 309, weight: 1 }, // 배틀레즈
+{ work_id: 136, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 136, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 136, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 137 ---
+{ work_id: 137, tag_id: 102, weight: 2 }, // 캠퍼스
+{ work_id: 137, tag_id: 118, weight: 1 }, // 동갑
+{ work_id: 137, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 137, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 137, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 137, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 137, tag_id: 701, weight: 1 }, // 완결
 ];

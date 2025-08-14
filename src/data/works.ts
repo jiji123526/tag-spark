@@ -132,4 +132,7 @@ export const works = [
   { id: 132, title: "미완의 마침표", author: "윙터레스트", source_url: "https://posty.pe/109uc4" },
   { id: 133, title: "도깨비불", author: "발베니", source_url: "https://posty.pe/soh30jt" },
   { id: 134, title: "아가미호흡", author: "발베니", source_url: "https://posty.pe/mrey8h" },
+  { id: 135, title: "별이 빛나는 밤에", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/18574436" },
+  { id: 136, title: "어디가 아파서 오셨어요", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/9614466" },
+  { id: 137, title: "모든 일에는 예외가 존재한다", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/8485783" },
 ];
