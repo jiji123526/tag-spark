@@ -78,7 +78,7 @@ export const tags: Tag[] = [
   { id: 503, name: "오메가버스", category: "세계관", aliases: ["알파오메가", "알오물"] },
   { id: 504, name: "수인", category: "세계관" },
   { id: 505, name: "센티넬버스", category: "세계관", aliases: ["센티넬가이드", "가이드", "센가물"] },
-  { id: 506, name: "구원", category: "세계관", aliases: ["쌍방구원"] },
+  { id: 506, name: "구원", category: "관계", aliases: ["쌍방구원"] },
   { id: 508, name: "회귀", category: "세계관" },
   { id: 507, name: "기타", category: "세계관", aliases: ["피스틸버스", "하나하키"] },
 
