@@ -124,4 +124,11 @@ export const works = [
   { id: 124, title: "안녕하세요 똥깨예요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1426109" },
   { id: 125, title: "키워주세요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1430320" },
   { id: 126, title: "Thirsty", author: "턱끈", source_url: "https://www.postype.com/@chinstrap/post/14359304" },
+  { id: 127, title: "지구를 네 번, 바다를 여덟 번, 우주를 여섯 번", author: "창고지기", source_url: "https://www.postype.com/@darakbang-warehouse/series/1241525" },
+  { id: 128, title: "폭스트로트 러브", author: "새우", source_url: "https://www.postype.com/@raw-or-fried/post/14727799" },
+  { id: 129, title: "얼음이 네 안에 차오른 밤에", author: "옐", source_url: "https://www.postype.com/@yelling0417/series/1136938" },
+  { id: 130, title: "나의 자서전", author: "옐", source_url: "https://www.postype.com/@yelling0417/series/1166434" },
+  { id: 131, title: "피히테의 망각법", author: "새달", source_url: "https://www.postype.com/@newmoondong/post/12084747" },
+  { id: 132, title: "미완의 마침표", author: "윙터레스트", source_url: "https://posty.pe/109uc4" },
+  { id: 133, title: "도깨비불", author: "발베니", source_url: "https://posty.pe/soh30jt" },
 ];
