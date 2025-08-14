@@ -111,5 +111,16 @@ export const works = [
   { id: 110, title: "365 247", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/19784170" },
   { id: 111, title: "렛츠 런 다크호스", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/19394661" },
   { id: 112, title: "줄수록 냠냠", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/18916875" },
-  { id: 113, title: "PAstel Emotion REport", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/16014409" }
+  { id: 113, title: "PAstel Emotion REport", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/16014409" }, { id: 114, title: "크레딧", author: "슈뢰딩거", source_url: "https://posty.pe/0gzx5w" },
+  { id: 115, title: "불건전채권", author: "뻑", source_url: "https://posty.pe/h29ods" },
+  { id: 116, title: "백스티이지 로맨스", author: "카노", source_url: "https://posty.pe/z5j6kg" },
+  { id: 117, title: "야앵", author: "흑구", source_url: "https://posty.pe/ovtiui" },
+  { id: 118, title: "뜻대로 하세요", author: "이상해", source_url: "https://posty.pe/u2e7sl" },
+  { id: 119, title: "베아타 마리아", author: "흑구", source_url: "https://posty.pe/ib5af7" },
+  { id: 120, title: "돼지감자 퇴치하는 일기", author: "뚝102", source_url: "https://posty.pe/4vix2d" },
+  { id: 121, title: "사내 로맨스는 위험해!", author: "밀백", source_url: "https://posty.pe/mp70i2" },
+  { id: 122, title: "감자족제비네", author: "유달리", source_url: "https://posty.pe/jf7flw" },
+  { id: 123, title: "안녕, 트래블러", author: "카노", source_url: "https://posty.pe/ny2rqg" },
+  { id: 124, title: "안녕하세요 똥깨예요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1426109" },
+  { id: 125, title: "키워주세요", author: "--", source_url: "https://www.postype.com/@stand-up/series/1430320" },
 ];

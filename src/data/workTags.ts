@@ -703,4 +703,114 @@ export const workTags: WorkTag[] = [
   { work_id: 113, tag_id: 504, weight: 2 },
   { work_id: 113, tag_id: 601, weight: 1 },
   { work_id: 113, tag_id: 701, weight: 1 },
+  // --- append for works 114~123 ---
+{ work_id: 114, tag_id: 105, weight: 1 }, // 연예계
+{ work_id: 114, tag_id: 203, weight: 1 }, // 직장동료
+{ work_id: 114, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 114, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 114, tag_id: 310, weight: 1 }, // 후회
+{ work_id: 114, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 114, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 114, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 114, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 115, tag_id: 108, weight: 1 }, // 조직물
+{ work_id: 115, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 115, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 115, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 115, tag_id: 702, weight: 1 }, // 연재중
+
+{ work_id: 116, tag_id: 105, weight: 1 }, // 연예계
+{ work_id: 116, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 116, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 116, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 116, tag_id: 314, weight: 1 }, // 애새끼
+{ work_id: 116, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 116, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 116, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 117, tag_id: 109, weight: 1 }, // 시대물
+{ work_id: 117, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 117, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 117, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 117, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 117, tag_id: 308, weight: 1 }, // 쌍방삽질
+{ work_id: 117, tag_id: 315, weight: 1 }, // 봄
+{ work_id: 117, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 117, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 118, tag_id: 109, weight: 1 }, // 시대물
+{ work_id: 118, tag_id: 115, weight: 1 }, // 재벌
+{ work_id: 118, tag_id: 206, weight: 1 }, // 정략결혼
+{ work_id: 118, tag_id: 316, weight: 1 }, // 여름
+{ work_id: 118, tag_id: 506, weight: 1 }, // 구원
+{ work_id: 118, tag_id: 507, weight: 1 }, // 기타
+{ work_id: 118, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 118, tag_id: 702, weight: 1 }, // 연재중
+
+{ work_id: 119, tag_id: 101, weight: 2 }, // 청레 (core)
+{ work_id: 119, tag_id: 112, weight: 1 }, // 종교
+{ work_id: 119, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 119, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 119, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 119, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 119, tag_id: 313, weight: 2 }, // 노란장판 (core)
+{ work_id: 119, tag_id: 506, weight: 1 }, // 구원
+{ work_id: 119, tag_id: 602, weight: 1 }, // 중편
+{ work_id: 119, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 120, tag_id: 117, weight: 2 }, // 연반 (core)
+{ work_id: 120, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 120, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 120, tag_id: 316, weight: 1 }, // 여름
+{ work_id: 120, tag_id: 119, weight: 1 },
+{ work_id: 120, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 120, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 121, tag_id: 103, weight: 2 }, // 오피스 (core)
+{ work_id: 121, tag_id: 203, weight: 1 }, // 직장동료
+{ work_id: 121, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 121, tag_id: 320, weight: 1 }, // 노딱
+{ work_id: 121, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 121, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 122, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+{ work_id: 122, tag_id: 117, weight: 2 }, // 연반 (core)
+{ work_id: 122, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 122, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 122, tag_id: 308, weight: 1 }, // 쌍방삽질
+{ work_id: 122, tag_id: 604, weight: 1 }, // 썰백업
+{ work_id: 122, tag_id: 701, weight: 1 }, // 완결
+
+{ work_id: 123, tag_id: 101, weight: 2 }, // 청레 (core)
+{ work_id: 123, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+{ work_id: 123, tag_id: 107, weight: 2 }, // 스포츠 (core)
+{ work_id: 123, tag_id: 110, weight: 1 }, // 여행
+{ work_id: 123, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 123, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 123, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 123, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 123, tag_id: 307, weight: 1 }, // 새드
+{ work_id: 123, tag_id: 310, weight: 1 }, // 후회
+{ work_id: 123, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 123, tag_id: 508, weight: 1 }, // 회귀
+{ work_id: 123, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 123, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 124, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 124, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 124, tag_id: 105, weight: 1 },
+{ work_id: 124, tag_id: 203, weight: 1 },
+{ work_id: 124, tag_id: 209, weight: 1 },
+{ work_id: 124, tag_id: 308, weight: 1 },
+{ work_id: 124, tag_id: 301, weight: 1 },
+{ work_id: 124, tag_id: 303, weight: 1 },
+{ work_id: 125, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 125, tag_id: 702, weight: 1 }, // 연재중
+{ work_id: 125, tag_id: 105, weight: 1 },
+{ work_id: 125, tag_id: 201, weight: 1 },
+{ work_id: 125, tag_id: 114, weight: 1 },
+{ work_id: 125, tag_id: 117, weight: 2 },
+{ work_id: 125, tag_id: 216, weight: 1 },
+{ work_id: 125, tag_id: 301, weight: 1 },
+{ work_id: 125, tag_id: 303, weight: 1 },
 ];
