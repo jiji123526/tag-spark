@@ -113,7 +113,7 @@ export const works = [
   { id: 112, title: "줄수록 냠냠", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/18916875" },
   { id: 113, title: "PAstel Emotion REport", author: "해씨", source_url: "https://www.postype.com/@hambbb/post/16014409" }, { id: 114, title: "크레딧", author: "슈뢰딩거", source_url: "https://posty.pe/0gzx5w" },
   { id: 115, title: "불건전채권", author: "뻑", source_url: "https://posty.pe/h29ods" },
-  { id: 116, title: "백스티이지 로맨스", author: "카노", source_url: "https://posty.pe/z5j6kg" },
+  { id: 116, title: "백스테이지 로맨스", author: "카노", source_url: "https://posty.pe/z5j6kg" },
   { id: 117, title: "야앵", author: "흑구", source_url: "https://posty.pe/ovtiui" },
   { id: 118, title: "뜻대로 하세요", author: "이상해", source_url: "https://posty.pe/u2e7sl" },
   { id: 119, title: "베아타 마리아", author: "흑구", source_url: "https://posty.pe/ib5af7" },
