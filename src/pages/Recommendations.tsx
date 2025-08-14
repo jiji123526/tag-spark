@@ -242,7 +242,7 @@ const Recommendations = () => {
         </div>
       </main>
       <footer className="py-4 text-center text-sm text-muted-foreground border-t">
-        © 모든 문의는 트위터(X) @cxwdxggy 로 디엠 주세요.
+        © 2025 @cxwdxggy <br /> 문의는 메뉴 탭의 요청 폼 또는 트위터(X) 디엠 주세요.
       </footer>
     </div>
   );
