@@ -125,7 +125,7 @@ const Recommendations = () => {
     });
 
     // 선택 태그들의 weight 합산으로 정렬
-    return hits.sort(compareAuthor);
+    return shuffle(hits);
   }, [selected]);
 
   // 유사 추천: “완벽 매치 전부 표시 + 유사 추천은 페이지당 10개만”
@@ -145,7 +145,7 @@ const Recommendations = () => {
     const exactIds = new Set(exactMatches.map((w) => w.id));
     const onlySimilar = recos.filter((w) => !exactIds.has(w.id));
 
-    const sorted = onlySimilar.sort(compareAuthor);
+    const sorted = onlySimilar.sort((a, b) => b.similarity - a.similarity);
     const start = (page - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     return sorted.slice(start, end);
