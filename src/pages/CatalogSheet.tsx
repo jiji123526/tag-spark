@@ -38,14 +38,27 @@ export default function CatalogSheet() {
       return code >= 0xac00 && code <= 0xd7a3;
     }
 
+    const categoryOrder: Record<string, number> = {
+      "분량": 1,
+      "완결여부": 2,
+      "세계관": 3,
+      "장르": 4,
+      "설정": 5,
+      "관계": 6,
+      "분위기": 7,
+    };
+
     const arr = allWorks.map((w) => ({
       id: w.id,
       title: w.title,
       author: w.author,
       source_url: w.source_url,
-      tags: (byWork.get(w.id) ?? []).sort((a, b) =>
-        a.name.localeCompare(b.name)
-      ),
+      tags: (byWork.get(w.id) ?? []).sort((a, b) => {
+        const ca = categoryOrder[a.category] ?? 999;
+        const cb = categoryOrder[b.category] ?? 999;
+        if (ca !== cb) return ca - cb;
+        return a.name.localeCompare(b.name, "ko");
+      }),
     }));
 
     // Sort: Korean authors first (Korean alphabetical order), then others (English alphabetical order)

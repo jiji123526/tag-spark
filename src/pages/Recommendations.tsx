@@ -21,6 +21,26 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function isKoreanName(name: string): boolean {
+  if (!name) return false;
+  const ch = name.trim()[0];
+  if (!ch) return false;
+  const code = ch.charCodeAt(0);
+  return code >= 0xac00 && code <= 0xd7a3; // Hangul syllables
+}
+
+function compareAuthor(a: { author: string }, b: { author: string }): number {
+  const aKo = isKoreanName(a.author);
+  const bKo = isKoreanName(b.author);
+  if (aKo && !bKo) return -1;
+  if (!aKo && bKo) return 1;
+  // both Korean or both not: locale-aware compare
+  return a.author.localeCompare(b.author, aKo ? "ko" : "en", {
+    sensitivity: "base",
+    numeric: true,
+  });
+}
+
 const Recommendations = () => {
   const [searchParams] = useSearchParams();
 
@@ -63,9 +83,24 @@ const Recommendations = () => {
     }
 
     const out = new Map<number, Tag[]>();
+    const categoryOrder: Record<string, number> = {
+      "세계관": 1,
+      "장르": 2,
+      "설정": 3,
+      "관계": 4,
+      "분위기": 5,
+      "분량": 6,
+      "완결여부": 7,
+    };
     for (const [workId, list] of map) {
-      // 코어(2.0) 우선 정렬
-      list.sort((a, b) => b.weight - a.weight);
+      // 코어(2.0) 우선 정렬 + 카테고리 지정 순서 + 이름순
+      list.sort((a, b) => {
+        if (b.weight !== a.weight) return b.weight - a.weight;
+        const aCat = categoryOrder[a.tag.category] ?? 999;
+        const bCat = categoryOrder[b.tag.category] ?? 999;
+        if (aCat !== bCat) return aCat - bCat;
+        return a.tag.name.localeCompare(b.tag.name, "ko");
+      });
       out.set(workId, list.map((x) => x.tag));
     }
     return out;
@@ -90,17 +125,7 @@ const Recommendations = () => {
     });
 
     // 선택 태그들의 weight 합산으로 정렬
-    return hits
-      .map((w) => {
-        const tagWeights = byWork[w.id] || {};
-        const score = selected.reduce(
-          (sum, id) => sum + (tagWeights[id] || 0),
-          0
-        );
-        return { w, score };
-      })
-      .sort((a, b) => b.score - a.score)
-      .map((x) => x.w);
+    return hits.sort(compareAuthor);
   }, [selected]);
 
   // 유사 추천: “완벽 매치 전부 표시 + 유사 추천은 페이지당 10개만”
@@ -120,10 +145,10 @@ const Recommendations = () => {
     const exactIds = new Set(exactMatches.map((w) => w.id));
     const onlySimilar = recos.filter((w) => !exactIds.has(w.id));
 
+    const sorted = onlySimilar.sort(compareAuthor);
     const start = (page - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
-
-    return onlySimilar.slice(start, end);
+    return sorted.slice(start, end);
   }, [selected, page, exactMatches]);
 
   useEffect(() => {
