@@ -718,7 +718,6 @@ export const workTags: WorkTag[] = [
   { work_id: 113, tag_id: 504, weight: 2 },
   { work_id: 113, tag_id: 601, weight: 1 },
   { work_id: 113, tag_id: 701, weight: 1 },
-{ work_id: 113, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 { work_id: 114, tag_id: 105, weight: 1 }, // 연예계
 { work_id: 114, tag_id: 203, weight: 1 }, // 직장동료
 { work_id: 114, tag_id: 302, weight: 1 }, // 힐링
