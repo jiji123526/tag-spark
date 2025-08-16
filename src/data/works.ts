@@ -135,4 +135,7 @@ export const works = [
   { id: 135, title: "별이 빛나는 밤에", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/18574436" },
   { id: 136, title: "어디가 아파서 오셨어요", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/9614466" },
   { id: 137, title: "모든 일에는 예외가 존재한다", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/post/8485783" },
+  { id: 138, title: "화엽불상견(花葉不相見)", author: "프레임", source_url: "https://posty.pe/s6h3lsq" },
+  { id: 139, title: "something special", author: "우다다", source_url: "https://posty.pe/sh997le" },
+  { id: 140, title: "시든 꽃에 물을", author: "카노", source_url: "https://posty.pe/cn7qd3" },
 ];

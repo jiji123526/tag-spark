@@ -91,4 +91,5 @@ export const tags: Tag[] = [
   // 완결 여부 (700~799)
   { id: 701, name: "완결", category: "완결여부" },
   { id: 702, name: "연재중", category: "완결여부" },
+
 ];

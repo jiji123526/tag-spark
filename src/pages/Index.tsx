@@ -13,7 +13,7 @@ const CATEGORIES: Tag["category"][] = [
   "장르",
   "세계관",
   "분량",
-  "완결여부", 
+  "완결여부"
 ];
 
 const LABELS: Record<Tag["category"], string> = {
