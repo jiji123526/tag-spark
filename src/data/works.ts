@@ -138,4 +138,5 @@ export const works = [
   { id: 138, title: "화엽불상견(花葉不相見)", author: "프레임", source_url: "https://posty.pe/s6h3lsq" },
   { id: 139, title: "something special", author: "우다다", source_url: "https://posty.pe/sh997le" },
   { id: 140, title: "시든 꽃에 물을", author: "카노", source_url: "https://posty.pe/cn7qd3" },
+  { id: 141, title: "최악의 결혼", author: "턱끈", source_url: "https://www.postype.com/@chinstrap/series/1482249" },
 ];

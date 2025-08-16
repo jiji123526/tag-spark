@@ -963,4 +963,11 @@ export const workTags: WorkTag[] = [
 { work_id: 140, tag_id: 101, weight: 2 }, // 청레 (core)
 { work_id: 140, tag_id: 601, weight: 1 }, // 단편
 { work_id: 140, tag_id: 701, weight: 1 }, // 완결
+// --- work 141 ---
+{ work_id: 141, tag_id: 503, weight: 2 }, // 오메가버스 (core)
+{ work_id: 141, tag_id: 206, weight: 1 }, // 정략결혼
+{ work_id: 141, tag_id: 309, weight: 1 }, // 배틀레즈
+{ work_id: 141, tag_id: 115, weight: 1 }, // 재벌
+{ work_id: 141, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 141, tag_id: 702, weight: 1 }, // 연재중
 ];
