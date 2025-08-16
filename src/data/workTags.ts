@@ -928,21 +928,18 @@ export const workTags: WorkTag[] = [
 { work_id: 137, tag_id: 701, weight: 1 }, // 완결
 
 // --- work 138 ---
-{ work_id: 138, tag_id: 109, weight: 1 }, // 시대물
-{ work_id: 138, tag_id: 110, weight: 1 }, // 여행
-{ work_id: 138, tag_id: 702, weight: 1 }, // 연재중
-{ work_id: 138, tag_id: 603, weight: 1 }, // 장편
 { work_id: 138, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
 { work_id: 138, tag_id: 216, weight: 1 }, // 재회
 { work_id: 138, tag_id: 506, weight: 1 }, // 구원
 { work_id: 138, tag_id: 301, weight: 1 }, // 로코
 { work_id: 138, tag_id: 305, weight: 1 }, // 찌통
 { work_id: 138, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 138, tag_id: 109, weight: 1 }, // 시대물
+{ work_id: 138, tag_id: 110, weight: 1 }, // 여행
+{ work_id: 138, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 138, tag_id: 702, weight: 1 }, // 연재중
 
 // --- work 139 ---
-{ work_id: 139, tag_id: 103, weight: 2 }, // 오피스 (core)
-{ work_id: 139, tag_id: 702, weight: 1 }, // 연재중
-{ work_id: 139, tag_id: 603, weight: 1 }, // 장편
 { work_id: 139, tag_id: 203, weight: 1 }, // 직장동료
 { work_id: 139, tag_id: 216, weight: 1 }, // 재회
 { work_id: 139, tag_id: 506, weight: 1 }, // 구원
@@ -950,11 +947,11 @@ export const workTags: WorkTag[] = [
 { work_id: 139, tag_id: 307, weight: 1 }, // 새드
 { work_id: 139, tag_id: 308, weight: 1 }, // 쌍방삽질
 { work_id: 139, tag_id: 310, weight: 1 }, // 후회
+{ work_id: 139, tag_id: 103, weight: 2 }, // 오피스 (core)
+{ work_id: 139, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 139, tag_id: 702, weight: 1 }, // 연재중
 
 // --- work 140 ---
-{ work_id: 140, tag_id: 101, weight: 2 }, // 청레 (core)
-{ work_id: 140, tag_id: 701, weight: 1 }, // 완결
-{ work_id: 140, tag_id: 601, weight: 1 }, // 단편
 { work_id: 140, tag_id: 207, weight: 1 }, // 친구
 { work_id: 140, tag_id: 506, weight: 1 }, // 구원
 { work_id: 140, tag_id: 303, weight: 1 }, // 달달
@@ -963,4 +960,7 @@ export const workTags: WorkTag[] = [
 { work_id: 140, tag_id: 307, weight: 1 }, // 새드
 { work_id: 140, tag_id: 315, weight: 1 }, // 봄
 { work_id: 140, tag_id: 318, weight: 1 }, // 겨울
+{ work_id: 140, tag_id: 101, weight: 2 }, // 청레 (core)
+{ work_id: 140, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 140, tag_id: 701, weight: 1 }, // 완결
 ];
