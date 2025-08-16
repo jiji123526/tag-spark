@@ -1,7 +1,7 @@
 export type Tag = {
   id: number;
   name: string;
-  category: "설정" | "관계" | "분위기" | "장르" | "세계관" | "분량" | "완결여부";
+  category: "설정" | "관계" | "분위기" | "장르" | "세계관" | "분량" | "완결여부" | "씨피고정";
   aliases?: string[];
 };
 
@@ -92,4 +92,7 @@ export const tags: Tag[] = [
   { id: 701, name: "완결", category: "완결여부" },
   { id: 702, name: "연재중", category: "완결여부" },
 
+  // 씨피고정 (800~899)
+  { id: 801, name: "윈칼", category: "씨피고정" },
+  { id: 802, name: "칼윈", category: "씨피고정" },
 ];

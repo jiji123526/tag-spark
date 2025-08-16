@@ -154,6 +154,7 @@ export const workTags: WorkTag[] = [
   { work_id: 21, tag_id: 503, weight: 2 },
   { work_id: 21, tag_id: 603, weight: 1 },
   { work_id: 21, tag_id: 701, weight: 1 },
+{ work_id: 21, tag_id: 802, weight: 2 }, // 칼윈 (씨피고정)
   { work_id: 22, tag_id: 106, weight: 2 },
   { work_id: 22, tag_id: 115, weight: 1 },
   { work_id: 22, tag_id: 201, weight: 1 },
@@ -192,6 +193,7 @@ export const workTags: WorkTag[] = [
   { work_id: 25, tag_id: 310, weight: 1 },
   { work_id: 25, tag_id: 602, weight: 1 },
   { work_id: 25, tag_id: 701, weight: 1 },
+{ work_id: 25, tag_id: 802, weight: 2 }, // 칼윈 (씨피고정)
   { work_id: 26, tag_id: 102, weight: 2 },
   { work_id: 26, tag_id: 115, weight: 1 },
   { work_id: 26, tag_id: 202, weight: 1 },
@@ -199,6 +201,7 @@ export const workTags: WorkTag[] = [
   { work_id: 26, tag_id: 304, weight: 1 },
   { work_id: 26, tag_id: 603, weight: 1 },
   { work_id: 26, tag_id: 701, weight: 1 },
+{ work_id: 26, tag_id: 802, weight: 2 }, // 칼윈 (씨피고정)
   { work_id: 27, tag_id: 107, weight: 2 },
   { work_id: 27, tag_id: 115, weight: 1 },
   { work_id: 27, tag_id: 603, weight: 1 },
@@ -682,6 +685,7 @@ export const workTags: WorkTag[] = [
   { work_id: 108, tag_id: 504, weight: 2 },
   { work_id: 108, tag_id: 602, weight: 1 },
   { work_id: 108, tag_id: 701, weight: 1 },
+{ work_id: 108, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 109, tag_id: 105, weight: 1 },
   { work_id: 109, tag_id: 107, weight: 2 },
   { work_id: 109, tag_id: 212, weight: 1 },
@@ -689,15 +693,18 @@ export const workTags: WorkTag[] = [
   { work_id: 109, tag_id: 301, weight: 1 },
   { work_id: 109, tag_id: 601, weight: 1 },
   { work_id: 109, tag_id: 701, weight: 1 },
+{ work_id: 109, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 110, tag_id: 105, weight: 1 },
   { work_id: 110, tag_id: 111, weight: 1 },
   { work_id: 110, tag_id: 301, weight: 1 },
   { work_id: 110, tag_id: 303, weight: 1 },
   { work_id: 110, tag_id: 601, weight: 1 },
   { work_id: 110, tag_id: 701, weight: 1 },
+{ work_id: 110, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 111, tag_id: 107, weight: 2 },
   { work_id: 111, tag_id: 601, weight: 1 },
   { work_id: 111, tag_id: 701, weight: 1 },
+{ work_id: 111, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 112, tag_id: 102, weight: 2 },
   { work_id: 112, tag_id: 202, weight: 1 },
   { work_id: 112, tag_id: 215, weight: 2 },
@@ -705,11 +712,13 @@ export const workTags: WorkTag[] = [
   { work_id: 112, tag_id: 320, weight: 1 },
   { work_id: 112, tag_id: 601, weight: 1 },
   { work_id: 112, tag_id: 701, weight: 1 },
+{ work_id: 112, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 113, tag_id: 301, weight: 1 },
   { work_id: 113, tag_id: 303, weight: 1 },
   { work_id: 113, tag_id: 504, weight: 2 },
   { work_id: 113, tag_id: 601, weight: 1 },
   { work_id: 113, tag_id: 701, weight: 1 },
+{ work_id: 113, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 { work_id: 114, tag_id: 105, weight: 1 }, // 연예계
 { work_id: 114, tag_id: 203, weight: 1 }, // 직장동료
 { work_id: 114, tag_id: 302, weight: 1 }, // 힐링
@@ -776,6 +785,7 @@ export const workTags: WorkTag[] = [
 { work_id: 121, tag_id: 320, weight: 1 }, // 노딱
 { work_id: 121, tag_id: 601, weight: 1 }, // 단편
 { work_id: 121, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 121, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 
 { work_id: 122, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
 { work_id: 122, tag_id: 117, weight: 2 }, // 연반 (core)
@@ -807,6 +817,7 @@ export const workTags: WorkTag[] = [
 { work_id: 124, tag_id: 308, weight: 1 },
 { work_id: 124, tag_id: 301, weight: 1 },
 { work_id: 124, tag_id: 303, weight: 1 },
+{ work_id: 124, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 { work_id: 125, tag_id: 603, weight: 1 }, // 장편
 { work_id: 125, tag_id: 702, weight: 1 }, // 연재중
 { work_id: 125, tag_id: 105, weight: 1 },
@@ -817,6 +828,7 @@ export const workTags: WorkTag[] = [
 { work_id: 125, tag_id: 301, weight: 1 },
 { work_id: 125, tag_id: 303, weight: 1 },
 { work_id: 125, tag_id: 403, weight: 1 },
+{ work_id: 125, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 { work_id: 126, tag_id: 114, weight: 1 }, // 인외
 { work_id: 126, tag_id: 208, weight: 1 }, // 키잡
 { work_id: 126, tag_id: 305, weight: 1 }, // 찌통
@@ -977,6 +989,7 @@ export const workTags: WorkTag[] = [
 { work_id: 142, tag_id: 304, weight: 1 }, // 풋풋
 { work_id: 142, tag_id: 601, weight: 1 }, // 단편
 { work_id: 142, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 142, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 
 // --- work 143 ---
 { work_id: 143, tag_id: 201, weight: 1 }, // 소꿉친구
@@ -985,10 +998,12 @@ export const workTags: WorkTag[] = [
 { work_id: 143, tag_id: 304, weight: 1 }, // 풋풋
 { work_id: 143, tag_id: 601, weight: 1 }, // 단편
 { work_id: 143, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 143, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 
 // --- work 144 ---
 { work_id: 144, tag_id: 105, weight: 1 }, // 연예인
 { work_id: 144, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
 { work_id: 144, tag_id: 601, weight: 1 }, // 단편
 { work_id: 144, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 144, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 ];
