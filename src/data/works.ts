@@ -139,4 +139,7 @@ export const works = [
   { id: 139, title: "something special", author: "우다다", source_url: "https://posty.pe/sh997le" },
   { id: 140, title: "시든 꽃에 물을", author: "카노", source_url: "https://posty.pe/cn7qd3" },
   { id: 141, title: "최악의 결혼", author: "턱끈", source_url: "https://www.postype.com/@chinstrap/series/1482249" },
+  { id: 142, title: "투 영 걸프렌드", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/17133157" },
+  { id: 143, title: "짝사랑 성공시대", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/16560635" },
+  { id: 144, title: "직진과 유턴", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/15024183" },
 ];
