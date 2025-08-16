@@ -142,4 +142,9 @@ export const works = [
   { id: 142, title: "투 영 걸프렌드", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/17133157" },
   { id: 143, title: "짝사랑 성공시대", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/16560635" },
   { id: 144, title: "직진과 유턴", author: "밀백", source_url: "https://www.postype.com/@wkwkwkwk/post/15024183" },
+  { id: 145, title: "꿈★은 이루어진다", author: "istros", source_url: "https://posty.pe/5nfwe0" },
+  { id: 146, title: "행복한 세상의 족제비", author: "잉어", source_url: "https://posty.pe/kukolm" },
+  { id: 147, title: "슬리핑 딜리버리", author: "짱", source_url: "https://posty.pe/fc50sk" },
+  { id: 148, title: "오늘의 민둥이", author: "뵤…", source_url: "https://posty.pe/6atfm4" },
+  { id: 149, title: "코코로", author: "뵤...", source_url: "https://posty.pe/kaaa6z" },
 ];

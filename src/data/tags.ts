@@ -13,7 +13,7 @@ export const tags: Tag[] = [
   { id: 104, name: "군대", category: "설정", aliases: ["군인", "군바리"] },
   { id: 105, name: "연예인", category: "설정", aliases: ["아이돌", "배우", "앵커", "연습생", "프듀", "래퍼"] },
   { id: 106, name: "메디컬", category: "설정", aliases: ["병원", "의료"] },
-  { id: 107, name: "스포츠", category: "설정" },
+  { id: 107, name: "스포츠", category: "설정", aliases: ["운동", "운동선수", "야구", "축구", "농구", "배구", "검도", "펜싱", "성장", "선출", "수영"] },
   { id: 108, name: "조직물", category: "설정", aliases: ["조폭", "마피아"] },
   { id: 109, name: "시대물", category: "설정", aliases: ["과거", "조선", "옛날"] },
   { id: 110, name: "여행", category: "설정" },
