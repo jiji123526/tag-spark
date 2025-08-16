@@ -277,6 +277,7 @@ export const workTags: WorkTag[] = [
   { work_id: 40, tag_id: 701, weight: 1 },
   { work_id: 41, tag_id: 603, weight: 1 },
   { work_id: 41, tag_id: 702, weight: 1 },
+  { work_id: 41, tag_id: 403, weight: 1 }, 
   { work_id: 42, tag_id: 601, weight: 1 },
   { work_id: 42, tag_id: 701, weight: 1 },
   { work_id: 43, tag_id: 313, weight: 2 },
@@ -815,6 +816,7 @@ export const workTags: WorkTag[] = [
 { work_id: 125, tag_id: 216, weight: 1 },
 { work_id: 125, tag_id: 301, weight: 1 },
 { work_id: 125, tag_id: 303, weight: 1 },
+{ work_id: 125, tag_id: 403, weight: 1 },
 { work_id: 126, tag_id: 114, weight: 1 }, // 인외
 { work_id: 126, tag_id: 208, weight: 1 }, // 키잡
 { work_id: 126, tag_id: 305, weight: 1 }, // 찌통
