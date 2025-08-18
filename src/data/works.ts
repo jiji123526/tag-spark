@@ -147,4 +147,5 @@ export const works = [
   { id: 147, title: "슬리핑 딜리버리", author: "짱", source_url: "https://posty.pe/fc50sk" },
   { id: 148, title: "오늘의 민둥이", author: "뵤…", source_url: "https://posty.pe/6atfm4" },
   { id: 149, title: "코코로", author: "뵤...", source_url: "https://posty.pe/kaaa6z" },
+  { id: 150, title: "시고르자브종", author: "카노", source_url: "https://posty.pe/gv7h1o" },
 ];

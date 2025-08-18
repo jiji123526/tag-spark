@@ -1038,4 +1038,16 @@ export const workTags: WorkTag[] = [
 { work_id: 149, tag_id: 301, weight: 1 }, // 로코
 { work_id: 149, tag_id: 601, weight: 1 }, // 단편
 { work_id: 149, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 150 ---
+{ work_id: 150, tag_id: 201, weight: 1 }, // 소꿉친구
+{ work_id: 150, tag_id: 208, weight: 1 }, // 키잡
+{ work_id: 150, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+{ work_id: 150, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 150, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 150, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 150, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 150, tag_id: 314, weight: 1 }, // 애새끼
+{ work_id: 150, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 150, tag_id: 701, weight: 1 }, // 완결
 ];
