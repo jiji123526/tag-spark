@@ -73,8 +73,7 @@ export const tags: Tag[] = [
   { id: 404, name: "누아르", category: "장르" },
 
   // 세계관 (500~599)
-  { id: 501, name: "좀아포", category: "세계관", aliases: ["좀비", "아포칼립스"] },
-  { id: 502, name: "아포칼립스", category: "세계관" },
+  { id: 502, name: "아포칼립스", category: "세계관", aliases: ["좀아포", "좀비"] },
   { id: 503, name: "오메가버스", category: "세계관", aliases: ["알파오메가", "알오물"] },
   { id: 504, name: "수인", category: "세계관" },
   { id: 505, name: "센티넬버스", category: "세계관", aliases: ["센티넬가이드", "가이드", "센가물"] },
