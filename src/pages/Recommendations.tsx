@@ -60,13 +60,28 @@ const Recommendations = () => {
       .filter((n) => Number.isFinite(n));
   }, [searchParams]);
 
+  const excluded = useMemo(() => {
+    const raw = (searchParams.get("exclude") || "").trim();
+    if (!raw) return [] as number[];
+    return raw
+      .split(",")
+      .map((n) => parseInt(n, 10))
+      .filter((n) => Number.isFinite(n));
+  }, [searchParams]);
+
+  const selectedEffective = useMemo(() => {
+    if (excluded.length === 0) return selected;
+    const ex = new Set(excluded);
+    return selected.filter((id) => !ex.has(id));
+  }, [selected, excluded]);
+
   // 선택한 태그 객체 (상단 칩 표시용)
   const selectedTags = useMemo(
     () =>
-      selected
+      selectedEffective
         .map((id) => allTags.find((t) => t.id === id))
         .filter((t): t is NonNullable<typeof t> => !!t),
-    [selected]
+    [selectedEffective]
   );
 
   // 작품별 태그 목록 (WorkCard에 전달)
@@ -106,9 +121,26 @@ const Recommendations = () => {
     return out;
   }, []);
 
+  const workHasExcluded = useMemo(() => {
+    const ex = new Set(excluded);
+    if (ex.size === 0) return (id: number) => false;
+    const byWork = new Map<number, number[]>();
+    for (const m of mappings) {
+      const list = byWork.get(m.work_id) ?? [];
+      list.push(m.tag_id);
+      byWork.set(m.work_id, list);
+    }
+    return (id: number) => {
+      const tags = byWork.get(id) || [];
+      return tags.some((tid) => ex.has(tid));
+    };
+  }, [excluded]);
+
+  const filteredWorks = useMemo(() => allWorks.filter((w) => !workHasExcluded(w.id)), [workHasExcluded]);
+
   // 정확 일치: 선택한 모든 태그 포함 작품 (→ “전부” 보여줌)
   const exactMatches = useMemo(() => {
-    if (selected.length === 0) return [] as typeof allWorks;
+    if (selectedEffective.length === 0) return [] as typeof allWorks;
     // work_id -> {tag_id: weight} 맵
     const byWork: Record<number, Record<number, number>> = mappings.reduce(
       (acc, m) => {
@@ -119,25 +151,27 @@ const Recommendations = () => {
       {} as Record<number, Record<number, number>>
     );
 
-    const hits = allWorks.filter((w) => {
+    const hits = filteredWorks.filter((w) => {
+      // workHasExcluded already applied by filteredWorks
       const tagWeights = byWork[w.id] || {};
-      return selected.every((id) => id in tagWeights);
+      return selectedEffective.every((id) => id in tagWeights);
     });
 
     // 선택 태그들의 weight 합산으로 정렬
     return shuffle(hits);
-  }, [selected]);
+  }, [selectedEffective, filteredWorks]);
 
   // 유사 추천: “완벽 매치 전부 표시 + 유사 추천은 페이지당 10개만”
   const similar = useMemo(() => {
     // 선택한 태그가 하나도 없으면 “무작위 10개”
-    if (selected.length === 0) {
-      return shuffle(allWorks).slice(0, PAGE_SIZE);
+    if (selectedEffective.length === 0) {
+      return shuffle(filteredWorks).slice(0, PAGE_SIZE);
     }
 
-    const recos = computeRecommendations(selected, {
-      works: allWorks,
+    const recos = computeRecommendations(selectedEffective, {
+      works: filteredWorks,
       tags: allTags,
+      excludeTagIds: excluded,
     });
 
     // computeRecommendations는 [exact..., similar...] 순이므로
@@ -149,7 +183,7 @@ const Recommendations = () => {
     const start = (page - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     return sorted.slice(start, end);
-  }, [selected, page, exactMatches]);
+  }, [selectedEffective, page, exactMatches, filteredWorks]);
 
   useEffect(() => {
     document.title = "키워드 추천 결과";
@@ -176,7 +210,7 @@ const Recommendations = () => {
 
           {/* 선택한 태그 칩 표시 */}
           {selectedTags.length > 0 && (
-            <div className="mb-4">
+            <div className={excluded.length > 0 ? "mb-1" : "mb-6"}>
               <h2 className="sr-only">선택한 키워드</h2>
               <div className="flex flex-wrap gap-2">
                 {selectedTags.map((t) => (
@@ -198,6 +232,21 @@ const Recommendations = () => {
                   </Button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {excluded.length > 0 && (
+            <div className="mt-0 mb-6 flex flex-wrap gap-0">
+              {excluded.map((id) => {
+                const t = allTags.find((x) => x.id === id);
+                if (!t) return null;
+                return (
+                  <Button key={`ex-${id}`} variant="outline" size="pill" disabled aria-pressed>
+                    {/* simple minus icon using a hyphen for consistency with disabled state */}
+                    − {t.name}
+                  </Button>
+                );
+              })}
             </div>
           )}
 
@@ -246,7 +295,7 @@ const Recommendations = () => {
                 ))}
               </div>
             </div>
-          ) : selected.length > 0 && exactMatches.length === 0 ? (
+          ) : selectedEffective.length > 0 && exactMatches.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               선택한 태그와 유사한 작품을 찾지 못했어요.
             </p>

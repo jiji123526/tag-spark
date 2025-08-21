@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { tags as allTags, Tag } from "@/data/tags";
-import { Check, Search, XCircle } from "lucide-react"; // 🔹 XCircle 아이콘 추가
+import { Check, Search, XCircle, MinusCircle, PlusCircle } from "lucide-react"; // 🔹 XCircle 아이콘 추가, MinusCircle, PlusCircle 추가
 import { Link, useNavigate } from "react-router-dom";
 
 const CATEGORIES: Tag["category"][] = [
@@ -32,15 +32,26 @@ const Index = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const [excluded, setExcluded] = useState<number[]>([]);
+  const [excludeMode, setExcludeMode] = useState(false);
 
   const goToResults = () => {
-    const qs = selected.join(",");
-    navigate(`/loading?tags=${qs}`);
+    const includeSet = new Set(selected);
+    const uniqueSelected = Array.from(includeSet);
+    const uniqueExcluded = excluded.filter((id) => !includeSet.has(id));
+    const qs = uniqueSelected.join(",");
+    const ex = uniqueExcluded.join(",");
+    const params = new URLSearchParams();
+    if (qs) params.set("tags", qs);
+    if (ex) params.set("exclude", ex);
+    navigate(`/recommendations?${params.toString()}`);
   };
 
   // 🔹 선택 초기화 함수
   const resetSelection = () => {
     setSelected([]);
+    setExcluded([]);
+    setExcludeMode(false);
     setQuery("");
   };
 
@@ -73,9 +84,27 @@ const Index = () => {
   }, [filteredTags]);
 
   const toggleTag = (id: number) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
+    if (excludeMode) {
+      setExcluded((prev) => {
+        const exists = prev.includes(id);
+        const next = exists ? prev.filter((t) => t !== id) : [...prev, id];
+        if (!exists) {
+          // 방금 제외에 추가했으므로 포함 목록에서 제거
+          setSelected((sel) => sel.filter((t) => t !== id));
+        }
+        return next;
+      });
+    } else {
+      setSelected((prev) => {
+        const exists = prev.includes(id);
+        const next = exists ? prev.filter((t) => t !== id) : [...prev, id];
+        if (!exists) {
+          // 방금 포함에 추가했으므로 제외 목록에서 제거
+          setExcluded((ex) => ex.filter((t) => t !== id));
+        }
+        return next;
+      });
+    }
   };
 
   return (
@@ -109,7 +138,7 @@ const Index = () => {
                 className="pl-9"
               />
             </div>
-            {selected.length > 0 && (
+            {(selected.length > 0 || excluded.length > 0) && (
               <Button
                 variant="outline"
                 size="icon"
@@ -119,6 +148,49 @@ const Index = () => {
                 <XCircle className="size-5" />
               </Button>
             )}
+          </div>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant={excludeMode ? "destructive" : "secondary"}
+              size="sm"
+              onClick={() => setExcludeMode((v) => !v)}
+              title="태그 선택 모드 전환 (포함/제외)"
+              aria-pressed={excludeMode}
+            >
+              {excludeMode ? <MinusCircle className="mr-1 size-4" /> : <PlusCircle className="mr-1 size-4" />}
+              {excludeMode ? "제외 모드" : "포함 모드"}
+            </Button>
+
+            <div className="flex flex-wrap items-center gap-1">
+              {selected.map((id) => {
+                const t = allTags.find((x) => x.id === id)!;
+                return (
+                  <Button
+                    key={`sel-${id}`}
+                    size="pill"
+                    className="bg-blue-500/80 text-white hover:bg-blue-600"
+                    onClick={() => setSelected((p) => p.filter((x) => x !== id))}
+                  >
+                    <Check className="mr-1 size-4" />{t.name}
+                  </Button>
+                );
+              })}
+              {excluded.map((id) => {
+                const t = allTags.find((x) => x.id === id)!;
+                return (
+                  <Button
+                    key={`ex-${id}`}
+                    size="pill"
+                    className="bg-red-300 text-white hover:bg-red-400"
+                    onClick={() => setExcluded((p) => p.filter((x) => x !== id))}
+                  >
+                    <MinusCircle className="mr-1 size-4" />{t.name}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="mt-4 space-y-5">
@@ -137,22 +209,36 @@ const Index = () => {
 
                   <div className="flex flex-wrap gap-2">
                     {tags.map((t) => {
-                      const active = selected.includes(t.id);
+                      const activeInclude = selected.includes(t.id);
+                      const activeExclude = excluded.includes(t.id);
+                      // ✅ Always show selection state, independent of mode
+                      const showingAsActive = activeInclude || activeExclude;
+                      const variant = activeExclude ? "destructive" : activeInclude ? "chipActive" : "chip";
+                      const ariaLabel = excludeMode ? `Exclude ${t.name}` : `Include ${t.name}`;
                       return (
                         <Button
                           key={t.id}
-                          variant={active ? "chipActive" : "chip"}
+                          variant={variant as any}
                           size="pill"
                           onClick={() => toggleTag(t.id)}
-                          aria-pressed={active}
-                          aria-label={`Toggle ${t.name}`}
+                          aria-pressed={showingAsActive}
+                          aria-label={ariaLabel}
+                          className={activeExclude
+                            ? "bg-red-300 text-white hover:bg-red-400"
+                            : activeInclude
+                            ? "bg-blue-500/80 text-white hover:bg-blue-600"
+                            : undefined}
                           title={
                             t.aliases && t.aliases.length > 0
                               ? `별칭: ${t.aliases.join(", ")}`
                               : undefined
                           }
                         >
-                          {active && <Check className="mr-1 size-4" />}
+                          {activeExclude ? (
+                            <MinusCircle className="mr-1 size-4" />
+                          ) : activeInclude ? (
+                            <Check className="mr-1 size-4" />
+                          ) : null}
                           {t.name}
                         </Button>
                       );

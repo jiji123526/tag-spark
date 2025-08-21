@@ -18,6 +18,7 @@ const CAT_WEIGHT: Record<Category, number> = {
   세계관: 1.0,
   분량: 0.5,
   완결여부: 0.4,
+  씨피고정: 0.7, // Added missing property with a default weight
 };
 
 // 점수 파라미터
@@ -232,24 +233,76 @@ function shuffleInPlace<T>(arr: T[]): T[] {
   return arr;
 }
 
+// -------------------------------------------------------------
+// helper: expand excluded tag ids by aliases and cluster neighbors
+function expandExcludedTagIds(allTags: Tag[], base: number[]): Set<number> {
+  if (!base || base.length === 0) return new Set<number>();
+  const aliasSetById = new Map<number, Set<string>>();
+  for (const t of allTags) aliasSetById.set(t.id, buildAliasSet(t.name, t.aliases));
+
+  const expanded = new Set<number>(base);
+
+  // Alias / string-equivalence expansion
+  for (const b of base) {
+    const bSet = aliasSetById.get(b) ?? new Set<string>();
+    for (const [id, aSet] of aliasSetById) {
+      if (aliasOverlap(aSet, bSet)) expanded.add(id);
+    }
+  }
+
+  // Cluster neighbors expansion
+  const graph = buildSimilarityGraphFromClusters(allTags);
+  for (const b of base) {
+    const row = graph[b] || {} as Record<number, number>;
+    for (const k in row) {
+      const nid = Number(k);
+      if (row[nid] > 0) expanded.add(nid);
+    }
+  }
+
+  return expanded;
+}
+
+// -------------------------------------------------------------
+// helper: exclude 태그가 붙은 작품 필터링
+function filterOutExcludedWorks(
+  works: Work[],
+  workTags = WORK_TAGS,
+  excludeTagIds: number[] = []
+): Work[] {
+  if (!excludeTagIds || excludeTagIds.length === 0) return works;
+  const exclude = expandExcludedTagIds(ALL_TAGS, excludeTagIds);
+  const byWork: Record<number, number[]> = {};
+  for (const wt of workTags) {
+    (byWork[wt.work_id] ??= []).push(wt.tag_id);
+  }
+  return works.filter((w) => {
+    const tags = byWork[w.id] || [];
+    return !tags.some((tid) => exclude.has(tid));
+  });
+}
+
 // 분리형: 완벽 매칭은 전부, 유사 추천은 최대 N개
 export function computeExactAndSimilar(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number }
+  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
   const works = opts?.works ?? ALL_WORKS;
   const tags = opts?.tags ?? ALL_TAGS;
   const similarMax = opts?.similarMax ?? 10;
 
+  const excludeTagIds = opts?.excludeTagIds ?? [];
+  const worksFiltered = filterOutExcludedWorks(works, WORK_TAGS, excludeTagIds);
+
   // ✅ 선택 키워드가 없으면: 가중치 없이 랜덤 추천
   if (!selectedTagIds || selectedTagIds.length === 0) {
-    const pool = [...works];
+    const pool = [...worksFiltered];
     shuffleInPlace(pool);
     return { exact: [] as Work[], similar: pool.slice(0, similarMax) };
   }
 
-  const indexed = buildWorkIndex(works, WORK_TAGS);
-  const exact = getExactMatches(selectedTagIds, works, WORK_TAGS);
+  const indexed = buildWorkIndex(worksFiltered, WORK_TAGS);
+  const exact = getExactMatches(selectedTagIds, worksFiltered, WORK_TAGS);
 
   const exactIds = new Set(exact.map((w) => w.id));
   const scoreWork = buildSimilarityScorer(tags, WORK_TAGS);
@@ -298,7 +351,7 @@ export function computeExactAndSimilar(
 // 원샷: exact 전부 + similar 최대 10개를 이어 붙여 반환
 export function computeRecommendations(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number }
+  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
   const { exact, similar } = computeExactAndSimilar(selectedTagIds, opts);
   return [...exact, ...similar];
