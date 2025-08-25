@@ -968,7 +968,6 @@ export const workTags: WorkTag[] = [
 { work_id: 140, tag_id: 303, weight: 1 }, // 달달
 { work_id: 140, tag_id: 304, weight: 1 }, // 풋풋
 { work_id: 140, tag_id: 305, weight: 1 }, // 찌통
-{ work_id: 140, tag_id: 307, weight: 1 }, // 새드
 { work_id: 140, tag_id: 315, weight: 1 }, // 봄
 { work_id: 140, tag_id: 318, weight: 1 }, // 겨울
 { work_id: 140, tag_id: 101, weight: 2 }, // 청레 (core)
