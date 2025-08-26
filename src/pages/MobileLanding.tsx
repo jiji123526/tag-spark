@@ -48,23 +48,6 @@ const MobileLanding:FunctionComponent = () => {
         				</div>
         				<div className={styles.statusBarTimeWidgets}>
           					<div className={styles.widgets}>
-            						<div className={styles.lockscreenWidget}>
-              							<img className={styles.ringIcon} alt="" src={ring} />
-              							<div className={styles.low}>68</div>
-              							<div className={styles.high}>86</div>
-              							<div className={styles.currentTemp}>72</div>
-              							<img className={styles.marker} alt="" src={marker} />
-            						</div>
-            						<div className={styles.lockscreenWidget}>
-              							<div className={styles.outerRing} />
-              							<div className={styles.middleRing} />
-              							<div className={styles.innerRing} />
-            						</div>
-            						<div className={styles.lockscreenWidget2}>
-              							<div className={styles.city}>CUP</div>
-              							<div className={styles.time}>5:12</div>
-              							<div className={styles.ampm}>AM</div>
-            						</div>
           					</div>
           					<div className={styles.statusBarTimeDate}>
             						<div className={styles.statusbar}>
