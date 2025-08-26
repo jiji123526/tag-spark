@@ -21,7 +21,7 @@ const Header = () => {
       <div className="container flex h-14 items-center justify-between">
         {/* 제목을 index.tsx("/")로 연결 */}
         <Link
-          to="/"
+          to="/index"
           aria-label="Site title"
           className="font-semibold tracking-tight hover:underline"
         >

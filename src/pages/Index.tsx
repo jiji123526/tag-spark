@@ -109,7 +109,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      <Header onClickTitle={() => navigate("/index")} />
       <main className="container pt-20 pb-16">
         <section aria-labelledby="hero">
           <h1 id="hero" className="text-2xl font-semibold tracking-tight">
