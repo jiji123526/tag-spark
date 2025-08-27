@@ -149,7 +149,7 @@ const OnBoarding:FunctionComponent = () => {
       			</div>
       			<div className={styles.messageBubble6}>
         				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>검색창 아래의 모드 버튼을 사용하여 포함/제외 키워드 선택이 가능합니다.</div>
+          					<div className={styles.OnBoarding_message}>검색창 아래의 모드 버튼을 사용하여<br/>포함/제외 키워드 선택이 가능합니다.</div>
           					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
         				</div>
         				<div className={styles.spacing} />
