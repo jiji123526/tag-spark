@@ -6,7 +6,7 @@ import TailIcon from "../assets/OnBoarding/Tail.svg";
 import Tail1Icon from "../assets/OnBoarding/Tail-1.svg";
 import AvatarIcon from "../assets/OnBoarding/Avatar.svg";
 import CellularIcon from "../assets/OnBoarding/Cellular Connection.svg";
-import WifiIcon from "../assets/OnBoarding/Wifi.svg";
+import WifiIcon from "../assets/OnBoarding/wifi.svg";
 import ChevronIcon from "../assets/OnBoarding/Chevron.svg";
 import BackIcon from "../assets/OnBoarding/Back.svg";
 import PlusIcon from "../assets/OnBoarding/plus.svg";
