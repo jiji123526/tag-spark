@@ -4,8 +4,6 @@ import styles from './MobileLanding.module.css';
 import wallpaper from "../assets/Wallpaper.png";
 import flashlight from "../assets/Flashlight.svg";
 import camera from "../assets/Camera.svg";
-import ring from "../assets/Ring.svg";
-import marker from "../assets/Marker.svg";
 import mobileSignal from "../assets/Mobile Signal.svg";
 import wifi from "../assets/Wifi.svg";
 import outline from "../assets/_StatusBar-battery.svg";
@@ -21,7 +19,7 @@ import chevronForward from "../assets/chevron.forward.svg";
 const MobileLanding:FunctionComponent = () => {
   const navigate = useNavigate();
   const handleOpen = () => {
-    navigate("/Index");
+    navigate("/onboarding");
   };
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {

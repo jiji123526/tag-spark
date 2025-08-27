@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro:wght@0,400;0,500;0,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@0,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:wght@500&display=swap');
@@ -10,21 +12,37 @@ body {
   	/* Color */
   	--color-white: #fff;
   	--color-black: #000;
-  	--color-gray: rgba(255, 255, 255, 0.75);
+  	--color-gray: #1c1c1e;
   	--color-royalblue: #007aff;
   	--color-darkslategray-100: rgba(60, 60, 67, 0.6);
   	--color-darkslategray-200: rgba(60, 60, 67, 0.36);
-  	
+  	--color-dodgerblue: #0a84ff;
+  	--color-whitesmoke: #efeff4;
+  	--color-gray-200: rgba(255, 255, 255, 0.75);
+  	--color-gray-100: rgba(0, 0, 0, 0.3);
+  	--color-limegreen: rgba(76, 217, 100, 0.4);
+  	--color-gray-300: rgba(120, 120, 128, 0.16);
+  	--color-gainsboro: #e6e5eb;
+  	--color-silver: #c6c6c8;
+
   	/* Gap */
   	--gap-8: 8px;
-  	
+  	--gap-10: 10px;
+
+  	/* Padding */
+  	--padding-6: 6px;
+  	--padding-14: 14px;
+  	--padding-16: 16px;
+
   	/* BorderRadius */
   	--br-100: 100px;
-  	
+  	--br-16: 16px;
+
   	/* Font */
   	--font-sf-pro-text: SF Pro Text;
   	--font-sf-pro-display: SF Pro Display;
   	--font-sf-pro-rounded: SF Pro Rounded;
+  	--font-sf-pro: SF Pro;
   	
   	/* FontSize */
   	--font-size-11: 11px;

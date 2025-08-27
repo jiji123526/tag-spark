@@ -1,0 +1,527 @@
+.OnBoarding {
+    width: 100%;
+    position: relative;
+    border-radius: 48px;
+    height: 1036px;
+    overflow: hidden;
+    text-align: left;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro);
+}
+.safeArea {
+    position: absolute;
+    height: calc(100% - 139px);
+    width: 100%;
+    top: 139px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-color: var(--color-limegreen);
+    display: none;
+}
+.messageBubblesGroup {
+    position: absolute;
+    width: calc(100% - 32px);
+    top: 149px;
+    right: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--gap-10);
+}
+.messageBubble2 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.message {
+    border-radius: var(--br-16);
+    background-color: var(--color-gainsboro);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    position: relative;
+    gap: var(--gap-10);
+    max-width: 295px;
+}
+.OnBoarding_message {
+    flex: 1;
+    position: relative;
+    line-height: 22px;
+    z-index: 0;
+}
+.tailIcon {
+    width: 20px;
+    position: absolute;
+    margin: 0 !important;
+    bottom: -5px;
+    left: -5px;
+    height: 19px;
+    object-fit: cover;
+    z-index: 1;
+}
+.spacing {
+    flex: 1;
+    position: relative;
+    height: 17px;
+}
+.messageBubble3 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--color-white);
+}
+.message1 {
+    border-radius: var(--br-16);
+    background-color: var(--color-royalblue);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    position: relative;
+    gap: var(--gap-10);
+    max-width: 295px;
+}
+.OnBoarding_tailIcon {
+    width: 20px;
+    position: absolute;
+    margin: 0 !important;
+    right: -5px;
+    bottom: 0px;
+    height: 14px;
+    object-fit: cover;
+    z-index: 1;
+}
+.p {
+    margin: 0;
+}
+.OnBoarding_messageBubble3 {
+    position: absolute;
+    top: 603px;
+    right: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--color-white);
+}
+.OnBoarding_messageBubble4 {
+    position: absolute;
+    top: 309px;
+    left: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.messageBubble5 {
+    position: absolute;
+    top: 377px;
+    left: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.messageBubble6 {
+    position: absolute;
+    top: 467px;
+    left: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.messageBubble7 {
+    position: absolute;
+    top: 535px;
+    left: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.messageBubble8 {
+    position: absolute;
+    top: 649px;
+    left: 16px;
+    width: 370px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.message17 {
+    position: absolute;
+    top: 717px;
+    left: 16px;
+    border-radius: var(--br-16);
+    background-color: var(--color-gainsboro);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    gap: var(--gap-10);
+    max-width: 295px;
+}
+.message19 {
+    position: absolute;
+    top: 763px;
+    left: 16px;
+    border-radius: var(--br-16);
+    background-color: var(--color-gainsboro);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    gap: var(--gap-10);
+    max-width: 295px;
+}
+.message21 {
+    position: absolute;
+    top: 809px;
+    left: 16px;
+    border-radius: var(--br-16);
+    background-color: var(--color-gainsboro);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    gap: var(--gap-10);
+    max-width: 295px;
+}
+.message23 {
+    position: absolute;
+    top: 905px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    transform: none;
+    width: max-content;
+    border-radius: var(--br-16);
+    background-color: var(--color-royalblue);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    color: var(--color-white);
+    text-align: center;
+}
+.message24 {
+    flex: 1;
+    position: relative;
+    line-height: 22px;
+}
+.inputBar {
+    position: absolute;
+    width: 100%;
+    right: 0px;
+    bottom: 28px;
+    left: 0px;
+    background-color: var(--color-white);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 4px var(--padding-16) 15px var(--padding-14);
+    box-sizing: border-box;
+    gap: 13px;
+    text-align: center;
+    color: var(--color-darkslategray-200);
+}
+.plusButton {
+    width: 34px;
+    position: relative;
+    border-radius: var(--br-100);
+    background-color: var(--color-gray-300);
+    height: 34px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 22px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+}
+.input {
+    flex: 1;
+    border-radius: 17px;
+    border: 1px solid var(--color-silver);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 7px 10px var(--padding-6) 12px;
+    gap: 0px;
+    text-align: left;
+    color: var(--color-darkslategray-100);
+}
+.imessage {
+    flex: 1;
+    position: relative;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.OnBoarding_div {
+    width: 13px;
+    position: relative;
+    font-size: 16px;
+    line-height: 21px;
+    text-align: center;
+    display: inline-block;
+    flex-shrink: 0;
+    margin-right: 2%;
+}
+.navigationBarMessages {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    backdrop-filter: blur(50px);
+    background-color: var(--color-gray-200);
+    border-bottom: 0.3px solid var(--color-gray-100);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 63px var(--padding-16) 32px;
+    font-size: 11px;
+}
+.avatarAndName {
+    margin: 0 !important;
+    position: absolute;
+    bottom: 8px;
+    left: calc(50% - 47px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    z-index: 0;
+}
+.avatarIcon {
+    width: 50px;
+    position: relative;
+    border-radius: var(--br-100);
+    height: 50px;
+    object-fit: cover;
+}
+.name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+}
+.navigationBarName {
+    position: relative;
+    line-height: 13px;
+}
+.chevron {
+    position: relative;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--color-darkslategray-200);
+    text-align: center;
+    top: -1px;
+}
+.leftAndRightAccessories {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0px;
+    z-index: 1;
+    font-size: var(--font-size-22);
+    color: var(--color-royalblue);
+}
+.back {
+    width: 13px;
+    position: relative;
+    font-weight: 500;
+    display: inline-block;
+    height: 26px;
+    flex-shrink: 0;
+    margin-top: -2%;
+    margin-left: 2%;
+}
+.facetime {
+    width: 44px;
+    position: relative;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    flex-shrink: 0;
+}
+.statusBarIphone {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 402px;
+    height: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 21px 0px 0px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.frame {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0px;
+}
+.time {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0px var(--padding-6) 0px var(--padding-16);
+}
+.OnBoarding_time {
+    position: absolute;
+    left: 10%;
+    line-height: 22px;
+    font-weight: 600;
+}
+.dynamicIslandSpacer {
+    width: 30px;
+    height: 10px;
+}
+.levels {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0px var(--padding-16) 0px var(--padding-6);
+    gap: 7px;
+    margin-left: -8px;
+}
+.cellularConnectionIcon {
+    width: 19.2px;
+    position: relative;
+    height: 12.2px;
+}
+.wifiIcon {
+    width: 17.1px;
+    position: relative;
+    height: 12.3px;
+}
+.battery {
+    width: 27.3px;
+    position: relative;
+    height: 13px;
+}
+.border {
+    position: absolute;
+    height: 100%;
+    top: 0%;
+    bottom: 0%;
+    left: calc(50% - 13.65px);
+    border-radius: 4.3px;
+    border: 1px solid var(--color-black);
+    box-sizing: border-box;
+    width: 25px;
+    opacity: 0.35;
+    mix-blend-mode: normal;
+}
+.capIcon {
+    position: absolute;
+    height: 31.54%;
+    top: 36.78%;
+    bottom: 31.68%;
+    left: calc(50% + 12.35px);
+    max-height: 100%;
+    width: 1.3px;
+    opacity: 0.4;
+    mix-blend-mode: normal;
+}
+.capacity {
+    position: absolute;
+    height: 69.23%;
+    top: 15.38%;
+    bottom: 15.38%;
+    left: calc(50% - 11.65px);
+    border-radius: 2.5px;
+    background-color: var(--color-black);
+    width: 21px;
+}
+.navigationBarRightAccesso {
+    position: absolute;
+    right: 7px;
+    bottom: 929px;
+    width: 170px;
+    height: 44px;
+    text-align: right;
+    color: var(--color-dodgerblue);
+    font-family: var(--font-sf-pro-text);
+}
+.label {
+    position: absolute;
+    width: 90.59%;
+    top: 11px;
+    left: 0%;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Scroll reveal: start hidden and slide up */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 480ms ease, transform 560ms ease;
+  will-change: opacity, transform;
+}
+.revealVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
