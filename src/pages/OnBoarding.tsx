@@ -191,7 +191,7 @@ const OnBoarding:FunctionComponent = () => {
           					<img className={styles.div} alt="plus" src={PlusIcon} />
         				</div>
         				<div className={styles.input}>
-          					<div className={styles.imessage}>iMessage</div>
+          					<div className={styles.imessage}>JMJ Forever...</div>
           					<img className={styles.OnBoarding_div} alt="mic" src={MicIcon} />
         				</div>
       			</div>
