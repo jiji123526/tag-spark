@@ -1,5 +1,7 @@
 # 🌟 Tag-Spark: Tag-based Recommendation Tool  
 
+🔗 **Live Demo**: [kwkrecom.vercel.app](https://kwkrecom.vercel.app)
+
 **Tag-Spark** is a web application that recommends online novels based on selected tags.  
 Built with **React**, **Vite**, **TypeScript**, **Tailwind**, and **shadcn/ui**.  
 
@@ -139,4 +141,4 @@ npm run typecheck
 ## 📜 License  
 
 Free for personal/non-commercial use.  
-For commercial use, please contact the repository owner.  
+For commercial use, please contact the repository owner. 
