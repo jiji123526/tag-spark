@@ -600,7 +600,7 @@
   /* visual styles kept */
   backdrop-filter: blur(80px);
   border-radius: 34px;
-  background-color: var(--color-gray);
+  background-color: #D1D7DB;
   overflow: hidden;
   font-size: 17px;
   color: var(--color-darkslategray-100);
