@@ -5,6 +5,7 @@ import backIcon from "../assets/mobileIndex/back.svg";
 import groupSvg from "../assets/mobileIndex/Group.svg";
 import magnifyingGlass from "../assets/mobileIndex/Magnifyingglass.svg";
 import extraIcon from "../assets/mobileIndex/x.svg";
+import menuIcon from "../assets/mobileIndex/menu.svg";
 
 import { useNavigate } from 'react-router-dom';
 import { tags as allTags, Tag } from "@/data/tags";
@@ -32,6 +33,9 @@ const mobileIndex:FunctionComponent = () => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
   const [excluded, setExcluded] = useState<number[]>([]);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const handleMenuToggle = () => setMenuOpen((v) => !v);
 
   const goToResults = () => {
     const includeSet = new Set(selected);
@@ -212,6 +216,17 @@ const mobileIndex:FunctionComponent = () => {
           					<div className={styles.navigationBarCenter}>
             						<div className={styles.title}>키워드를 선택하세요.</div>
           					</div>
+                    <div className={styles.navigationBarRight}>
+                      <img
+                        className={styles.menuButton}
+                        alt="Menu"
+                        src={menuIcon}
+                        onClick={handleMenuToggle}
+                        role="button"
+                        aria-label="메뉴 열기"
+                        tabIndex={0}
+                      />
+                    </div>
         				</div>
       			</div>
       			<div className={styles.systemBar}>
@@ -234,6 +249,83 @@ const mobileIndex:FunctionComponent = () => {
               <img className={styles.magnifyingglassIcon} alt="Search" src={magnifyingGlass} />
               <img className={styles.mobileIndex_icon} alt="Extra" src={extraIcon} onClick={resetSelection} />
       			</div>
+          {menuOpen && (
+            <div
+              onClick={handleMenuToggle}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.35)",
+                zIndex: 9999,
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-end",
+              }}
+              aria-modal="true"
+              role="dialog"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  width: "72%",
+                  maxWidth: 340,
+                  minWidth: 260,
+                  background: "#fff",
+                  borderTopLeftRadius: 12,
+                  borderBottomLeftRadius: 12,
+                  padding: "16px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <strong style={{ fontSize: 16 }}>메뉴</strong>
+                  <button
+                    onClick={handleMenuToggle}
+                    style={{ fontSize: 16, lineHeight: "24px", background: "transparent", border: "none", padding: 8, cursor: "pointer" }}
+                    aria-label="메뉴 닫기"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <nav style={{ display: "grid", gap: 10 }}>
+                  <button
+                    onClick={() => { setMenuOpen(false); navigate("/catalog-sheet"); }}
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 12px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(0,0,0,0.08)",
+                      background: "#f9fafb",
+                      cursor: "pointer",
+                      fontSize: 14
+                    }}
+                  >
+                    현재 등록된 추천작 보기
+                  </button>
+
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform?usp=sharing&amp;ouid=103167940717310868379"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    style={{
+                      display: "block",
+                      textDecoration: "none",
+                      padding: "10px 12px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(0,0,0,0.08)",
+                      background: "#f9fafb",
+                      fontSize: 14,
+                      color: "inherit"
+                    }}
+                  >
+                    내 추천작 등록하기
+                  </a>
+                </nav>
+              </div>
+            </div>
+          )}
     		</div>);
 };
 

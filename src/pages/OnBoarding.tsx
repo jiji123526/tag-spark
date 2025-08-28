@@ -10,7 +10,7 @@ import WifiIcon from "../assets/OnBoarding/wifi.svg";
 import ChevronIcon from "../assets/OnBoarding/Chevron.svg";
 import BackIcon from "../assets/OnBoarding/Back.svg";
 import PlusIcon from "../assets/OnBoarding/plus.svg";
-import MicIcon from "../assets/OnBoarding/mic.svg";
+import MicIcon from "../assets/OnBoarding/sending.svg";
 
 
 const OnBoarding:FunctionComponent = () => {
@@ -183,16 +183,13 @@ const OnBoarding:FunctionComponent = () => {
         				<div className={styles.OnBoarding_message}>{`기타 문의사항이나 개선 사항 건의는 요청폼 마지막 질문에 입력 또는 트위터(X) @cxwdwggy로 디엠 주세요. `}</div>
         				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
       			</div>
-      			<div className={styles.message23} onClick={() => navigate('/index')}>
-        				<div className={styles.message24}>시작하기</div>
-      			</div>
       			<div className={styles.inputBar}>
         				<div className={styles.plusButton}>
           					<img className={styles.div} alt="plus" src={PlusIcon} />
         				</div>
         				<div className={styles.input}>
-          					<div className={styles.imessage}>JMJ Forever...</div>
-          					<img className={styles.OnBoarding_div} alt="mic" src={MicIcon} />
+          					<div className={styles.imessage}>키워드 고르러 가기</div>
+          					<img className={styles.OnBoarding_div} alt="mic" src={MicIcon} onClick={() => navigate('/index')} />
         				</div>
       			</div>
       			<div className={styles.navigationBarMessages}>

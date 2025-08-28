@@ -178,7 +178,7 @@
 .group {
     position: absolute;
     top: 21.33px;
-    right: 24.3px;
+    right: 33px;
     width: 66.7px;
     height: 11.3px;
 }
@@ -246,6 +246,7 @@
     line-height: 16px;
     font-weight: 600;
     display: inline-block;
+    font-size: 15px;
 }
 .searchPlaceholder {
     position: absolute;
@@ -439,3 +440,16 @@
 
 /* Keep the gap small so icon+label look compact */
 .chip { gap: 6px; }
+
+/* Menu button aligned with top navigation bar title */
+.menuButton {
+    position: absolute;
+    top: 12px;       /* same vertical offset as title */
+    right: 37px;     /* aligned to right edge */
+    height: 22px;
+    border-radius: var(--br-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
