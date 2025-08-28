@@ -211,7 +211,7 @@ const OnBoarding:FunctionComponent = () => {
                 								  className={styles.back}
                 								  alt="back"
                 								  src={BackIcon}
-                								  onClick={() => navigate('/MobileLanding')}
+                								  onClick={() => navigate(-1)}
                 								/>
                 								<div className={styles.facetime} />
               							</div>

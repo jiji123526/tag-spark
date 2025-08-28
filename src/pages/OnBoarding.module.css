@@ -373,13 +373,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 0px;
-    z-index: 1;
+    position: relative; /* ensure local positioning context */
+    z-index: 10; /* above right skip container */
+    pointer-events: auto; /* clicks pass through normally */
     font-size: var(--font-size-22);
     color: var(--color-royalblue);
 }
 .back {
     width: 13px;
     position: relative;
+    z-index: 999;;
     font-weight: 500;
     display: inline-block;
     height: 26px;
@@ -493,24 +496,26 @@
     width: 21px;
 }
 .navigationBarRightAccesso {
-    position: absolute;
-    right: 7px;
-    bottom: 929px;
-    width: 170px;
-    height: 44px;
+    position: fixed;
+    top: 40px;
+    right: 25px;
+    width: auto;
+    height: auto;
     text-align: right;
     color: var(--color-dodgerblue);
     font-family: var(--font-sf-pro-text);
+    pointer-events: none; /* avoid overlay capturing unintended clicks */
+    z-index: 9; /* below left/right accessories */
 }
 .label {
-    position: fixed;
-    width: 90.59%;
-    top: 45px;
-    right: 7%;
+    position: static; /* follow parent .navigationBarRightAccesso */
     letter-spacing: -0.41px;
     line-height: 22px;
     font-weight: 600;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto; /* clickable */
 }
 
 /* Scroll reveal: start hidden and slide up */
@@ -544,4 +549,3 @@
     letter-spacing: 0.07px;
     font-family: var(--font-sf-pro-text);
 }
-
