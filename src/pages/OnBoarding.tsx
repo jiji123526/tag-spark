@@ -93,7 +93,13 @@ const OnBoarding:FunctionComponent = () => {
   	return (
     		<div ref={rootRef} className={styles.OnBoarding}>
       			<div className={styles.safeArea} />
+				
       			<div className={styles.messageBubblesGroup}>
+        				<div className={styles.time}>
+          					<span className={styles.yesterday}>Today</span>
+          					<span className={styles.span}>{` `}</span>
+          					<span className={styles.span}>5:12</span>
+        				</div>
         				<div className={styles.messageBubble2}>
           					<div className={styles.message}>
             						<div className={styles.OnBoarding_message}>스크롤을 내려 사용 방법을 확인하세요.</div>
@@ -210,22 +216,7 @@ const OnBoarding:FunctionComponent = () => {
                 								<div className={styles.facetime} />
               							</div>
               							</div>
-              							<div className={styles.statusBarIphone}>
-                								<div className={styles.frame}>
-                  									<div className={styles.time}>
-                    										<div className={styles.OnBoarding_time}>5:12</div>
-                  									</div>
-                  									<div className={styles.dynamicIslandSpacer} />
-                  									<div className={styles.levels}>
-                    										<img className={styles.cellularConnectionIcon} alt="" src={CellularIcon} />
-                    										<img className={styles.wifiIcon} alt="" src={WifiIcon} />
-                       <div className={styles.battery}>
-                         <div className={styles.border} />
-                         <div className={styles.capacity} />
-                       </div>
-                  									</div>
-                								</div>
-              							</div>
+              							
               							<div className={styles.navigationBarRightAccesso}>
                 								<div className={styles.label} onClick={() => navigate('/index')}>Skip</div>
               							</div>

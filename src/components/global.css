@@ -4,6 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:ital,wght@0,400;0,500&display=swap');
 
 body {
   	margin: 0; line-height: normal;
@@ -17,6 +18,7 @@ body {
   	--color-royalblue: #007aff;
   	--color-darkslategray-100: rgba(60, 60, 60, 0.3);
   	--color-darkslategray-200: rgba(60, 60, 67, 0.6);
+    --color-darkslategray: rgba(60, 60, 67, 0.6);
   	--color-dodgerblue: #0a84ff;
   	--color-whitesmoke: #efeff4;
   	--color-gray-200: rgba(253, 253, 253, 0.92);
