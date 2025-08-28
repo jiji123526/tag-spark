@@ -251,74 +251,40 @@ const mobileIndex:FunctionComponent = () => {
       			</div>
           {menuOpen && (
             <div
+              className={styles.menuBackdrop}
               onClick={handleMenuToggle}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(0,0,0,0.35)",
-                zIndex: 9999,
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-end",
-              }}
               aria-modal="true"
               role="dialog"
             >
               <div
+                className={styles.menuSheet}
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  width: "72%",
-                  maxWidth: 340,
-                  minWidth: 260,
-                  background: "#fff",
-                  borderTopLeftRadius: 12,
-                  borderBottomLeftRadius: 12,
-                  padding: "16px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-                }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <strong style={{ fontSize: 16 }}>메뉴</strong>
+                <div className={styles.menuHeader}>
+                  <strong className={styles.menuTitle}>메뉴</strong>
                   <button
                     onClick={handleMenuToggle}
-                    style={{ fontSize: 16, lineHeight: "24px", background: "transparent", border: "none", padding: 8, cursor: "pointer" }}
+                    className={styles.menuClose}
                     aria-label="메뉴 닫기"
                   >
                     ✕
                   </button>
                 </div>
 
-                <nav style={{ display: "grid", gap: 10 }}>
+                <nav className={styles.menuList}>
                   <button
                     onClick={() => { setMenuOpen(false); navigate("/catalog-sheet"); }}
-                    style={{
-                      textAlign: "left",
-                      padding: "10px 12px",
-                      borderRadius: 8,
-                      border: "1px solid rgba(0,0,0,0.08)",
-                      background: "#f9fafb",
-                      cursor: "pointer",
-                      fontSize: 14
-                    }}
+                    className={styles.menuItem}
                   >
                     현재 등록된 추천작 보기
                   </button>
-
+                  <div className={styles.menuDivider} />
                   <a
                     href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform?usp=sharing&amp;ouid=103167940717310868379"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMenuOpen(false)}
-                    style={{
-                      display: "block",
-                      textDecoration: "none",
-                      padding: "10px 12px",
-                      borderRadius: 8,
-                      border: "1px solid rgba(0,0,0,0.08)",
-                      background: "#f9fafb",
-                      fontSize: 14,
-                      color: "inherit"
-                    }}
+                    className={`${styles.menuItem} ${styles.menuLink}`}
                   >
                     내 추천작 등록하기
                   </a>

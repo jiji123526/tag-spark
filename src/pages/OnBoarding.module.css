@@ -2,7 +2,7 @@
     width: 100%;
     position: relative;
     border-radius: 48px;
-    height: 1036px;
+    height: 1000px;
     overflow: hidden;
     text-align: left;
     font-size: 17px;
@@ -242,7 +242,7 @@
     position: absolute;
     width: 100%;
     right: 0px;
-    bottom: 70px;
+    bottom: 40px;
     left: 0px;
     background-color: var(--color-white);
     display: flex;

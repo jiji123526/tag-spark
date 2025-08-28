@@ -653,16 +653,3 @@
   }
 
   
-/* Menu button aligned with top navigation bar title */
-.menuButton {
-  position: absolute;
-  top: 24px;       /* same vertical offset as title */
-  right: 24px;     /* aligned to right edge */
-  width: 30px;
-  height: 30px;
-  border-radius: var(--br-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
