@@ -1,0 +1,441 @@
+.mobileIndex {
+    width: 100%;
+    position: relative;
+    background-color: var(--color-white);
+    height: 930px;
+    overflow-y: visible;
+    overflow-x: hidden;
+    text-align: center;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro);
+}
+.controlssegmentedControlsli {
+    position: absolute;
+    height: 2.69%;
+    width: 91.09%;
+    top: 15.38%;
+    right: 4.33%;
+    bottom: 81.94%;
+    left: 4.58%;
+    background-color: var(--color-white);
+    font-size: 13px;
+}
+.background {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+    border-radius: 8.91px;
+    background-color: var(--color-gray-400);
+}
+.bold { font-weight: 500; }
+.separator {
+    position: absolute;
+    height: calc(100% + 2px);
+    top: -1px;
+    bottom: -1px;
+    left: calc(50% - 0.5px);
+    width: 1px;
+}
+.mobileIndex_separator {
+    position: absolute;
+    height: 100%;
+    top: 0px;
+    bottom: 0px;
+    left: calc(50% - 0.5px);
+    border-radius: 0.5px;
+    background-color: var(--color-gray-100);
+    width: 1px;
+    opacity: 0.3;
+    mix-blend-mode: normal;
+}
+.option2 {
+    position: absolute;
+    height: calc(100% - 4px);
+    top: 2px;
+    right: 3.04px;
+    bottom: 2px;
+    width: 178.5px;
+}
+.mask {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+}
+.label1 {
+    position: absolute;
+    top: calc(50% - 8.5px);
+    left: calc(50% - 12.75px);
+    line-height: 18px;
+}
+.option1 {
+    position: absolute;
+    height: calc(100% - 4px);
+    top: 2px;
+    bottom: 2px;
+    left: 3px;
+    width: 178.5px;
+}
+.mobileIndex_mask {
+    position: absolute;
+    height: calc(100% + 1px);
+    width: calc(100% + 3.5px);
+    top: -0.5px;
+    right: -2px;
+    bottom: -0.5px;
+    left: -1.5px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px var(--color-gray-300);
+    border-radius: 6.93px;
+    background-color: var(--color-white);
+    border: 0.5px solid var(--color-gray-300);
+    box-sizing: border-box;
+}
+.mobileIndex_label1 {
+    position: absolute;
+    top: calc(50% - 8.5px);
+    left: calc(50% - 12.75px);
+    line-height: 18px;
+    font-weight: 600;
+}
+.navigationBar {
+    position: absolute;
+    top: 53px;
+    left: 0px;
+    backdrop-filter: blur(48px);
+    background-color: var(--color-gray-200);
+    width: 393px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    color: var(--color-royalblue);
+}
+.navBarFirstRow {
+    align-self: stretch;
+    position: relative;
+    height: 44px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.navigationBarLeft {
+    position: absolute;
+    bottom: -0.5px;
+    left: 0px;
+    width: 180px;
+    height: 44px;
+}
+.label {
+    position: absolute;
+    top: calc(50% - 8px);
+    left: 30px;
+    letter-spacing: -0.41px;
+    line-height: 16px;
+}
+.icon {
+    position: absolute;
+    top: calc(50% - 10.83px);
+    left: 6.44px;
+    width: 11.9px;
+    height: 20.7px;
+}
+.navigationBarCenter {
+    position: absolute;
+    top: 0.5px;
+    left: calc(50% - 87.5px);
+    width: 175px;
+    height: 44px;
+    text-align: center;
+    color: var(--color-black);
+}
+.title {
+    position: absolute;
+    top: calc(50% - 11px);
+    left: calc(50% - 73.5px);
+    letter-spacing: -0.4px;
+    line-height: 22px;
+    font-weight: 600;
+}
+.systemBar {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0%;
+    left: 0%;
+    backdrop-filter: blur(48px);
+    background-color: var(--color-gray-200);
+    height: 53px;
+    font-size: 14px;
+}
+.group {
+    position: absolute;
+    top: 21.33px;
+    right: 24.3px;
+    width: 66.7px;
+    height: 11.3px;
+}
+.battery {
+    position: absolute;
+    top: 0px;
+    right: 0.07px;
+    width: 24.3px;
+    height: 11.3px;
+}
+.border {
+    position: absolute;
+    top: 0px;
+    right: 2.3px;
+    border-radius: 2.67px;
+    border: 1px solid var(--color-darkslategray-200);
+    box-sizing: border-box;
+    width: 22px;
+    height: 11.3px;
+    opacity: 0.35;
+    mix-blend-mode: normal;
+}
+.capIcon {
+    position: absolute;
+    top: 3.67px;
+    right: 0px;
+    width: 1.3px;
+    height: 4px;
+    opacity: 0.4;
+    mix-blend-mode: normal;
+}
+.capacity {
+    position: absolute;
+    top: 2px;
+    right: 4.3px;
+    border-radius: 1.33px;
+    background-color: var(--color-black);
+    width: 18px;
+    height: 7.3px;
+}
+.wifiIcon {
+    position: relative;
+    width: 15.3px;
+    height: 11px;
+}
+.cellularConnectionIcon {
+    position: relative;
+    width: 17px;
+    height: 10.7px;
+}
+.starus {
+    position: absolute;
+    height: 39.62%;
+    top: 30.19%;
+    bottom: 30.19%;
+    left: 21px;
+    width: 54px;
+}
+.time {
+    position: absolute;
+    width: 100%;
+    top: calc(50% - 7.5px);
+    left: 0px;
+    letter-spacing: -0.28px;
+    line-height: 16px;
+    font-weight: 600;
+    display: inline-block;
+}
+.searchPlaceholder {
+    position: absolute;
+    height: calc(100% - px);
+    width: calc(100% - 32px);
+    top: 97px;
+    right: 16px;
+    bottom: 797px;
+    left: 16px;
+    border-radius: var(--br-10);
+    text-align: left;
+    text-size-adjust: 90%;
+    color: var(--color-darkslategray-100);
+}
+.searchField {
+    position: absolute;
+    text-indent: 30px;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+    border-radius: var(--br-10);
+    background-color: var(--color-ghostwhite);
+}
+.magnifyingglassIcon {
+    position: absolute;
+    top: calc(50% - 7.89px);
+    left: 8px;
+    width: 15.6px;
+    height: 15.8px;
+}
+.placeholderLabel {
+    position: absolute;
+    top: calc(50% - 7px);
+    left: 30px;
+    letter-spacing: -0.41px;
+    line-height: 16px;
+}
+.mobileIndex_icon {
+    position: absolute;
+    top: calc(50% - 7.5px);
+    right: 9.5px;
+    width: 15px;
+    height: 15px;
+}
+
+
+/* === Segmented control alignment fixes (override) === */
+.controlssegmentedControlsli {
+  position: absolute;                 /* keep existing placement */
+  display: grid;                      /* 2 columns for Include/Exclude */
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  border-radius: 8.91px;              /* same radius as background */
+}
+
+/* Both options fill their grid cell and center text */
+.controlssegmentedControlsli .option1,
+.controlssegmentedControlsli .option2 {
+  position: relative;                 /* override absolute */
+  inset: auto;                        /* reset top/right/bottom/left */
+  width: auto;                        /* use grid width */
+  height: 100%;
+  display: flex;
+  align-items: center;                /* vertical center */
+  justify-content: center;            /* horizontal center */
+  overflow: hidden;
+}
+
+/* Prevent label baseline/line-height from pushing text */
+.controlssegmentedControlsli .mobileIndex_label1,
+.controlssegmentedControlsli .label1 {
+  position: static;                   /* override absolute */
+  margin: 0;
+  line-height: 1;                     /* lock height */
+  pointer-events: none;               /* clicks go to parent */
+}
+
+/* Center the middle separator without intercepting clicks */
+.controlssegmentedControlsli .separator {
+  position: absolute;                 /* span whole control */
+  inset: 0;
+  pointer-events: none;
+}
+.controlssegmentedControlsli .mobileIndex_separator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-0.5px);
+}
+
+/* Ensure any legacy mask layers don't capture clicks */
+.controlssegmentedControlsli .mask,
+.controlssegmentedControlsli .mobileIndex_mask {
+  pointer-events: none;
+}
+
+
+/* === Tags section layout & heading alignment fixes === */
+:global(section[aria-labelledby="tags-mobile"]) {
+  display: block;
+  /* 전체 태그 섹션을 한꺼번에 아래로 이동 (상단 바/검색창과 겹침 방지) */
+  margin-top: 137px; /* 필요 시 120~220px 사이에서 조정 */
+  padding: 0 16px 24px; /* TSX inline padding과 동일하게 유지 */
+  text-align: left;    /* 내부 기본 정렬을 왼쪽으로 */
+  max-width: 360px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:global(section[aria-labelledby="tags-mobile"] article > h3) {
+  text-align: left;     /* 카테고리 제목 왼쪽 정렬 */
+  margin: 18px 0 8px;   /* 제목과 태그 칩 사이 간격 */
+  font-weight: 600;
+  color: var(--color-darkslategray-200);
+}
+
+
+/* =============================
+   Chips for tag buttons (used by mobileIndex.tsx)
+   ============================= */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #bfb9b9; /* blue outline */
+  background: #ffffff; /* white background */
+  color: #000000; /* blue text changed to black */
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: inset 0 -1px 0 rgba(51, 153, 255, 0.12);
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease, transform 50ms ease;
+}
+.chip:hover { background: #e6f5ff; } /* lightly tinted blue background on hover */
+.chip:active { transform: translateY(1px); }
+
+/* 포함(선택) 상태 — 강한 파란색으로 확실하게 보이도록, 기본 chip 스타일을 완전히 덮어씀 */
+.chip.chipActive {
+  background-color: #66b3ff !important; /* solid blue (matches border) */
+  color: #ffffff !important;            /* white text changed to black */
+  border-color: #66b3ff !important;     /* match fill */
+  box-shadow: none !important;          /* remove inner highlight from .chip */
+}
+.chip.chipActive:hover {
+  background-color: #4da6ff !important; /* slightly darker on hover */
+  border-color: #4da6ff !important;     /* border matches hover bg */
+}
+
+/* 제외(선택) 상태 — 레드 칩 */
+/* 제외(선택) 상태 — 레드 칩 */
+.chip.chipDestructive {
+  background-color: #fca5a5 !important;
+  color: #ffffff !important;            /* white text changed to black */
+  border-color: #fca5a5 !important;
+  box-shadow: none !important;
+}
+.chip.chipDestructive:hover {
+  background-color: #f87171 !important;
+  border-color: #f87171 !important;
+  box-shadow: none !important;
+}
+
+/* Specificity helpers to ensure active styles override base chip styles */
+.chip.chipActive, .chip.chipDestructive { border-width: 1.5px; }
+
+/* === Check icon sizing (prevent chip height jump when selected) === */
+/* Works for text ✓ wrapped in .checkIcon, and for SVG icons (e.g., lucide-react) */
+.chip .checkIcon {
+  display: inline-block;
+  font-size: 1em;          /* same as text size inside chip */
+  line-height: 1;          /* do not stretch vertically */
+  height: 1em;             /* lock height to current font-size */
+  width: 1em;              /* square icon */
+  vertical-align: -0.1em;  /* optically center with text */
+}
+
+/* If a SVG icon is used (lucide, etc.), normalize its box so it won't enlarge the chip */
+.chip :where(svg) {
+  height: 1em;
+  width: 1em;
+  flex: 0 0 auto;          /* do not stretch within flex */
+  vertical-align: middle;
+}
+
+/* Keep the gap small so icon+label look compact */
+.chip { gap: 6px; }

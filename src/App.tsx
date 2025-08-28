@@ -13,6 +13,7 @@ import Recommendations from "./pages/Recommendations";
 import CatalogSheet from "./pages/CatalogSheet"; // ✅ 추가
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/OnBoarding";
+import MobileIndex from "./pages/mobileIndex";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/recommendations" element={<Recommendations />} />
           <Route path="/catalog-sheet" element={<CatalogSheet />} /> {/* ✅ 현재 등록된 추천작(시트) */}
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/mobile-index" element={<MobileIndex />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} /> {/* ✅ 캐치올 */}

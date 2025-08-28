@@ -166,7 +166,7 @@ const OnBoarding:FunctionComponent = () => {
       			</div>
       			<div className={styles.messageBubble8}>
         				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>하단의 메뉴 탭에서 다음과 같은 요청이 가능합니다.</div>
+          					<div className={styles.OnBoarding_message}>메뉴 탭에서 다음과 같은 요청이 가능합니다.</div>
           					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
         				</div>
         				<div className={styles.spacing} />
