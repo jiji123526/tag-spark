@@ -14,7 +14,7 @@ import CatalogSheet from "./pages/CatalogSheet"; // ✅ 추가
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/OnBoarding";
 import MobileIndex from "./pages/mobileIndex";
-import MobileRecom from "./pages/MobileRecom";
+import MobileRecom from "./pages/mobilerecom";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
