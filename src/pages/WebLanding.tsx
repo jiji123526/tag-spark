@@ -15,7 +15,7 @@ const WebLanding: FunctionComponent = () => {
       <img className={styles.dock} alt="Dock" src={appsInDock} />
       <img className={styles.statusBar} alt="Status Bar" src={statusBar} />
       <div className={styles.popupWrapper}>
-        <Link to="/index">
+        <Link to="/mobile-index">
           <img className={styles.appStorePopup} alt="App Store Popup" src={appStorePopup} />
         </Link>
       </div>
