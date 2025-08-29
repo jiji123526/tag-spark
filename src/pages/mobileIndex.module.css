@@ -386,6 +386,17 @@
   font-size: 15px;
 }
 
+.icon3 {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.icon3:active {
+  opacity: 0.5;      /* 눌렀을 때 */
+}
+.menuActive {
+  opacity: 0.5;      /* 메뉴가 열린 상태 */
+  transition: opacity 0.15s ease;
+}
 
 /* =============================
    Chips for tag buttons (used by mobileIndex.tsx)
