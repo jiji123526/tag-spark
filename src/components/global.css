@@ -5,6 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:wght@500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:ital,wght@0,400;0,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro:ital,wght@0,400;0,600;0,700&display=swap');
 
 body {
   	margin: 0; line-height: normal;
@@ -26,18 +27,25 @@ body {
   	--color-limegreen: rgba(76, 217, 100, 0.4);
   	--color-gray-300: rgba(0, 0, 0, 0.04);
   	--color-gainsboro: #e6e5eb;
-  	--color-silver: #c6c6c8;
+  	--color-silver: #c7c7cc;
   	--color-gray-400: rgba(118, 118, 128, 0.12);
   	--color-ghostwhite: #f2f2f7;
+    --color-goldenrod: #e4af0a;
 
   	/* Gap */
   	--gap-8: 8px;
   	--gap-10: 10px;
+    --gap-3: 3px;
 
   	/* Padding */
   	--padding-6: 6px;
   	--padding-14: 14px;
   	--padding-16: 16px;
+    --padding-3: 3px;
+    --padding-12: 12px;
+    --padding-18: 18px;
+    --padding-20: 20px;
+    --padding-28: 28px;
 
   	/* BorderRadius */
   	--br-100: 100px;
@@ -55,5 +63,6 @@ body {
   	--font-size-12: 12px;
   	--font-size-15: 15px;
   	--font-size-22: 22px;
+    --font-size-19: 19px;
   	
 }

@@ -1,4 +1,4 @@
-import { FunctionComponent, useState, KeyboardEvent } from 'react';
+import { FunctionComponent, useState, KeyboardEvent, useEffect, useRef } from 'react';
 import styles from './mobileIndex.module.css';
 
 import backIcon from "../assets/mobileIndex/back.svg";
@@ -12,9 +12,11 @@ import { tags as allTags, Tag } from "@/data/tags";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
 
-const mobileIndex:FunctionComponent = () => {
+const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
 	const handleBack = () => navigate(-1);
+
+  const selectedBarRef = useRef<HTMLDivElement | null>(null);
 
   // segmented control state (include/exclude)
   const [excludeMode, setExcludeMode] = useState(false);
@@ -46,7 +48,7 @@ const mobileIndex:FunctionComponent = () => {
     const params = new URLSearchParams();
     if (qs) params.set("tags", qs);
     if (ex) params.set("exclude", ex);
-    navigate(`/recommendations?${params.toString()}`);
+    navigate(`/mobile-recom?${params.toString()}`);
   };
 
   const resetSelection = () => {
@@ -90,6 +92,17 @@ const mobileIndex:FunctionComponent = () => {
       });
     }
   };
+
+  // Keep CSS variable --selbar-h in sync with the selected bar's height
+  useEffect(() => {
+    const updateSelbarHeight = () => {
+      const h = selectedBarRef.current?.offsetHeight ?? 0;
+      document.documentElement.style.setProperty('--selbar-h', `${h}px`);
+    };
+    updateSelbarHeight();
+    window.addEventListener('resize', updateSelbarHeight);
+    return () => window.removeEventListener('resize', updateSelbarHeight);
+  }, [selected.length, excluded.length]);
 
   	return (
     		<div className={styles.mobileIndex}>
@@ -199,13 +212,17 @@ const mobileIndex:FunctionComponent = () => {
               })}
             </div>
 
-            {/* 진행 버튼 */}
-            <div className="mt-8 flex items-center justify-end">
-              <Button onClick={goToResults} aria-label="See recommendations">
-                추천작 보기
-              </Button>
-            </div>
-          </section>
+				<div
+  					className={styles.lightLargeButton}
+  					onClick={goToResults}
+  					role="button"
+  					aria-label="추천작 보기"
+				>
+  					<div className={styles.background} />
+  					<div className={styles.button}>추천작 보기</div>
+				</div>
+
+            </section>
 
       			<div className={styles.navigationBar}>
         				<div className={styles.navBarFirstRow}>
@@ -229,14 +246,56 @@ const mobileIndex:FunctionComponent = () => {
                     </div>
         				</div>
       			</div>
-      			<div className={styles.systemBar}>
-        				<div className={styles.group}>
-          					<img className={styles.groupIcon} alt="Status Group" src={groupSvg} />
-        				</div>
-        				<div className={styles.starus}>
-          					<div className={styles.time}>5:12</div>
-        				</div>
-      			</div>
+
+          {/* 선택된 키워드 요약 (검색창 위) */}
+          <div className={styles.selectedBar} aria-live="polite" ref={selectedBarRef}>
+            <div className={styles.selectedList}>
+              {selected.map((id) => {
+                const t = allTags.find((x) => x.id === id);
+                if (!t) return null;
+                return (
+                  <button
+                    key={`sel-${id}`}
+                    type="button"
+                    className={`${styles.selectedChip} ${styles.include}`}
+                    onClick={() => setSelected((p) => p.filter((x) => x !== id))}
+                    aria-label={`${t.name} 포함 해제`}
+                    title="클릭하면 해제됩니다"
+                  >
+                    {'+ ' + t.name}
+                  </button>
+                );
+              })}
+              {excluded.map((id) => {
+                const t = allTags.find((x) => x.id === id);
+                if (!t) return null;
+                return (
+                  <button
+                    key={`ex-${id}`}
+                    type="button"
+                    className={`${styles.selectedexcludedChip} ${styles.exclude}`}
+                    onClick={() => setExcluded((p) => p.filter((x) => x !== id))}
+                    aria-label={`${t.name} 제외 해제`}
+                    title="클릭하면 해제됩니다"
+                  >
+                    {'- ' + t.name}
+                  </button>
+                );
+              })}
+            </div>
+            {(selected.length > 0 || excluded.length > 0) && (
+              <button
+                type="button"
+                className={styles.clearBtn}
+                onClick={resetSelection}
+                aria-label="선택된 키워드 전체 해제"
+                title="전체 해제"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
       			<div className={styles.searchPlaceholder}>
               <input
                 className={styles.searchField}
@@ -245,6 +304,7 @@ const mobileIndex:FunctionComponent = () => {
                 aria-label="키워드 검색"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                style={{ color: "black" }}
               />
               <img className={styles.magnifyingglassIcon} alt="Search" src={magnifyingGlass} />
               <img className={styles.mobileIndex_icon} alt="Extra" src={extraIcon} onClick={resetSelection} />
@@ -295,4 +355,4 @@ const mobileIndex:FunctionComponent = () => {
     		</div>);
 };
 
-export default mobileIndex;
+export default MobileIndex;

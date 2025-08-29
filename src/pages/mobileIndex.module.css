@@ -2,6 +2,7 @@
     width: 100%;
     position: relative;
     background-color: var(--color-white);
+    --selbar-h: 0px;
     height: 930px;
     overflow-y: visible;
     overflow-x: hidden;
@@ -106,30 +107,37 @@
     font-weight: 600;
 }
 .navigationBar {
-    position: absolute;
-    top: 53px;
+    position: fixed;
+    top: 0px;
     left: 0px;
     backdrop-filter: blur(48px);
-    background-color: var(--color-gray-200);
+    background-color: #ffffff;
     width: 393px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     text-align: left;
+    width: 100%;
     color: var(--color-royalblue);
+    z-index: 100;
 }
 .navBarFirstRow {
     align-self: stretch;
-    position: relative;
-    height: 44px;
+    position: fixed;  /* 항상 화면 기준으로 고정 */
+    top: 0;
+    left: 0;
+    right: 0;
+    height:70px;
     overflow: hidden;
+    background-color: #ffffff;
     flex-shrink: 0;
-}
+    z-index: 100;
+  }
 .navigationBarLeft {
     position: absolute;
-    bottom: -0.5px;
-    left: 0px;
+    top: 20px;
+    left: 10px;
     width: 180px;
     height: 44px;
 }
@@ -149,7 +157,7 @@
 }
 .navigationBarCenter {
     position: absolute;
-    top: 0.5px;
+    top: 20px;
     left: calc(50% - 87.5px);
     width: 175px;
     height: 44px;
@@ -250,11 +258,10 @@
 }
 .searchPlaceholder {
     position: absolute;
-    height: calc(100% - px);
+    height: 36px;
     width: calc(100% - 32px);
-    top: 97px;
+    top: calc(97px + var(--selbar-h, 0px));
     right: 16px;
-    bottom: 797px;
     left: 16px;
     border-radius: var(--br-10);
     text-align: left;
@@ -272,6 +279,7 @@
     left: 0%;
     border-radius: var(--br-10);
     background-color: var(--color-ghostwhite);
+    color: #000;
 }
 .magnifyingglassIcon {
     position: absolute;
@@ -355,8 +363,7 @@
   margin-top: 137px; /* 필요 시 120~220px 사이에서 조정 */
   padding: 0 16px 24px; /* TSX inline padding과 동일하게 유지 */
   text-align: left;    /* 내부 기본 정렬을 왼쪽으로 */
-  max-width: 360px;
-  width: 100%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -444,8 +451,8 @@
 /* Menu button aligned with top navigation bar title */
 .menuButton {
     position: absolute;
-    top: 12px;       /* same vertical offset as title */
-    right: 37px;     /* aligned to right edge */
+    top: 30px;       /* same vertical offset as title */
+    right: 25px;     /* aligned to right edge */
     height: 22px;
     border-radius: var(--br-100);
     display: flex;
@@ -524,3 +531,114 @@
   background: transparent;
   border: 0;
 }
+
+
+/* =============================
+   Selected keywords summary bar (search above)
+   ============================= */
+   .selectedBar {
+    position: absolute;     /* 화면 기준 배치 */
+    top: 62px;              /* 검색창(.searchPlaceholder) 위쪽에 오도록 */
+    left: 17.5px;
+    right: 16px;
+    z-index: 90;            /* navBar(100)보다 낮게, 콘텐츠 위 */
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  
+    padding: 6px 0;
+    margin: 0;              /* 기존 margin 제거 */
+  }
+
+.selectedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0px;
+  align-items: center;
+}
+
+/* Summary chips (lighter than main chips) */
+.selectedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: -10px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px #fff;
+  background: #fff;
+  color: var(--color-royalblue);
+  font-size: 13px;
+  line-height: 1;
+}
+.selectedexcludedChip {
+    display: inline-flex;
+    align-items: center;
+    gap: -10px;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px #fff;
+    background: #fff;
+    color: hsl(var(--destructive) / 0.9);
+    font-size: 13px;
+    line-height: 1;
+  }
+
+/* Include / Exclude accent colors for the summary chips */
+.selectedChip.include { border-color: #66b3ff; }
+.selectedChip.exclude { border-color: #fca5a5; }
+
+/* Clear-all (우측) */
+.clearBtn {
+  border: none;
+  background: transparent;
+  color: var(--color-royalblue);
+  font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.clearBtn:hover { background: rgba(0,0,0,0.04); }
+
+/* =============================
+   Proceed 버튼 스타일
+   ============================= */
+   .lightLargeButton {
+    width: 100%;
+    position: relative;
+    height: 82px;
+    text-align: center;
+    font-size: 17px;
+    color: var(--color-white);
+    font-family: var(--font-sf-pro-text);
+    cursor: pointer; /* 버튼처럼 보이게 */
+  }
+  
+  .lightLargeButton .background {
+    position: absolute;
+    height: 60.98%;
+    width: 91.47%;
+    top: 19.51%;
+    right: 4.27%;
+    bottom: 15%;
+    left: 4.27%;
+    border-radius: 8px;
+    background-color: var(--color-dodgerblue); /* 기본 파란 배경 */
+    transition: background-color 0.2s ease;
+  }
+  
+  .lightLargeButton:hover .background {
+    background-color: #1a73e8; /* hover 시 조금 더 진한 파란색 */
+  }
+  
+  .lightLargeButton .button {
+    position: absolute;
+    width: 82.93%;
+    top: calc(50% - 11px);
+    left: 8.53%;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+    font-weight: 600;
+    display: inline-block;
+  }
