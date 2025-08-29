@@ -125,7 +125,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 4px;
+    gap: 3px;
+    z-index: 0;
+    width: 100%;
 }
 .div2 {
     position: relative;
@@ -528,7 +530,47 @@
   justify-content: flex-start;
   gap: 3px;
   z-index: 0;
+  width: 100%;
 }
+
+/* 스크롤 되는 실제 텍스트 영역 */
+.textScroll {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 24px;           /* ✅ 마지막 글자 여유 공간 (잘림 방지) */
+  }
+  .textScroll::-webkit-scrollbar { display: none; }
+  
+  /* 그라데이션 마스크 래퍼 */
+  .scrollFade {
+    position: relative;
+    overflow: hidden;              /* 내부 스크롤 내용만 보이게 */
+    border-radius: 10px;           /* 기존 회색 박스와 동일하면 그대로 */
+    /* ✅ 웹킷(모바일 사파리) 마스크: 내용만 페이드 (배경은 유지) */
+    -webkit-mask-image: linear-gradient(to right, #000 0,
+                                        #000 calc(100% - 20px),
+                                        transparent 100%);
+            mask-image: linear-gradient(to right, #000 0,
+                                        #000 calc(100% - 20px),
+                                        transparent 100%);
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* 크롬/비웹킷용 폴백: 오른쪽에 배경색 그라데이션 오버레이 */
+  .scrollFade::after {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; width: 20px; height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to left,
+                var(--color-lightgray) 0%,
+                rgba(210,210,215,0) 100%);
+  }
 
 .div {
   position: relative;

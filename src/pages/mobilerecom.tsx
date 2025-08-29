@@ -237,7 +237,11 @@ const mobilerecom:FunctionComponent = () => {
                   <div className={styles.inputChangeOpacity}>
                     <div className={styles.iconAndText}>
                       <img className={styles.div} src={MagIcon} alt="search" />
-                      <div className={styles.div}>{selectedText}</div>
+                      <div className={styles.scrollFade}>
+                        <div className={styles.textScroll} aria-label="선택한 키워드">
+                          {selectedText}
+                        </div>
+                      </div>
                     </div>
                     
                   </div>
