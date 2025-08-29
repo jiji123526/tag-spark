@@ -81,6 +81,11 @@
     height: 23px;
     margin-top: 15px;
 }
+
+.menuActive {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
 .actionsContainer {
     align-self: stretch;
     height: 70px;

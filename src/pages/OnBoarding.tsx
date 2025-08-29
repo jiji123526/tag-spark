@@ -195,7 +195,7 @@ const OnBoarding:FunctionComponent = () => {
         				</div>
         				<div className={styles.input}>
           					<div className={styles.imessage}>키워드 고르러 가기</div>
-          					<img className={styles.OnBoarding_div} alt="mic" src={MicIcon} onClick={() => navigate('/index')} />
+          					<img className={styles.OnBoarding_div} alt="mic" src={MicIcon} onClick={() => navigate('/Mobile-Index')} />
         				</div>
       			</div>
       			<div className={styles.navigationBarMessages}>
@@ -218,7 +218,7 @@ const OnBoarding:FunctionComponent = () => {
               							</div>
               							
               							<div className={styles.navigationBarRightAccesso}>
-                								<div className={styles.label} onClick={() => navigate('/index')}>Skip</div>
+                								<div className={styles.label} onClick={() => navigate('/Mobile-Index')}>Skip</div>
               							</div>
               							</div>);
             						};

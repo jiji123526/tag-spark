@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo, useEffect } from 'react';
+import { FunctionComponent, useMemo, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import LeftIcon from "../assets/mobilerecom/left.svg";
 import MenuIcon from "../assets/mobilerecom/menu.svg";
@@ -9,6 +9,8 @@ import { works as allWorks } from "@/data/works";
 import { tags as allTags, Tag } from "@/data/tags";
 import { workTags as mappings } from "@/data/workTags";
 import { computeRecommendations } from "@/lib/reco";
+
+import ContextMenu from "../components/ContextMenu";
 
 const PAGE_SIZE = 10;
 function shuffle<T>(arr: T[]): T[] {
@@ -23,6 +25,9 @@ function shuffle<T>(arr: T[]): T[] {
 const mobilerecom:FunctionComponent = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuBtnRef = useRef<HTMLDivElement | null>(null);
 
   // selected / excluded ids from query
   const selected = useMemo(() => {
@@ -198,7 +203,20 @@ const mobilerecom:FunctionComponent = () => {
                 								<div className={styles.content2} />
               							</div>
               							<div className={styles.pageTitle}>
-                								<div className={styles.icon3}>
+                								<div
+                                                className={`${styles.icon3} ${menuOpen ? styles.menuActive : ''}`}
+                                              ref={menuBtnRef}
+                                              role="button"
+                                              aria-label="메뉴 열기"
+                                              tabIndex={0}
+                                              onClick={() => setMenuOpen(true)}
+                                              onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                  e.preventDefault();
+                                                  setMenuOpen(true);
+                                                }
+                                              }}
+                                            >
                   									<img className={styles.div3} src={MenuIcon} alt="menu icon" />
                 								</div>
               							</div>
@@ -250,6 +268,9 @@ const mobilerecom:FunctionComponent = () => {
                 								</div>
                 								</div>
                 								</div>
+                								{menuOpen && (
+                            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
+                          )}
                 								</div>);
               							};
               							

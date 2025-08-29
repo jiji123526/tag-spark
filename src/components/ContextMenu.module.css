@@ -1,104 +1,88 @@
 .contextMenu {
-    width: auto;
-    max-width: 70vw;
-    position: fixed;
-    margin-top: 13px;       /* slight offset from cursor */
-    backdrop-filter: blur(48px);
-    border-radius: 13px;
-    background-color: var(--color-gray);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: left;
-    font-size: 17px;
-    color: var(--color-black);
-    font-family: var(--font-sf-pro, -apple-system, system-ui, Segoe UI, Roboto, sans-serif);
-    z-index: 2000;              /* ensure it floats above */
-    box-shadow: 0 10px 30px rgba(0,0,0,.12);
-    border: 1px solid rgba(0,0,0,.08);
-    padding: 6px;               /* slight inner padding so rows don't touch edges */
-    min-width: 200px;           /* match TSX width logic */
+  width: 100%;
+  position: relative;
+  backdrop-filter: blur(48px);
+  border-radius: 13px;
+  background-color: var(--color-gray);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 17px;
+  color: var(--color-black);
+  font-family: var(--font-sf-pro);
 }
 .tableViewRow {
-    align-self: stretch;
-    position: relative;
-    height: 36px;
-    cursor: pointer;
-    border-radius: 8px;
+  align-self: stretch;
+  position: relative;
+  height: 44px;
 }
-
-.tableViewRow::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 16px;
-    right: 16px;
-    height: 1px;
-    background: rgba(0,0,0,.08);
-}
-.contextMenu .tableViewRow:last-child::after {
-    display: none;
-}
-.tableViewRow:hover { background: rgba(0,0,0,.04); }
-.tableViewRow:active { background: rgba(0,0,0,.06); }
 .tableViewRowLeft {
-    position: absolute;
-    top: calc(50% - 18px);
-    left: 0px;
-    width: 200px;
-    height: 36px;
+  position: absolute;
+  top: calc(50% - 22px);
+  left: 0px;
+  width: 256px;
+  height: 44px;
 }
 .stack {
-    position: absolute;
-    top: calc(50% - 15px);
-    left: 16px;
-    height: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+  position: absolute;
+  top: calc(50% - 19px);
+  left: 16px;
+  height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 .title {
-    position: relative;
-    letter-spacing: -0.41px;
-    line-height: 22px;
-    font-size: 15px;
+  position: relative;
+  letter-spacing: -0.41px;
+  line-height: 22px;
 }
 .separator0pt0ptIcon {
-display: none;
+  position: absolute;
+  width: 100%;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  max-width: 100%;
+  overflow: visible;
+  height: 2px;
+  transform: scale(1.5);
+  transform-origin: center;
 }
 .row {
-    position: absolute;
-    top: calc(50% - 22px);
-    right: 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
+  position: absolute;
+  top: calc(50% - 22px);
+  right: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
 .tableViewRowRight {
-    width: 119px;
-    position: relative;
-    height: 35px;
+  width: 119px;
+  position: relative;
+  height: 43px;
 }
 .arrow {
-    position: absolute;
-    top: calc(50% - 6.5px);
-    right: 16px;
-    width: 13px;
-    height: 14px;
+  position: absolute;
+  top: calc(50% - 6.5px);
+  right: 16px;
+  width: 13px;
+  height: 14px;
 }
 .icon {
-    position: absolute;
-    height: 98.57%;
-    width: 60.77%;
-    top: 3.18%;
-    right: 0.35%;
-    bottom: -1.75%;
-    left: 38.88%;
-    max-width: 100%;
-    overflow: hidden;
-    max-height: 100%;
+  position: absolute;
+  height: 98.57%;
+  width: 60.77%;
+  top: 3.18%;
+  right: 0.35%;
+  bottom: -1.75%;
+  left: 38.88%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
 }
