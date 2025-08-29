@@ -11,12 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import { tags as allTags, Tag } from "@/data/tags";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
+import ContextMenu from "../components/ContextMenu";
 
 const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
 	const handleBack = () => navigate(-1);
 
   const selectedBarRef = useRef<HTMLDivElement | null>(null);
+  const menuBtnRef = useRef<HTMLDivElement | null>(null);
 
   // segmented control state (include/exclude)
   const [excludeMode, setExcludeMode] = useState(false);
@@ -234,15 +236,22 @@ const MobileIndex: FunctionComponent = () => {
             						<div className={styles.title}>키워드를 선택하세요.</div>
           					</div>
                     <div className={styles.navigationBarRight}>
-                      <img
-                        className={styles.menuButton}
-                        alt="Menu"
-                        src={menuIcon}
-                        onClick={handleMenuToggle}
+                      <div
+                        className={styles.menuAnchor}
+                        ref={menuBtnRef}
                         role="button"
                         aria-label="메뉴 열기"
                         tabIndex={0}
-                      />
+                        onClick={(e) => { e.stopPropagation(); setMenuOpen(true); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMenuOpen(true); } }}
+                      >
+                        <img
+                          className={styles.menuButton}
+                          alt="Menu"
+                          src={menuIcon}
+                          draggable={false}
+                        />
+                      </div>
                     </div>
         				</div>
       			</div>
@@ -310,47 +319,7 @@ const MobileIndex: FunctionComponent = () => {
               <img className={styles.mobileIndex_icon} alt="Extra" src={extraIcon} onClick={resetSelection} />
       			</div>
           {menuOpen && (
-            <div
-              className={styles.menuBackdrop}
-              onClick={handleMenuToggle}
-              aria-modal="true"
-              role="dialog"
-            >
-              <div
-                className={styles.menuSheet}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className={styles.menuHeader}>
-                  <strong className={styles.menuTitle}>메뉴</strong>
-                  <button
-                    onClick={handleMenuToggle}
-                    className={styles.menuClose}
-                    aria-label="메뉴 닫기"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <nav className={styles.menuList}>
-                  <button
-                    onClick={() => { setMenuOpen(false); navigate("/catalog-sheet"); }}
-                    className={styles.menuItem}
-                  >
-                    현재 등록된 추천작 보기
-                  </button>
-                  <div className={styles.menuDivider} />
-                  <a
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform?usp=sharing&amp;ouid=103167940717310868379"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMenuOpen(false)}
-                    className={`${styles.menuItem} ${styles.menuLink}`}
-                  >
-                    내 추천작 등록하기
-                  </a>
-                </nav>
-              </div>
-            </div>
+            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
           )}
     		</div>);
 };

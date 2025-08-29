@@ -2,6 +2,7 @@ import { FunctionComponent, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import LeftIcon from "../assets/mobilerecom/left.svg";
 import MenuIcon from "../assets/mobilerecom/menu.svg";
+import MagIcon from "../assets/mobilerecom/tag.svg";
 import styles from './mobilerecom.module.css';
 
 import { works as allWorks } from "@/data/works";
@@ -49,6 +50,11 @@ const mobilerecom:FunctionComponent = () => {
         .filter((t): t is NonNullable<typeof t> => !!t),
     [selectedEffective]
   );
+
+  const selectedText = useMemo(() => {
+    const names = selectedTags.map((t) => t.name).join(', ');
+    return names || '선택한 키워드가 없습니다.';
+  }, [selectedTags]);
 
   // tags grouped by work id (order: weight → category → name)
   const tagsByWorkId = useMemo(() => {
@@ -209,25 +215,15 @@ const mobilerecom:FunctionComponent = () => {
         				</div>
       			</div>
       			<div className={styles.section}>
-                {/* Selected keywords summary (above exact matches) */}
-                {selectedTags.length > 0 && (
-                  <div className={styles.pageTitle}>
-                    <div className={styles.selectedBar} aria-label="선택한 키워드">
-                      <div className={styles.selectedList}>
-                        {selectedTags.map((t) => (
-                          <span
-                            key={t.id}
-                            className={`${styles.selectedChip} ${styles.include}`}
-                            title={t.aliases && t.aliases.length > 0 ? `별칭: ${t.aliases.join(', ')}` : undefined}
-                          >
-                            + {t.name}
-                          </span>
-                        ))}
-                      </div>
+                <div className={styles.searchInput}>
+                  <div className={styles.inputChangeOpacity}>
+                    <div className={styles.iconAndText}>
+                      <img className={styles.div} src={MagIcon} alt="search" />
+                      <div className={styles.div}>{selectedText}</div>
                     </div>
+                    
                   </div>
-                )}
-
+                </div>
         				<div className={styles.pageTitle}>
           					<div className={styles.pageTitle}>
             						<div className={styles.title3}>
