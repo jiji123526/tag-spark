@@ -5,7 +5,7 @@ import styles from './mobilelist.module.css';
 import backIcon from "../assets/mobileIndex/back.svg";
 import menuIcon from "../assets/mobileIndex/menu.svg";
 import magnifyingglassIcon from "../assets/mobilelist/magnifyingglass.svg";
-import microphoneIcon from "../assets/mobileindex/x.svg";
+import microphoneIcon from "../assets/mobilelist/x.svg";
 import chevronRightIcon from "../assets/mobilelist/chevron.right.svg";
 import line3HorizontalIcon from "../assets/mobilelist/+.svg";
 import squareAndPencilIcon from "../assets/mobilelist/square.and.pencil.svg";
