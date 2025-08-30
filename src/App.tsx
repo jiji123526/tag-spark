@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/OnBoarding";
 import MobileIndex from "./pages/mobileIndex";
 import MobileRecom from "./pages/mobilerecom";
+import MobileList from "./pages/mobilelist";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
@@ -39,6 +40,8 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/mobile-index" element={<MobileIndex />} />
           <Route path="/mobile-recom" element={<MobileRecom />} />
+
+          <Route path="/mobile-list" element={<MobileList />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} /> {/* ✅ 캐치올 */}

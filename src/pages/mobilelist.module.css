@@ -1,0 +1,862 @@
+.mobileIndex {
+    width: 100%;
+    position: relative;
+    background-color: var(--color-white);
+    --selbar-h: 0px;
+    height: 930px;
+    overflow-y: visible;
+    overflow-x: hidden;
+    text-align: center;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro);
+  }
+  
+  /* 상단바 전체 */
+  .actionsContainer {
+    align-self: stretch;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0 var(--padding-20);
+    box-sizing: border-box;
+    position: relative;
+    font-size: var(--font-size-22);
+    color: var(--color-goldenrod);
+  }
+  
+  /* 뒤로가기 버튼 영역 */
+  .back {
+    margin: 0 !important;
+    position: absolute;
+    top: calc(50% - 22px);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    z-index: 0;
+  }
+  
+  .content {
+    height: 44px;
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 0 0 var(--padding-12);
+    box-sizing: border-box;
+  }
+  
+  .iconAndText {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  
+  .icon4 {
+    width: 12px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  
+  .div3 {
+    align-self: stretch;
+    position: relative;
+    letter-spacing: -0.26px;
+    line-height: 28px;
+  }
+  
+  .back2 {
+    position: relative;
+    font-size: 18px;
+    letter-spacing: -0.43px;
+    line-height: 22px;
+    margin-left: 2px;
+    margin-top: 4px;
+    color: var(--color-dodgerblue);
+    font-family: var(--font-sf-pro);
+  }
+  
+  /* 좌측 액션 빈칸 */
+  .leftAction {
+    margin: 0 !important;
+    position: absolute;
+    top: calc(50% - 22px);
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    z-index: 1;
+  }
+  
+  .content2 {
+    width: 20px;
+    height: 44px;
+  }
+  
+  /* 우측 메뉴 버튼 영역 */
+  .rightActions {
+    margin: 0 !important;
+    position: absolute;
+    top: 23px;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 30px;
+    z-index: 2;
+    text-align: center;
+  }
+  
+  .pageTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* 메뉴 아이콘 */
+  .icon3 {
+    width: 24px;
+    position: relative;
+    height: 23px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .icon3:active {
+    opacity: 0.5;
+  }
+  
+  .menuActive {
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+  }
+  
+  /* 제목 텍스트 컨테이너 */
+  .titleContainer {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: var(--padding-3) var(--padding-20) 8px;
+    font-size: 34px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .title2 {
+    flex: 1;
+    width: auto;
+    position: relative;
+    font-size: 34px;
+    letter-spacing: 0.4px;
+    line-height: 41px;
+    display: inline-block;
+    font-family: var(--font-sf-pro);
+    color: var(--color-black);
+    text-align: left;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+
+.mobilelist {
+    width: 100%;
+    position: relative;
+    background-color: var(--color-white);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: left;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro-text);
+    margin-bottom: 60px;
+}
+.topnavigation {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    right: 0px;
+    left: 0px;
+    backdrop-filter: blur(20px);
+    background-color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: var(--color-darkslategray-200);
+}
+.extra {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px var(--padding-16) 15px;
+}
+.searchfield {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.mobilelistSearchfield {
+    flex: 1;
+    border-radius: 10px;
+    background-color: var(--color-gray-200);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px var(--padding-6);
+    gap: 6px;
+}
+.iconMagnifyingglass {
+    width: 15.6px;
+    position: relative;
+    height: 15.8px;
+    margin-left: 7px
+}
+.query {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+}
+.searchInput {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 17px;
+    flex: 1;
+    margin: 0 8px;
+    font-color: var(--color-gray-200);
+  }
+.sfSymbolMicrophone {
+    width: 17px;
+    position: relative;
+    margin-right: 7px;
+}
+.threads {
+    position: absolute;
+    top: 65px;
+    left: calc(50% - 196.5px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: var(--font-size-15);
+}
+.mobilelistThread {
+    width: 393px;
+    background-color: var(--color-white);
+    min-height: 80px;
+    overflow: visible;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px 0px 0px var(--padding-28);
+    box-sizing: border-box;
+}
+.mobilelistcontent {
+    flex: 1;
+    border-top: 0.5px solid var(--color-darkslategray-100);
+    box-sizing: border-box;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: var(--padding-8) 0px;
+}
+.contactTime {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0px var(--padding-10) 0px 0px;
+    gap: var(--gap-4);
+    font-size: 17px;
+}
+.contactName {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+    font-weight: 600;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 22px;
+}
+.timeChevron {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--gap-10);
+    text-align: right;
+    font-size: var(--font-size-15);
+    color: var(--color-darkslategray-200);
+}
+.time {
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+}
+.sfSymbolChevronright {
+    width: 10px;
+    position: relative;
+    margin-right: 12px;
+    margin-top: 0px;
+}
+.subject {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px var(--padding-16) 0px 0px;
+}
+.mobilelistSubject {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+}
+.preview {
+    align-self: stretch;
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+    margin-right: 20px;
+    color: var(--color-darkslategray-200);
+    display: -webkit-inline-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.tabBar {
+    position: fixed;
+    width: 100%;
+    right: 0px;
+    bottom: -0.05px;
+    left: 0px;
+    backdrop-filter: blur(20px);
+    background-color: var(--color-gray-100);
+    border-top: 0.5px solid var(--color-darkslategray-100);
+    box-sizing: border-box;
+    height: 60px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--padding-10) 0px 0px;
+    font-size: var(--font-size-11);
+}
+.content9 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 18px;
+    gap: 0px;
+}
+.sfSymbolLine3horizontal {
+    width: 21.9px;
+    position: relative;
+    height: 21.9px;
+}
+.updatesUnread {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.url {
+    position: relative;
+    letter-spacing: 0.07px;
+    line-height: 13px;
+}
+.mobilelistUrl {
+    position: relative;
+    letter-spacing: 0.07px;
+    line-height: 13px;
+    color: var(--color-darkslategray-200);
+}
+.sfSymbolSquareandpencil {
+    width: 21px;
+    position: relative;
+    height: 21px;
+}
+.homeindicator {
+    align-self: stretch;
+    position: relative;
+    height: 34px;
+}
+
+.mobileIndex {
+    width: 100%;
+    position: relative;
+    background-color: var(--color-white);
+    --selbar-h: 0px;
+    height: 930px;
+    overflow-y: visible;
+    overflow-x: hidden;
+    text-align: center;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro);
+  }
+  
+  /* 상단바 전체 */
+  .actionsContainer {
+    align-self: stretch;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0 var(--padding-20);
+    box-sizing: border-box;
+    position: relative;
+    font-size: var(--font-size-22);
+    color: var(--color-goldenrod);
+  }
+  
+  /* 뒤로가기 버튼 영역 */
+  .back {
+    margin: 0 !important;
+    position: absolute;
+    top: calc(50% - 22px);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    z-index: 0;
+  }
+  
+  .content {
+    height: 44px;
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 0 0 var(--padding-12);
+    box-sizing: border-box;
+  }
+  
+  .iconAndText {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  
+  .icon4 {
+    width: 12px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  
+  .div3 {
+    align-self: stretch;
+    position: relative;
+    letter-spacing: -0.26px;
+    line-height: 28px;
+  }
+  
+  .back2 {
+    position: relative;
+    font-size: 18px;
+    letter-spacing: -0.43px;
+    line-height: 22px;
+    margin-left: 2px;
+    margin-top: 4px;
+    color: var(--color-dodgerblue);
+    font-family: var(--font-sf-pro);
+  }
+  
+  /* 좌측 액션 빈칸 */
+  .leftAction {
+    margin: 0 !important;
+    position: absolute;
+    top: calc(50% - 22px);
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    z-index: 1;
+  }
+  
+  .content2 {
+    width: 20px;
+    height: 44px;
+  }
+  
+  /* 우측 메뉴 버튼 영역 */
+  .rightActions {
+    margin: 0 !important;
+    position: absolute;
+    top: 23px;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 30px;
+    z-index: 2;
+    text-align: center;
+  }
+  
+  .pageTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* 메뉴 아이콘 */
+  .icon3 {
+    width: 24px;
+    position: relative;
+    height: 23px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .icon3:active {
+    opacity: 0.5;
+  }
+
+  /* 메뉴 버튼 래퍼 (icon3와 동일한 레이아웃 컨텍스트) */
+  .menuBtn {
+    width: 24px;
+    height: 23px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    position: relative;
+    opacity: 1;
+  }
+  .menuBtn:active {
+    opacity: 0.5;
+  }
+
+  .menuBtnActive {
+    opacity: 0.4;
+  }
+  
+  .menuActive {
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+  }
+  
+  /* 제목 텍스트 컨테이너 */
+  .titleContainer {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: var(--padding-3) var(--padding-20) 8px;
+    font-size: 34px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .title2 {
+    flex: 1;
+    width: auto;
+    position: relative;
+    font-size: 34px;
+    letter-spacing: 0.4px;
+    line-height: 41px;
+    display: inline-block;
+    font-family: var(--font-sf-pro);
+    color: var(--color-black);
+    text-align: left;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+
+  .mobilelist {
+    width: 100%;
+    position: relative;
+    background-color: var(--color-white);
+    height: 1127px;
+    overflow-y: visible;
+    overflow-x: hidden;
+    text-align: left;
+    font-size: 17px;
+    color: var(--color-black);
+    font-family: var(--font-sf-pro-text);
+    margin-bottom: 60px;
+}
+.topnavigation {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    right: 0px;
+    left: 0px;
+    backdrop-filter: blur(20px);
+    background-color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: var(--color-darkslategray-200);
+}
+.extra {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px var(--padding-16) 15px;
+}
+.searchfield {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.mobilelistSearchfield {
+    flex: 1;
+    border-radius: 10px;
+    background-color: var(--color-gray-200);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px var(--padding-6);
+    gap: 6px;
+}
+.iconMagnifyingglass {
+    width: 15.6px;
+    position: relative;
+    height: 15.8px;
+    margin-left: 7px
+}
+.query {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+}
+.searchInput {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 17px;
+    flex: 1;
+    margin: 0 8px;
+    font-color: var(--color-gray-200);
+  }
+.sfSymbolMicrophone {
+    width: 17px;
+    position: relative;
+    margin-right: 7px;
+}
+.threads {
+    position: absolute;
+    top: 65px;
+    left: calc(50% - 196.5px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: var(--font-size-15);
+}
+.mobilelistThread {
+    width: 393px;
+    background-color: var(--color-white);
+    min-height: 80px;
+    overflow: visible;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px 0px 0px var(--padding-28);
+    box-sizing: border-box;
+}
+.mobilelistcontent {
+    flex: 1;
+    border-top: 0.5px solid var(--color-darkslategray-100);
+    box-sizing: border-box;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: var(--padding-8) 0px;
+}
+.contactTime {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0px var(--padding-10) 0px 0px;
+    gap: var(--gap-4);
+    font-size: 17px;
+}
+.contactName {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.41px;
+    line-height: 22px;
+    font-weight: 600;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 22px;
+}
+.timeChevron {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--gap-10);
+    text-align: right;
+    font-size: var(--font-size-15);
+    color: var(--color-darkslategray-200);
+}
+.time {
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+}
+.sfSymbolChevronright {
+    width: 10px;
+    position: relative;
+    margin-right: 12px;
+    margin-top: 0px;
+}
+.subject {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0px var(--padding-16) 0px 0px;
+}
+.mobilelistSubject {
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+}
+.preview {
+    align-self: stretch;
+    flex: 1;
+    position: relative;
+    letter-spacing: -0.24px;
+    line-height: 20px;
+    margin-right: 30px;
+    color: var(--color-darkslategray-200);
+    display: -webkit-inline-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.tabBar {
+    position: fixed;
+    width: 100%;
+    right: 0px;
+    bottom: -0.05px;
+    left: 0px;
+    backdrop-filter: blur(20px);
+    background-color: var(--color-gray-100);
+    border-top: 0.5px solid var(--color-darkslategray-100);
+    box-sizing: border-box;
+    height: 60px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--padding-10) 0px 0px;
+    font-size: var(--font-size-11);
+}
+.content9 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 18px;
+    gap: 0px;
+}
+.sfSymbolLine3horizontal {
+    width: 21.9px;
+    position: relative;
+    height: 21.9px;
+}
+.updatesUnread {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.url {
+    position: relative;
+    letter-spacing: 0.07px;
+    line-height: 13px;
+}
+.mobilelistUrl {
+    position: relative;
+    letter-spacing: 0.07px;
+    line-height: 13px;
+    color: var(--color-darkslategray-200);
+}
+.sfSymbolSquareandpencil {
+    width: 21px;
+    position: relative;
+    height: 21px;
+}
+.homeindicator {
+    align-self: stretch;
+    position: relative;
+    height: 34px;
+}
+

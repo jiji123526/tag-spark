@@ -7,6 +7,8 @@
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:ital,wght@0,400;0,500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro:ital,wght@0,400;0,600;0,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro:ital,wght@0,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:ital,wght@0,400;0,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:ital,wght@0,700&display=swap');
 
 body {
   	margin: 0; line-height: normal;
@@ -17,14 +19,14 @@ body {
   	--color-white: #fff;
   	--color-black: #000;
   	--color-gray: rgba(253, 253, 253, 0.92);
-  	--color-gray-200: rgba(253, 253, 253, 0.92);
+  	--color-gray-200: rgba(118, 118, 128, 0.12);
   	--color-royalblue: #007aff;
-  	--color-darkslategray-100: rgba(60, 60, 60, 0.3);
+  	--color-darkslategray-100: rgba(60, 60, 67, 0.36);
   	--color-darkslategray-200: rgba(60, 60, 67, 0.6);
     --color-darkslategray: rgba(60, 60, 67, 0.6);
   	--color-dodgerblue: #0a84ff;
   	--color-whitesmoke: #efeff4;
-  	--color-gray-100: #8e8e93;
+  	--color-gray-100: rgba(255, 255, 255, 0.8);
   	--color-limegreen: rgba(76, 217, 100, 0.4);
   	--color-gray-300: rgba(0, 0, 0, 0.04);
   	--color-gainsboro: #e6e5eb;
@@ -38,6 +40,7 @@ body {
   	--gap-8: 8px;
   	--gap-10: 10px;
     --gap-3: 3px;
+    --gap-4: 4px;
 
   	/* Padding */
   	--padding-6: 6px;
@@ -48,6 +51,8 @@ body {
     --padding-18: 18px;
     --padding-20: 20px;
     --padding-28: 28px;
+    --padding-8: 8px;
+    --padding-10: 10px;
 
   	/* BorderRadius */
   	--br-100: 100px;

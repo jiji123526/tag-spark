@@ -50,7 +50,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, ancho
 
   return createPortal(
     <div className={styles.contextMenu} style={style} ref={menuRef} role="menu" aria-orientation="vertical">
-      <div className={styles.tableViewRow} onClick={() => { onClose(); navigate('/catalog-sheet'); }}>
+      <div className={styles.tableViewRow} onClick={() => { onClose(); navigate('/mobile-list'); }}>
         <div className={styles.tableViewRowLeft}>
           <div className={styles.stack}>
             <div className={styles.title}>현재 등록된 추천작</div>

@@ -276,6 +276,7 @@
   text-align: left;
   text-size-adjust: 90%;
   color: var(--color-darkslategray-100);
+  
 }
 .searchField {
     position: absolute;
@@ -286,10 +287,23 @@
     right: 0%;
     bottom: 0%;
     left: 0%;
-    border-radius: var(--br-10);
+    border-radius: 10px;
     background-color: var(--color-ghostwhite);
     color: #000;
 }
+
+.mobilelistSearchfield {
+  flex: 1;
+  border-radius: 10px;
+  background-color: var(--color-gray-200);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 7px var(--padding-8);
+  gap: 6px;
+}
+
 .magnifyingglassIcon {
     position: absolute;
     top: calc(50% - 7.89px);
@@ -883,3 +897,4 @@
   gap: var(--gap-3);
   z-index: 2;
 }
+
