@@ -65,8 +65,14 @@ const MobileHeader = () => {
     })).sort((a, b) => {
       const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
       const bk = b.author.charCodeAt(0) >= 0xac00 && b.author.charCodeAt(0) <= 0xd7a3;
+
       if (ak !== bk) return ak ? -1 : 1;
-      return a.author.localeCompare(b.author, ak ? "ko" : "en");
+
+      const locale = ak ? "ko" : "en";
+      const authorCompare = a.author.localeCompare(b.author, locale);
+      if (authorCompare !== 0) return authorCompare;
+
+      return a.title.localeCompare(b.title, locale);
     });
   }, []);
 

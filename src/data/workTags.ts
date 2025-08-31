@@ -1049,4 +1049,18 @@ export const workTags: WorkTag[] = [
 { work_id: 150, tag_id: 314, weight: 1 }, // 애새끼
 { work_id: 150, tag_id: 601, weight: 1 }, // 단편
 { work_id: 150, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 151 ---
+{ work_id: 151, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 151, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+{ work_id: 151, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 151, tag_id: 312, weight: 1 }, // 리얼물
+{ work_id: 151, tag_id: 602, weight: 1 }, // 중편
+{ work_id: 151, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 152 ---
+{ work_id: 152, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+{ work_id: 152, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 152, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 152, tag_id: 701, weight: 1 }, // 완결
 ];
