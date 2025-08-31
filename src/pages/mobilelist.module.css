@@ -257,7 +257,10 @@
 .threads {
     position: absolute;
     top: 65px;
-    left: calc(50% - 196.5px);
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -697,7 +700,10 @@
 .threads {
     position: absolute;
     top: 65px;
-    left: calc(50% - 196.5px);
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -705,7 +711,8 @@
     font-size: var(--font-size-15);
 }
 .mobilelistThread {
-    width: 393px;
+    width: 100%;
+    min-width: 0;
     background-color: var(--color-white);
     min-height: 80px;
     overflow: visible;
