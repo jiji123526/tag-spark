@@ -146,7 +146,7 @@ export const works = [
   { id: 146, title: "행복한 세상의 족제비", author: "잉어", source_url: "https://posty.pe/kukolm" },
   { id: 147, title: "슬리핑 딜리버리", author: "짱", source_url: "https://posty.pe/fc50sk" },
   { id: 148, title: "오늘의 민둥이", author: "뵤…", source_url: "https://posty.pe/6atfm4" },
-  { id: 149, title: "코코로", author: "뵤...", source_url: "https://posty.pe/kaaa6z" },
+  { id: 149, title: "코코로", author: "뵤…", source_url: "https://posty.pe/kaaa6z" },
   { id: 150, title: "시고르자브종", author: "카노", source_url: "https://posty.pe/gv7h1o" },
   { id: 151, title: "OFF the Romance", author: "EXPRESS", source_url: "https://posty.pe/89lkzh" },
   { id: 152, title: "꽃을 좋아하세요?", author: "EXPRESS", source_url: "https://posty.pe/urjk7b" },
