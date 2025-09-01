@@ -956,7 +956,6 @@ export const workTags: WorkTag[] = [
 { work_id: 139, tag_id: 216, weight: 1 }, // 재회
 { work_id: 139, tag_id: 506, weight: 1 }, // 구원
 { work_id: 139, tag_id: 305, weight: 1 }, // 찌통
-{ work_id: 139, tag_id: 307, weight: 1 }, // 새드
 { work_id: 139, tag_id: 308, weight: 1 }, // 쌍방삽질
 { work_id: 139, tag_id: 310, weight: 1 }, // 후회
 { work_id: 139, tag_id: 103, weight: 2 }, // 오피스 (core)
