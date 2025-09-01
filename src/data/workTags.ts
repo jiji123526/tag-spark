@@ -1064,4 +1064,43 @@ export const workTags: WorkTag[] = [
 { work_id: 152, tag_id: 305, weight: 1 }, // 찌통
 { work_id: 152, tag_id: 601, weight: 1 }, // 단편
 { work_id: 152, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 153 ---
+{ work_id: 153, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 153, tag_id: 203, weight: 1 }, // 직장동료
+{ work_id: 153, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 153, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 153, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 153, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 153, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 154 ---
+{ work_id: 154, tag_id: 103, weight: 2 }, // 오피스 (core)
+{ work_id: 154, tag_id: 203, weight: 1 }, // 직장동료
+{ work_id: 154, tag_id: 320, weight: 1 }, // 노딱
+{ work_id: 154, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 154, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 155 ---
+{ work_id: 155, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 155, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 155, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 155, tag_id: 307, weight: 1 }, // 새드
+{ work_id: 155, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 155, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 156 ---
+{ work_id: 156, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+{ work_id: 156, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 156, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 156, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 156, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 156, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 156, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 156, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 156, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 156, tag_id: 307, weight: 1 }, // 새드
+{ work_id: 156, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 156, tag_id: 701, weight: 1 }, // 완결
 ];
+

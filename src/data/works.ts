@@ -150,4 +150,8 @@ export const works = [
   { id: 150, title: "시고르자브종", author: "카노", source_url: "https://posty.pe/gv7h1o" },
   { id: 151, title: "OFF the Romance", author: "EXPRESS", source_url: "https://posty.pe/89lkzh" },
   { id: 152, title: "꽃을 좋아하세요?", author: "EXPRESS", source_url: "https://posty.pe/urjk7b" },
+  { id: 153, title: "팬 중 하나가 애인이 될 수 있다고 생각한 적이 있습니까", author: "whynotme", source_url: "https://posty.pe/r7g933" },
+  { id: 154, title: "또라이가 끌리는 이유", author: "턱끈", source_url: "https://posty.pe/vwaz7c" },
+  { id: 155, title: "너에게", author: "키캡", source_url: "https://posty.pe/70vfwc" },
+  { id: 156, title: "죽어도 사랑해", author: "잉어", source_url: "https://posty.pe/e0b1ag" },
 ];
