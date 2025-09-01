@@ -1060,7 +1060,7 @@ export const workTags: WorkTag[] = [
 { work_id: 151, tag_id: 701, weight: 1 }, // 완결
 
 // --- work 152 ---
-{ work_id: 152, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+{ work_id: 152, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
 { work_id: 152, tag_id: 305, weight: 1 }, // 찌통
 { work_id: 152, tag_id: 601, weight: 1 }, // 단편
 { work_id: 152, tag_id: 701, weight: 1 }, // 완결
