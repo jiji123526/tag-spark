@@ -961,7 +961,7 @@ export const workTags: WorkTag[] = [
 { work_id: 139, tag_id: 310, weight: 1 }, // 후회
 { work_id: 139, tag_id: 103, weight: 2 }, // 오피스 (core)
 { work_id: 139, tag_id: 603, weight: 1 }, // 장편
-{ work_id: 139, tag_id: 702, weight: 1 }, // 연재중
+{ work_id: 139, tag_id: 701, weight: 1 }, // 완결
 
 // --- work 140 ---
 { work_id: 140, tag_id: 207, weight: 1 }, // 친구
