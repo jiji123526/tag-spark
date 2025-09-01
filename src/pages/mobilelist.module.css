@@ -295,7 +295,7 @@
     align-self: stretch;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     padding: 0px var(--padding-10) 0px 0px;
     gap: var(--gap-4);
@@ -308,10 +308,11 @@
     line-height: 22px;
     font-weight: 600;
     display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 22px;
+    overflow: visible;
+    text-overflow: unset; /* no ellipsis */
+    white-space: normal;  /* allow wrapping */
+    overflow-wrap: anywhere; /* long words/continuous text also wrap */
+    height: auto; /* grow with content */
 }
 .timeChevron {
     display: flex;
@@ -735,27 +736,28 @@
     justify-content: flex-start;
     padding: var(--padding-8) 0px;
 }
-.contactTime {
+  .contactTime {
     align-self: stretch;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     padding: 0px var(--padding-10) 0px 0px;
     gap: var(--gap-4);
     font-size: 17px;
 }
-.contactName {
+  .contactName {
     flex: 1;
     position: relative;
     letter-spacing: -0.41px;
     line-height: 22px;
     font-weight: 600;
     display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 22px;
+    overflow: visible;
+    text-overflow: unset; /* no ellipsis */
+    white-space: normal;  /* allow wrapping */
+    overflow-wrap: anywhere; /* long words/continuous text also wrap */
+    height: auto; /* grow with content */
 }
 .timeChevron {
     display: flex;
