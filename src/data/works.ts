@@ -154,4 +154,5 @@ export const works = [
   { id: 154, title: "또라이가 끌리는 이유", author: "턱끈", source_url: "https://posty.pe/vwaz7c" },
   { id: 155, title: "너에게", author: "키캡", source_url: "https://posty.pe/70vfwc" },
   { id: 156, title: "죽어도 사랑해", author: "잉어", source_url: "https://posty.pe/e0b1ag" },
+  { id: 157, title: "바다", author: "P", source_url: "https://posty.pe/s3g3l96" },
 ];

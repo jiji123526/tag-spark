@@ -686,7 +686,7 @@ export const workTags: WorkTag[] = [
   { work_id: 108, tag_id: 504, weight: 2 },
   { work_id: 108, tag_id: 602, weight: 1 },
   { work_id: 108, tag_id: 701, weight: 1 },
-{ work_id: 108, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+  { work_id: 108, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 109, tag_id: 105, weight: 1 },
   { work_id: 109, tag_id: 107, weight: 2 },
   { work_id: 109, tag_id: 212, weight: 1 },
@@ -694,7 +694,7 @@ export const workTags: WorkTag[] = [
   { work_id: 109, tag_id: 301, weight: 1 },
   { work_id: 109, tag_id: 601, weight: 1 },
   { work_id: 109, tag_id: 701, weight: 1 },
-{ work_id: 109, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+  { work_id: 109, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
   { work_id: 110, tag_id: 105, weight: 1 },
   { work_id: 110, tag_id: 111, weight: 1 },
   { work_id: 110, tag_id: 301, weight: 1 },
@@ -1101,5 +1101,14 @@ export const workTags: WorkTag[] = [
 { work_id: 156, tag_id: 307, weight: 1 }, // 새드
 { work_id: 156, tag_id: 603, weight: 1 }, // 장편
 { work_id: 156, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 157 ---
+{ work_id: 157, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 157, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 157, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 157, tag_id: 310, weight: 1 }, // 후회
+{ work_id: 157, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 157, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 157, tag_id: 801, weight: 2 }, // 윈칼 
 ];
 
