@@ -30,7 +30,7 @@ Built with **React**, **Vite**, **TypeScript**, **Tailwind**, and **shadcn/ui**.
 
 ---
 
-## 📊 Product Planning Highlights (TPM Perspective)  
+## 📊 Product Planning Highlights 
 
 - **MVP Definition:**  
   - Core flow: Tag selection → Recommendation results.  
