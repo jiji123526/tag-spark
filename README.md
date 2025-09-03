@@ -26,7 +26,7 @@ Users select keywords, and the system automatically recommends works that match 
 - **Frontend**: React, TypeScript  
 - **UI/UX**: Tailwind CSS, custom modules  
 - **State Management**: React hooks  
-- **Deployment**: (To be added – e.g., Vercel, Netlify)  
+- **Deployment**: Vercel
 
 ---
 
