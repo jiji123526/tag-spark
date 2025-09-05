@@ -1099,7 +1099,7 @@ export const workTags: WorkTag[] = [
 { work_id: 156, tag_id: 305, weight: 1 }, // 찌통
 { work_id: 156, tag_id: 306, weight: 1 }, // 피폐
 { work_id: 156, tag_id: 307, weight: 1 }, // 새드
-{ work_id: 156, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 156, tag_id: 601, weight: 1 }, // 단편
 { work_id: 156, tag_id: 701, weight: 1 }, // 완결
 
 // --- work 157 ---
