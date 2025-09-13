@@ -1110,5 +1110,27 @@ export const workTags: WorkTag[] = [
 { work_id: 157, tag_id: 601, weight: 1 }, // 단편
 { work_id: 157, tag_id: 701, weight: 1 }, // 완결
 { work_id: 157, tag_id: 801, weight: 2 }, // 윈칼 
+
+// --- work 158 ---
+{ work_id: 158, tag_id: 214, weight: 2 }, // 칼짝윈
+{ work_id: 158, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 158, tag_id: 604, weight: 1 }, // 썰백업
+{ work_id: 158, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 159 ---
+{ work_id: 159, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 159, tag_id: 214, weight: 2 }, // 칼짝윈
+{ work_id: 159, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 159, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 159, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 160 ---
+{ work_id: 160, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 160, tag_id: 214, weight: 2 }, // 칼짝윈
+{ work_id: 160, tag_id: 215, weight: 2 }, // 윈짝칼
+{ work_id: 160, tag_id: 309, weight: 2 }, // 배틀레즈
+{ work_id: 160, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 160, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 160, tag_id: 702, weight: 1 }, // 연재중
 ];
 

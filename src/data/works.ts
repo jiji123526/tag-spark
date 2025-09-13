@@ -155,4 +155,7 @@ export const works = [
   { id: 155, title: "너에게", author: "키캡", source_url: "https://posty.pe/70vfwc" },
   { id: 156, title: "죽어도 사랑해", author: "잉어", source_url: "https://posty.pe/e0b1ag" },
   { id: 157, title: "바다", author: "P", source_url: "https://posty.pe/s3g3l96" },
+  { id: 158, title: "花吐き病", author: "🌊", source_url: "https://posty.pe/9yf8g4" },
+  { id: 159, title: "Y의 기사", author: "도꾸", source_url: "https://posty.pe/ee94ah" },
+  { id: 160, title: "Lockstar를 사랑하지 마세요", author: "슈뢰딩거", source_url: "https://posty.pe/syxag1" },
 ];
