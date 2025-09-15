@@ -83,7 +83,7 @@ export const works = [
   { id: 82, title: "졸업", author: "밤고래", source_url: "https://www.postype.com/@nightwhale/post/8709272", views: 29000, likes: 786, comments: 13 },
   { id: 83, title: "가르쳐 주세요", author: "밤고래", source_url: "https://www.postype.com/@nightwhale/post/9436447", views: 12000, likes: 571, comments: 11 },
   { id: 84, title: "짐승이 될 수는 없는 우리", author: "밤고래", source_url: "https://www.postype.com/@nightwhale/post/9219692", views: 10000, likes: 486, comments: 18 },
-  { id: 85, title: "불순의 사각지대", author: "밤고래", source_url: "https://www.postype.com/@nightwhale/post/19170684", views: 55000, likes: 232, comments: 12 },
+  { id: 85, title: "불순의 사각지대", author: "밤고래", source_url: "https://www.postype.com/@nightwhale/post/19170684", views: 5500, likes: 232, comments: 12 },
   { id: 86, title: "김쌤네", author: "앙봉", source_url: "https://www.postype.com/@abkdmlml/series/1232566", views: 17778, likes: 311, comments: 9 },
   { id: 87, title: "구라쟁이네", author: "앙봉", source_url: "https://www.postype.com/@abkdmlml/series/1454770", views: 2750, likes: 59, comments: 3 },
   { id: 88, title: "낭만의 초상", author: "istros", source_url: "https://www.postype.com/@istros/series/919630", views: 5100, likes: 340, comments: 20 },
