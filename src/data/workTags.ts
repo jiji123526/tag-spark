@@ -502,7 +502,7 @@ export const workTags: WorkTag[] = [
   { work_id: 77, tag_id: 311, weight: 2 },
   { work_id: 77, tag_id: 320, weight: 1 },
   { work_id: 77, tag_id: 603, weight: 1 },
-  { work_id: 77, tag_id: 702, weight: 1 },
+  { work_id: 77, tag_id: 701, weight: 1 },
   { work_id: 78, tag_id: 102, weight: 2 },
   { work_id: 78, tag_id: 301, weight: 1 },
   { work_id: 78, tag_id: 320, weight: 1 },
