@@ -32,6 +32,7 @@ const OnBoarding:FunctionComponent = () => {
       		styles.OnBoarding_messageBubble4,
       		styles.message17,
       		styles.message19,
+      		styles.message20,
       		styles.message21,
     	]
       		.filter(Boolean)
@@ -178,10 +179,14 @@ const OnBoarding:FunctionComponent = () => {
         				<div className={styles.spacing} />
       			</div>
       			<div className={styles.message17}>
-        				<div className={styles.OnBoarding_message}>내 추천작 등록하기</div>
+        				<div className={styles.OnBoarding_message}>현재 등록된 추천작 확인</div>
         				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
       			</div>
       			<div className={styles.message19}>
+        				<div className={styles.OnBoarding_message}>내 추천작 등록하기</div>
+        				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+      			</div>
+				<div className={styles.message20}>
         				<div className={styles.OnBoarding_message}>키워드 변경 요청</div>
         				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
       			</div>

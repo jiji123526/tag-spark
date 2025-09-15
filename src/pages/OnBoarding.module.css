@@ -2,12 +2,13 @@
     width: 100%;
     position: relative;
     border-radius: 48px;
-    height: 1000px;
+    height: calc( (var(--last-message-top, var(--message23-top, var(--message21-top, 855px)))) + (var(--last-message-height, var(--message23-height, var(--message21-height, 80px)))) + var(--inputbar-height, 64px) + 0px );
     overflow: hidden;
     text-align: left;
     font-size: 17px;
     color: var(--color-black);
     font-family: var(--font-sf-pro);
+    --inputbar-height: 64px;
 }
 .safeArea {
     position: absolute;
@@ -198,7 +199,7 @@
     gap: var(--gap-10);
     max-width: 295px;
 }
-.message21 {
+.message20 {
     position: absolute;
     top: 809px;
     left: 16px;
@@ -213,9 +214,26 @@
     gap: var(--gap-10);
     max-width: 295px;
 }
+.message21 {
+    position: absolute;
+    top: 855px;
+    left: 16px;
+    border-radius: var(--br-16);
+    background-color: var(--color-gainsboro);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 7px var(--padding-14);
+    box-sizing: border-box;
+    gap: var(--gap-10);
+    max-width: 295px;
+    --message21-top: 855px;
+    --message21-height: 80px;
+}
 .message23 {
     position: absolute;
-    top: 905px;
+    top: 951px;
     left: 0;
     right: 0;
     margin-left: auto;
@@ -232,6 +250,8 @@
     box-sizing: border-box;
     color: var(--color-white);
     text-align: center;
+    --message23-top: 951px;
+    --message23-height: 44px;
 }
 .message24 {
     flex: 1;
@@ -242,7 +262,8 @@
     position: absolute;
     width: 100%;
     right: 0px;
-    bottom: 40px;
+    top: calc( (var(--last-message-top, var(--message23-top, var(--message21-top)))) + (var(--last-message-height, var(--message23-height, var(--message21-height)))) + 16px );
+    bottom: 0%;
     left: 0px;
     background-color: var(--color-white);
     display: flex;
@@ -254,6 +275,7 @@
     gap: 13px;
     text-align: center;
     color: var(--color-darkslategray-200);
+    z-index: 8;
 }
 .plusButton {
     width: 34px;
@@ -423,6 +445,7 @@
     gap: 0px;
 }
 .time {
+    margin-top: 0%;
     flex: 1;
     display: flex;
     flex-direction: row;
