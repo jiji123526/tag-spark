@@ -1132,5 +1132,14 @@ export const workTags: WorkTag[] = [
 { work_id: 160, tag_id: 319, weight: 1 }, // 오해
 { work_id: 160, tag_id: 601, weight: 1 }, // 단편
 { work_id: 160, tag_id: 702, weight: 1 }, // 연재중
+
+// --- work 161 ---
+{ work_id: 161, tag_id: 102, weight: 1 }, // 캠퍼스
+{ work_id: 161, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 161, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 161, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 161, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 161, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 161, tag_id: 702, weight: 1 }, // 연재중
 ];
 

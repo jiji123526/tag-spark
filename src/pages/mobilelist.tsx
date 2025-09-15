@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { useRef, useState, KeyboardEvent, useMemo, useEffect } from 'react';
 import ContextMenu from "../components/ContextMenu";
+import SortMenu, { SortMenuItem } from "../components/SortMenu";
 import styles from './mobilelist.module.css';
 import backIcon from "../assets/mobileIndex/back.svg";
 import menuIcon from "../assets/mobileIndex/menu.svg";
 import magnifyingglassIcon from "../assets/mobilelist/magnifyingglass.svg";
 import microphoneIcon from "../assets/mobilelist/x.svg";
 import chevronRightIcon from "../assets/mobilelist/chevron.right.svg";
-import line3HorizontalIcon from "../assets/mobilelist/+.svg";
+import line3HorizontalIcon from "../assets/mobilelist/sort.svg";
 import squareAndPencilIcon from "../assets/mobilelist/square.and.pencil.svg";
 import { works as allWorks } from "@/data/works";
 import { tags as allTags, Tag } from "@/data/tags";
@@ -21,10 +22,18 @@ const MobileHeader = () => {
   const navigate = useNavigate();
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortBtnRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
+  const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
 
-  const handleMenuToggle = () => {
-    console.log("Menu button clicked");
-    setMenuOpen(true);
+  const compareByAuthorTitle = (a: {author: string; title: string}, b: {author: string; title: string}) => {
+    const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
+    const bk = b.author.charCodeAt(0) >= 0xac00 && b.author.charCodeAt(0) <= 0xd7a3;
+    if (ak !== bk) return ak ? -1 : 1;
+    const locale = ak ? "ko" : "en";
+    const authorCompare = a.author.localeCompare(b.author, locale);
+    if (authorCompare !== 0) return authorCompare;
+    return a.title.localeCompare(b.title, locale);
   };
 
   const [q, setQ] = useState("");
@@ -62,6 +71,9 @@ const MobileHeader = () => {
         if (ca !== cb) return ca - cb;
         return a.name.localeCompare(b.name, "ko");
       }),
+      views: w.views,
+      likes: w.likes,
+      comments: w.comments,
     })).sort((a, b) => {
       const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
       const bk = b.author.charCodeAt(0) >= 0xac00 && b.author.charCodeAt(0) <= 0xd7a3;
@@ -78,16 +90,39 @@ const MobileHeader = () => {
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    if (!k) return rows;
-    return rows.filter((r) => {
-      if (r.title.toLowerCase().includes(k)) return true;
-      if (r.author.toLowerCase().includes(k)) return true;
-      return r.tags.some(t =>
-        t.name.toLowerCase().includes(k) ||
-        (t.aliases ?? []).some((a) => a.toLowerCase().includes(k))
-      );
-    });
-  }, [q, rows]);
+    let base = rows;
+    if (k) {
+      base = rows.filter((r) => {
+        if (r.title.toLowerCase().includes(k)) return true;
+        if (r.author.toLowerCase().includes(k)) return true;
+        return r.tags.some(t =>
+          t.name.toLowerCase().includes(k) ||
+          (t.aliases ?? []).some((a) => a.toLowerCase().includes(k))
+        );
+      });
+    }
+    if (sortKey === 'author_asc') {
+      // copy before sort to avoid mutating memoized arrays
+      return [...base].sort(compareByAuthorTitle);
+    }
+    if (sortKey === 'views_desc') {
+      return [...base].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+    }
+    if (sortKey === 'likes_desc') {
+      return [...base].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0));
+    }
+    if (sortKey === 'comments_desc') {
+      return [...base].sort((a, b) => (b.comments ?? 0) - (a.comments ?? 0));
+    }
+    if (sortKey === 'popular_desc') {
+      return [...base].sort((a, b) => {
+        const scoreA = (a.views ?? 0) + (a.likes ?? 0) * 10 + (a.comments ?? 0) * 20;
+        const scoreB = (b.views ?? 0) + (b.likes ?? 0) * 10 + (b.comments ?? 0) * 20;
+        return scoreB - scoreA;
+      });
+    }
+    return base;
+  }, [q, rows, sortKey]);
 
   return (
     <>
@@ -203,20 +238,42 @@ const MobileHeader = () => {
         </div>
         <div className={styles.tabBar}>
           <div className={styles.content9}>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform" target="_blank" rel="noopener noreferrer">
-              <img className={styles.sfSymbolLine3horizontal} alt="" src={line3HorizontalIcon} />
-            </a>
+            <div
+              className={styles.sortButton}
+              ref={sortBtnRef as any}
+              role="button"
+              tabIndex={0}
+              aria-label="정렬 옵션 열기"
+              onClick={() => setSortOpen(true)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSortOpen(true); }}}
+            >
+              <img className={styles.sfSymbolLine3horizontal} alt="sort menu" src={line3HorizontalIcon} />
+            </div>
             <div className={styles.updatesUnread}>
               <div className={styles.url}>{filtered.length} Works</div>
-              <div className={styles.mobilelistUrl}>Updated Sep 13</div>
+              <div className={styles.mobilelistUrl}>Updated Sep 16</div>
             </div>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLScU-elPQxC2vlIifZkISf8Z6jhAC3zZA1Anw8-Xa8kY7gc-Sg/viewform" target="_blank" rel="noopener noreferrer">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform" target="_blank" rel="noopener noreferrer">
               <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />
             </a>
           </div>
           <div className={styles.homeindicator} />
         </div>
       </div>
+      {sortOpen && (
+        <SortMenu
+          open={sortOpen}
+          onClose={() => setSortOpen(false)}
+          anchorRef={sortBtnRef as any}
+          items={[
+            { label: '가나다순', onClick: () => setSortKey('author_asc') },
+            { label: '조회수순', onClick: () => setSortKey('views_desc') },
+            { label: '좋아요순', onClick: () => setSortKey('likes_desc') },
+            { label: '댓글순', onClick: () => setSortKey('comments_desc') },
+            { label: '인기순', onClick: () => setSortKey('popular_desc') },
+          ]}
+        />
+      )}
       {menuOpen && (
         <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
       )}

@@ -396,6 +396,25 @@
     position: relative;
     height: 21.9px;
 }
+
+/* === Interaction feedback for sort/menu icon === */
+/* If the icon is wrapped by a clickable container */
+.sortButton { cursor: pointer; outline: none; }
+.sortButton .sfSymbolLine3horizontal { transition: opacity 0.15s ease; }
+.sortButton:active .sfSymbolLine3horizontal { opacity: 0.4; }
+.sortButton:hover .sfSymbolLine3horizontal { opacity: 0.6; }
+.sortButton:focus-visible .sfSymbolLine3horizontal { opacity: 0.6; }
+
+/* If the image itself is the clickable element */
+.sfSymbolLine3horizontal:hover { opacity: 0.6; }
+.sfSymbolLine3horizontal:active { opacity: 0.4; }
+.sfSymbolLine3horizontal:focus-visible { opacity: 0.6; }
+
+/* Also align the generic icon button with consistent feedback */
+.icon3 { transition: opacity 0.15s ease; }
+.icon3:hover { opacity: 0.6; }
+.icon3:focus-visible { opacity: 0.8; }
+/* .icon3:active already set elsewhere to 0.5 */
 .updatesUnread {
     display: flex;
     flex-direction: column;
@@ -563,8 +582,8 @@
     cursor: pointer;
     transition: opacity 0.15s ease;
   }
-  .icon3:active {
-    opacity: 0.5;
+.icon3:active {
+    opacity: 0.4;
   }
 
   /* 메뉴 버튼 래퍼 (icon3와 동일한 레이아웃 컨텍스트) */
@@ -578,11 +597,11 @@
     opacity: 1;
   }
   .menuBtn:active {
-    opacity: 0.5;
+    opacity: 0.4;
   }
 
   .menuBtnActive {
-    opacity: 0.4;
+    opacity: 0.35;
   }
   
   .menuActive {
