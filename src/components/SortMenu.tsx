@@ -26,15 +26,15 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    const onDown = (e: MouseEvent) => {
+    const onDocClick = (e: MouseEvent) => {
       if (!menuRef.current) return;
       if (!menuRef.current.contains(e.target as Node)) onClose();
     };
     document.addEventListener('keydown', onKey);
-    document.addEventListener('mousedown', onDown);
+    document.addEventListener('click', onDocClick);
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('click', onDocClick);
     };
   }, [open, onClose]);
 
@@ -92,7 +92,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
           href={item.href}
           target={item.newTab ? '_blank' : undefined}
           rel={item.newTab ? 'noopener noreferrer' : undefined}
-          onClick={() => { onClose(); }}
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
           className={styles.tableViewRow}
           role="menuitem"
         >
@@ -106,8 +106,8 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
         key={idx}
         className={styles.tableViewRow}
         role="menuitem"
-        onClick={() => {
-          // allow either explicit item.onClick or URL navigation via custom data attr
+        onClick={(e) => {
+          e.stopPropagation();
           if (item.onClick) item.onClick();
           onClose();
         }}
@@ -118,7 +118,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
   };
 
   return createPortal(
-    <div className={styles.contextMenu} style={style} ref={menuRef} role="menu" aria-orientation="vertical">
+    <div className={styles.contextMenu} style={style} ref={menuRef} role="menu" aria-orientation="vertical" onClick={(e) => e.stopPropagation()}>
       {items.map((it, i) => renderRow(it, i))}
     </div>,
     document.body
