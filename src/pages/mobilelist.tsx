@@ -163,11 +163,12 @@ const MobileHeader = () => {
                 role="button"
                 aria-label="메뉴 열기"
                 tabIndex={0}
-                onClick={() => setMenuOpen(true)}
+                onClick={() => { setMenuOpen((v) => !v); setSortOpen(false); }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setMenuOpen(true);
+                    setMenuOpen((v) => !v);
+                    setSortOpen(false);
                   }
                 }}
               >
@@ -244,8 +245,8 @@ const MobileHeader = () => {
               role="button"
               tabIndex={0}
               aria-label="정렬 옵션 열기"
-              onClick={() => setSortOpen(true)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSortOpen(true); }}}
+              onClick={() => { setSortOpen((v) => !v); setMenuOpen(false); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSortOpen((v) => !v); setMenuOpen(false); }}}
             >
               <img className={styles.sfSymbolLine3horizontal} alt="sort menu" src={line3HorizontalIcon} />
             </div>

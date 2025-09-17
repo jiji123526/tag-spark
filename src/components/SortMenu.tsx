@@ -7,16 +7,16 @@ import SepIcon from "../assets/contextmenu/sep.svg";
 
 export type SortMenuItem = {
   label: string;
-  onClick?: () => void; // used when you want a direct handler (e.g., setState)
-  href?: string;        // used when you want to open a link
-  newTab?: boolean;     // open in a new tab when href is used
+  onClick?: () => void;  // 직접 핸들러 (예: setState)
+  href?: string;         // 외부 링크 열기
+  newTab?: boolean;      // 링크를 새 탭에서 열지 여부
 };
 
 type SortMenuProps = {
   open: boolean;
   onClose: () => void;
   anchorRef?: React.RefObject<HTMLElement>;
-  items: SortMenuItem[]; // dynamic items to reuse across pages
+  items: SortMenuItem[]; // 페이지별로 재사용할 동적 항목
 };
 
 const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, items }) => {
@@ -25,16 +25,25 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
     const onDocClick = (e: MouseEvent) => {
       if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target as Node)) onClose();
+      // 메뉴 영역 외부 클릭 시 닫기
+      if (!menuRef.current.contains(e.target as Node)) {
+        onClose();
+      }
     };
+
     document.addEventListener('keydown', onKey);
-    document.addEventListener('click', onDocClick);
+    document.addEventListener('mousedown', onDocClick);
+
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('mousedown', onDocClick);
     };
   }, [open, onClose]);
 
@@ -42,12 +51,14 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
 
   const MENU_WIDTH = 240; // px
   const style: React.CSSProperties = { position: 'fixed', zIndex: 2000, width: MENU_WIDTH };
+
   if (anchorRef?.current) {
     const r = anchorRef.current.getBoundingClientRect();
     const left = Math.min(
       window.innerWidth - MENU_WIDTH - 8,
       Math.max(8, r.right - MENU_WIDTH)
     );
+    // 앵커 위로 띄우는 기존 포지셔닝 유지
     style.bottom = window.innerHeight - r.top + 8;
     style.left = left;
   } else {
@@ -75,6 +86,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
 
   const renderRow = (item: SortMenuItem, idx: number) => {
     const isLast = idx === items.length - 1;
+
     const common = (
       <>
         <RowLeft label={item.label} />
@@ -92,9 +104,12 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
           href={item.href}
           target={item.newTab ? '_blank' : undefined}
           rel={item.newTab ? 'noopener noreferrer' : undefined}
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
           className={styles.tableViewRow}
           role="menuitem"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
         >
           {common}
         </a>
@@ -118,7 +133,14 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
   };
 
   return createPortal(
-    <div className={styles.contextMenu} style={style} ref={menuRef} role="menu" aria-orientation="vertical" onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.contextMenu}
+      style={style}
+      ref={menuRef}
+      role="menu"
+      aria-orientation="vertical"
+      onClick={(e) => e.stopPropagation()}
+    >
       {items.map((it, i) => renderRow(it, i))}
     </div>,
     document.body
