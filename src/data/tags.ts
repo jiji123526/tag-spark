@@ -42,6 +42,7 @@ export const tags: Tag[] = [
   { id: 212, name: "이별", category: "관계" },
   { id: 214, name: "칼짝윈", category: "관계", aliases: ["짝사랑"] },
   { id: 215, name: "윈짝칼", category: "관계", aliases: ["짝사랑"] },
+  { id: 217, name: "엇갈림", category: "관계", aliases: ["짝사랑", "타이밍"] },
   { id: 216, name: "재회", category: "관계" },
 
   // 분위기 (300~399)
@@ -65,7 +66,6 @@ export const tags: Tag[] = [
   { id: 318, name: "겨울", category: "분위기", aliases: ["계절"] },
   { id: 319, name: "오해", category: "분위기" },
   { id: 320, name: "노딱", category: "분위기" },
-  { id: 321, name: "엇갈림", category: "분위기", aliases: ["짝사랑", "타이밍"] },
 
   // 장르 (400~499)
   { id: 401, name: "로판", category: "장르", aliases: ["로맨틱 판타지"] },

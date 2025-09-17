@@ -118,7 +118,7 @@ export const workTags: WorkTag[] = [
 { work_id: 17, tag_id: 320, weight: 1 },
 { work_id: 17, tag_id: 601, weight: 1 },
 { work_id: 17, tag_id: 701, weight: 1 },
-{ work_id: 17, tag_id: 321, weight: 1 }, // 엇갈림
+{ work_id: 17, tag_id: 217, weight: 1 }, // 엇갈림
   { work_id: 18, tag_id: 101, weight: 2 },
   { work_id: 18, tag_id: 102, weight: 2 },
   { work_id: 18, tag_id: 118, weight: 1 },
@@ -146,7 +146,7 @@ export const workTags: WorkTag[] = [
 { work_id: 20, tag_id: 311, weight: 2 },
 { work_id: 20, tag_id: 601, weight: 1 },
 { work_id: 20, tag_id: 701, weight: 1 },
-{ work_id: 20, tag_id: 321, weight: 1 }, // 엇갈림
+{ work_id: 20, tag_id: 217, weight: 1 }, // 엇갈림
   { work_id: 21, tag_id: 115, weight: 1 },
   { work_id: 21, tag_id: 201, weight: 1 },
   { work_id: 21, tag_id: 204, weight: 1 },
@@ -346,7 +346,7 @@ export const workTags: WorkTag[] = [
   { work_id: 53, tag_id: 314, weight: 1 },
   { work_id: 53, tag_id: 603, weight: 1 },
   { work_id: 53, tag_id: 701, weight: 1 },
-  { work_id: 53, tag_id: 321, weight: 1 }, // 엇갈림
+  { work_id: 53, tag_id: 217, weight: 1 }, // 엇갈림
 { work_id: 54, tag_id: 103, weight: 2 },
 { work_id: 54, tag_id: 203, weight: 1 },
 { work_id: 54, tag_id: 301, weight: 1 },
@@ -376,7 +376,7 @@ export const workTags: WorkTag[] = [
 { work_id: 56, tag_id: 603, weight: 1 },
 { work_id: 56, tag_id: 702, weight: 1 },
 { work_id: 56, tag_id: 214, weight: 2 },
-{ work_id: 56, tag_id: 321, weight: 1 }, // 엇갈림
+{ work_id: 56, tag_id: 217, weight: 1 }, // 엇갈림
   { work_id: 57, tag_id: 107, weight: 2 },
   { work_id: 57, tag_id: 603, weight: 1 },
   { work_id: 57, tag_id: 701, weight: 1 },
@@ -662,7 +662,7 @@ export const workTags: WorkTag[] = [
   { work_id: 103, tag_id: 602, weight: 1 },
   { work_id: 103, tag_id: 701, weight: 1 },
   { work_id: 103, tag_id: 210, weight: 1 },
-  { work_id: 103, tag_id: 321, weight: 1 }, // 엇갈림
+  { work_id: 103, tag_id: 217, weight: 1 }, // 엇갈림
 { work_id: 104, tag_id: 103, weight: 2 },
 { work_id: 104, tag_id: 117, weight: 2 },
 { work_id: 104, tag_id: 203, weight: 1 },
@@ -1149,7 +1149,7 @@ export const workTags: WorkTag[] = [
 
 // --- work 162 ---
 { work_id: 162, tag_id: 101, weight: 2 }, // 청레 (core)
-{ work_id: 162, tag_id: 321, weight: 1 }, // 엇갈림
+{ work_id: 162, tag_id: 217, weight: 1 }, // 엇갈림
 { work_id: 162, tag_id: 305, weight: 1 }, // 찌통
 { work_id: 162, tag_id: 216, weight: 1 }, // 재회
 { work_id: 162, tag_id: 118, weight: 1 }, // 동갑
