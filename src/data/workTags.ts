@@ -1131,10 +1131,13 @@ export const workTags: WorkTag[] = [
 
 // --- work 160 ---
 { work_id: 160, tag_id: 105, weight: 1 }, // 연예인
-{ work_id: 160, tag_id: 214, weight: 2 }, // 칼짝윈
-{ work_id: 160, tag_id: 215, weight: 2 }, // 윈짝칼
 { work_id: 160, tag_id: 309, weight: 2 }, // 배틀레즈
 { work_id: 160, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 160, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 160, tag_id: 217, weight: 1 }, // 엇갈림
+{ work_id: 160, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 160, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 160, tag_id: 308, weight: 1 }, // 쌍방삽질
 { work_id: 160, tag_id: 601, weight: 1 }, // 단편
 { work_id: 160, tag_id: 702, weight: 1 }, // 연재중
 
