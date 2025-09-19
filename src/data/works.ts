@@ -72,7 +72,7 @@ export const works = [
   { id: 71, title: "일방통행", author: "라기", source_url: "https://www.postype.com/@llex-cornuta/post/17618913", views: 5100, likes: 230, comments: 9 },
   { id: 72, title: "온상", author: "라기", source_url: "https://www.postype.com/@llex-cornuta/series/777371", views: 8571, likes: 421, comments: 20 },
   { id: 73, title: "너네 언니", author: "stag", source_url: "https://www.postype.com/@stag520/post/10140135", views: 8746, likes: 364, comments: 19 },
-  { id: 74, title: "퍼스널 컬러 블루", author: "카노", source_url: "https://www.postype.com/@ameri512/post/19241448", views: 17000, likes: 820, comments: 88 },
+  { id: 74, title: "퍼스널 컬러", author: "카노", source_url: "https://www.postype.com/@ameri512/series/1513552", views: 10500, likes: 550, comments: 70 },
   { id: 75, title: "클리셰", author: "문늬", source_url: "https://www.postype.com/@munniinmuni/post/13140126", views: 5300, likes: 272, comments: 8 },
   { id: 76, title: "만인의 연인", author: "문늬", source_url: "https://www.postype.com/@munniinmuni/post/10477305", views: 14000, likes: 633, comments: 9 },
   { id: 77, title: "유통기한은 별도로 표기 되어 있습니다", author: "하피", source_url: "https://www.postype.com/@hapi-world/post/19212454", views: 2286, likes: 150, comments: 28 },
