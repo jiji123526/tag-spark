@@ -1158,5 +1158,13 @@ export const workTags: WorkTag[] = [
 { work_id: 162, tag_id: 118, weight: 1 }, // 동갑
 { work_id: 162, tag_id: 601, weight: 1 }, // 단편
 { work_id: 162, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 163 ---
+{ work_id: 163, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+{ work_id: 163, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 163, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 163, tag_id: 309, weight: 2 }, // 배틀레즈
+{ work_id: 163, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 163, tag_id: 702, weight: 1 }, // 연재중
 ];
 
