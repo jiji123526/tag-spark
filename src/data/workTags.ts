@@ -887,10 +887,7 @@ export const workTags: WorkTag[] = [
 
 { work_id: 132, tag_id: 201, weight: 1 }, // 소꿉친구
 { work_id: 132, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
-{ work_id: 132, tag_id: 319, weight: 1 }, // 오해
 { work_id: 132, tag_id: 305, weight: 1 }, // 찌통
-{ work_id: 132, tag_id: 310, weight: 1 }, // 후회
-{ work_id: 132, tag_id: 210, weight: 1 }, // (짭)근친
 { work_id: 132, tag_id: 306, weight: 1 }, // 피폐
 { work_id: 132, tag_id: 307, weight: 1 }, // 새드
 { work_id: 132, tag_id: 313, weight: 2 }, // 노란장판 (core)
