@@ -1163,5 +1163,15 @@ export const workTags: WorkTag[] = [
 { work_id: 163, tag_id: 309, weight: 2 }, // 배틀레즈
 { work_id: 163, tag_id: 601, weight: 1 }, // 단편
 { work_id: 163, tag_id: 702, weight: 1 }, // 연재중
+// --- work 164 ---
+{ work_id: 164, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 164, tag_id: 107, weight: 2 }, // 스포츠 (core)
+{ work_id: 164, tag_id: 506, weight: 1 }, // 구원
+{ work_id: 164, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 164, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 164, tag_id: 402, weight: 1 }, // 판타지
+{ work_id: 164, tag_id: 507, weight: 1 }, // 기타
+{ work_id: 164, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 164, tag_id: 701, weight: 1 }, // 완결
 ];
 
