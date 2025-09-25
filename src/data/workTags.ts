@@ -1136,7 +1136,7 @@ export const workTags: WorkTag[] = [
 { work_id: 160, tag_id: 301, weight: 1 }, // 로코
 { work_id: 160, tag_id: 308, weight: 1 }, // 쌍방삽질
 { work_id: 160, tag_id: 601, weight: 1 }, // 단편
-{ work_id: 160, tag_id: 702, weight: 1 }, // 연재중
+{ work_id: 160, tag_id: 701, weight: 1 }, // 연재중
 
 // --- work 161 ---
 { work_id: 161, tag_id: 102, weight: 1 }, // 캠퍼스
