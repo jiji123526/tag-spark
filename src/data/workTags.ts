@@ -1173,5 +1173,75 @@ export const workTags: WorkTag[] = [
 { work_id: 164, tag_id: 507, weight: 1 }, // 기타
 { work_id: 164, tag_id: 603, weight: 1 }, // 장편
 { work_id: 164, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 165 ---
+{ work_id: 165, tag_id: 108, weight: 1 }, // 조직물
+{ work_id: 165, tag_id: 210, weight: 1 }, // (짭)근친
+{ work_id: 165, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 165, tag_id: 506, weight: 1 }, // 구원
+{ work_id: 165, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 165, tag_id: 310, weight: 1 }, // 후회
+{ work_id: 165, tag_id: 313, weight: 2 }, // 노란장판
+{ work_id: 165, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 165, tag_id: 320, weight: 1 }, // 노딱
+{ work_id: 165, tag_id: 404, weight: 1 }, // 누아르
+{ work_id: 165, tag_id: 602, weight: 1 }, // 중편
+{ work_id: 165, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 165, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+// --- work 166 ---
+{ work_id: 166, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 166, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 166, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 166, tag_id: 602, weight: 1 }, // 중편
+{ work_id: 166, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 167 ---
+{ work_id: 167, tag_id: 204, weight: 1 }, // 부부
+{ work_id: 167, tag_id: 401, weight: 1 }, // 로판
+{ work_id: 167, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 167, tag_id: 702, weight: 1 }, // 연재중
+
+// --- work 168 ---
+{ work_id: 168, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 168, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
+{ work_id: 168, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 168, tag_id: 313, weight: 2 }, // 노란장판
+{ work_id: 168, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 168, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 169 ---
+{ work_id: 169, tag_id: 103, weight: 2 }, // 오피스 (core)
+{ work_id: 169, tag_id: 110, weight: 1 }, // 여행
+{ work_id: 169, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 169, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 169, tag_id: 316, weight: 1 }, // 여름
+{ work_id: 169, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 169, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 170 ---
+{ work_id: 170, tag_id: 101, weight: 2 }, // 청레 (core)
+{ work_id: 170, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 170, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 170, tag_id: 307, weight: 1 }, // 새드
+{ work_id: 170, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 170, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 171 ---
+{ work_id: 171, tag_id: 105, weight: 1 }, // 연예인
+{ work_id: 171, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 171, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+{ work_id: 171, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 171, tag_id: 318, weight: 1 }, // 겨울
+{ work_id: 171, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 171, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 172 ---
+{ work_id: 172, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+{ work_id: 172, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 172, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 172, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 172, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 172, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
 ];
 

@@ -163,4 +163,12 @@ export const works = [
   { id: 162, title: "다이브", author: "키캡", source_url: "https://www.postype.com/@cleankeyboard/post/20448931", views: 2900, likes: 206, comments: 30 },
   { id: 163, title: "Cruel Summer", author: "카노", source_url: "https://www.postype.com/@ameri512/post/19708312", views: 3500, likes: 150, comments: 37 },
   { id: 164, title: "Touch", author: "하얀꿈", source_url: "https://posty.pe/sie8qq1", views: 1846, likes: 138, comments: 15 },
+  { id: 165, title: "Don't Look Back In Anger", author: "칼짱", source_url: "https://www.postype.com/@dirtyknife/series/1473430", views: 529, likes: 33, comments: 7 },
+  { id: 166, title: "미워도 다시 한번", author: "이이이", source_url: "https://www.postype.com/@kwinter0101/series/1011602", views: 5833, likes: 367, comments: 18 },
+  { id: 167, title: "여주를 고쳐쓰겠습니다", author: "김케딱", source_url: "https://www.postype.com/@y1y1--o/series/1098704", views: 2579, likes: 200, comments: 15 },
+  { id: 168, title: "내 기쁨은 너가 벤틀리를 끄는 거야", author: "뻑", source_url: "https://www.postype.com/@twinfuck/post/20279566", views: 5900, likes: 413, comments: 57 },
+  { id: 169, title: "Camino de Santiago", author: "앙봉", source_url: "https://www.postype.com/@spring--wintery/post/16901174", views: 4300, likes: 233, comments: 13 },
+  { id: 170, title: "무지개가 뜨는 동안", author: "교", source_url: "https://www.postype.com/@crosstheline/post/9079694", views: 3200, likes: 185, comments: 6 },
+  { id: 171, title: "첫 사랑의 계절", author: "교", source_url: "https://www.postype.com/@crosstheline/post/9043851", views: 8200, likes: 446, comments: 9 },
+  { id: 172, title: "난 지금 Danger!", author: "토리", source_url: "https://www.postype.com/@weareinsynk/post/9998264", views: 9000, likes: 340, comments: 2 },
 ];
