@@ -135,7 +135,7 @@ const MobileHeader = () => {
                 role="button"
                 tabIndex={0}
                 aria-label="모바일 인덱스로 이동"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/mobile-index")}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
