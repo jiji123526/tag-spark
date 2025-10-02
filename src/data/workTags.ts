@@ -1246,5 +1246,15 @@ export const workTags: WorkTag[] = [
 { work_id: 172, tag_id: 601, weight: 1 }, // 단편
 { work_id: 172, tag_id: 701, weight: 1 }, // 완결
 { work_id: 172, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+// --- work 173 ---
+{ work_id: 173, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 173, tag_id: 506, weight: 1 }, // 구원
+{ work_id: 173, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 173, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 173, tag_id: 308, weight: 1 }, // 쌍방삽질
+{ work_id: 173, tag_id: 319, weight: 1 }, // 오해
+{ work_id: 173, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 173, tag_id: 701, weight: 1 }, // 완결
 ];
 

@@ -167,4 +167,5 @@ export const works = [
   { id: 170, title: "무지개가 뜨는 동안", author: "교", source_url: "https://www.postype.com/@crosstheline/post/9079694", views: 3200, likes: 185, comments: 6 },
   { id: 171, title: "첫 사랑의 계절", author: "교", source_url: "https://www.postype.com/@crosstheline/post/9043851", views: 8200, likes: 446, comments: 9 },
   { id: 172, title: "난 지금 Danger!", author: "토리", source_url: "https://www.postype.com/@weareinsynk/post/9998264", views: 9000, likes: 340, comments: 2 },
+  { id: 173, title: "미로", author: "RQ", source_url: "https://posty.pe/s06e906", views: 714, likes: 46, comments: 6 },
 ];
