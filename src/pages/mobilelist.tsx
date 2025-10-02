@@ -63,6 +63,7 @@ const MobileHeader = () => {
     return allWorks.map((w) => ({
       id: w.id,
       title: w.title,
+      aliases: (w as any).aliases ?? [],
       author: w.author,
       source_url: w.source_url,
       tags: (byWork.get(w.id) ?? []).sort((a, b) => {
@@ -95,6 +96,7 @@ const MobileHeader = () => {
       base = rows.filter((r) => {
         if (r.title.toLowerCase().includes(k)) return true;
         if (r.author.toLowerCase().includes(k)) return true;
+        if ((r.aliases ?? []).some((a: string) => a.toLowerCase().includes(k))) return true;
         return r.tags.some(t =>
           t.name.toLowerCase().includes(k) ||
           (t.aliases ?? []).some((a) => a.toLowerCase().includes(k))
@@ -193,7 +195,7 @@ const MobileHeader = () => {
                   ref={inputRef}
                   type="text"
                   className={styles.searchInput}
-                  placeholder="제목 / 작가명 / 키워드 검색..."
+                  placeholder="제목 / 작가 / 키워드 검색..."
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                 />
