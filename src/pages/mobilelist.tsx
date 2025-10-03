@@ -254,7 +254,7 @@ const MobileHeader = () => {
             </div>
             <div className={styles.updatesUnread}>
               <div className={styles.url}>{filtered.length} Works</div>
-              <div className={styles.mobilelistUrl}>Updated Oct 1</div>
+              <div className={styles.mobilelistUrl}>Updated Oct 3</div>
             </div>
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform" target="_blank" rel="noopener noreferrer">
               <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />

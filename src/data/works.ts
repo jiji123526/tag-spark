@@ -168,4 +168,8 @@ export const works = [
   { id: 171, title: "첫 사랑의 계절", author: "교", source_url: "https://www.postype.com/@crosstheline/post/9043851", views: 8200, likes: 446, comments: 9 },
   { id: 172, title: "난 지금 Danger!", author: "토리", source_url: "https://www.postype.com/@weareinsynk/post/9998264", views: 9000, likes: 340, comments: 2 },
   { id: 173, title: "미로", author: "RQ", source_url: "https://posty.pe/s06e906", views: 714, likes: 46, comments: 6 },
+  { id: 174, title: "홈", author: "발베니", source_url: "https://www.postype.com/@balveniee/series/756783", views: 3700, likes: 270, comments: 8 },
+  { id: 175, title: "플래시 팡", author: "후배", source_url: "https://www.postype.com/@puppylove01010411/post/17037109", views: 1300, likes: 54, comments: 3, aliases: ["윈칼"] },
+  { id: 176, title: "세탁소", author: "일층", source_url: "https://www.postype.com/@ilcheung/series/1511756", views: 3800, likes: 166, comments: 17, aliases: ["윈칼"] },
+  { id: 177, title: "복수는 나의 것", author: "쿠크", source_url: "https://www.postype.com/@cookforkwk2/post/11186017", views: 7600, likes: 373, comments: 8 },
 ];

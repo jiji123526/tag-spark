@@ -1256,5 +1256,41 @@ export const workTags: WorkTag[] = [
 { work_id: 173, tag_id: 319, weight: 1 }, // 오해
 { work_id: 173, tag_id: 603, weight: 1 }, // 장편
 { work_id: 173, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 174 ---
+{ work_id: 174, tag_id: 110, weight: 1 }, // 여행
+{ work_id: 174, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 174, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 174, tag_id: 315, weight: 1 }, // 봄
+{ work_id: 174, tag_id: 119, weight: 1 }, // 농촌
+{ work_id: 174, tag_id: 603, weight: 1 }, // 장편
+{ work_id: 174, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 175 ---
+{ work_id: 175, tag_id: 101, weight: 2 }, // 청레 (core)
+{ work_id: 175, tag_id: 207, weight: 1 }, // 친구
+{ work_id: 175, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
+{ work_id: 175, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 175, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 175, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 175, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 175, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+// --- work 176 ---
+{ work_id: 176, tag_id: 107, weight: 2 }, // 스포츠
+{ work_id: 176, tag_id: 204, weight: 1 }, // 부부
+{ work_id: 176, tag_id: 214, weight: 2 }, // 칼짝윈
+{ work_id: 176, tag_id: 303, weight: 1 }, // 달달
+{ work_id: 176, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 176, tag_id: 701, weight: 1 }, // 완결
+{ work_id: 176, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+// --- work 177 ---
+{ work_id: 177, tag_id: 102, weight: 2 }, // 캠퍼스
+{ work_id: 177, tag_id: 202, weight: 1 }, // 선후배
+{ work_id: 177, tag_id: 301, weight: 1 }, // 로코
+{ work_id: 177, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 177, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 177, tag_id: 701, weight: 1 }, // 완결
 ];
 
