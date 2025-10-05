@@ -144,7 +144,7 @@ export const works = [
   { id: 146, title: "행복한 세상의 족제비", author: "잉어", source_url: "https://posty.pe/kukolm", views: 5429, likes: 321, comments: 31 },
   { id: 147, title: "슬리핑 딜리버리", author: "짱", source_url: "https://posty.pe/fc50sk", views: 11000, likes: 540, comments: 20 },
   { id: 148, title: "오늘의 민둥이", author: "뵤…", source_url: "https://posty.pe/6atfm4", views: 3917, likes: 225, comments: 20 },
-  { id: 149, title: "코코로", author: "뵤…", source_url: "https://posty.pe/kaaa6z", views: 7200, likes: 400, comments: 21 },
+  { id: 149, title: "코코로", author: "해씨", source_url: "https://posty.pe/kaaa6z", views: 7200, likes: 400, comments: 21 },
   { id: 150, title: "시고르자브종", author: "카노", source_url: "https://posty.pe/gv7h1o", views: 5400, likes: 322, comments: 32 },
   { id: 151, title: "OFF the Romance", author: "EXPRESS", source_url: "https://posty.pe/89lkzh", views: 7000, likes: 260, comments: 16 },
   { id: 152, title: "꽃을 좋아하세요?", author: "EXPRESS", source_url: "https://posty.pe/urjk7b", views: 3600, likes: 165, comments: 5 },
@@ -172,4 +172,8 @@ export const works = [
   { id: 175, title: "플래시 팡", author: "후배", source_url: "https://www.postype.com/@puppylove01010411/post/17037109", views: 1300, likes: 54, comments: 3, aliases: ["윈칼"] },
   { id: 176, title: "세탁소", author: "일층", source_url: "https://www.postype.com/@ilcheung/series/1511756", views: 3800, likes: 166, comments: 17, aliases: ["윈칼"] },
   { id: 177, title: "복수는 나의 것", author: "쿠크", source_url: "https://www.postype.com/@cookforkwk2/post/11186017", views: 7600, likes: 373, comments: 8 },
+  { id: 178, title: "Accelerator", author: "보코", source_url: "https://posty.pe/sihj83x", views: 763, likes: 56, comments: 6, aliases: ["윈칼"] },
+  { id: 179, title: "제자리", author: "보코", source_url: "https://posty.pe/sdqn9ym", views: 540, likes: 38, comments: 3, aliases: ["윈칼"] },
+  { id: 180, title: "아직도 깨어있는 새벽,", author: "과타쿠", source_url: "https://www.postype.com/@escape01/series/896660", views: 2429, likes: 186, comments: 9 },
+  { id: 181, title: "날짜 변경선", author: "에그", source_url: "https://www.postype.com/@howtomeltwinter/post/10061026", views: 6000, likes: 319, comments: 6 },
 ];

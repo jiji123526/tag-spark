@@ -1292,5 +1292,34 @@ export const workTags: WorkTag[] = [
 { work_id: 177, tag_id: 304, weight: 1 }, // 풋풋
 { work_id: 177, tag_id: 601, weight: 1 }, // 단편
 { work_id: 177, tag_id: 701, weight: 1 }, // 완결
+  // --- work 178 ---
+  { work_id: 178, tag_id: 107, weight: 2 }, // 스포츠 (core)
+  { work_id: 178, tag_id: 303, weight: 1 }, // 달달
+  { work_id: 178, tag_id: 602, weight: 1 }, // 중편
+  { work_id: 178, tag_id: 701, weight: 1 }, // 완결
+  { work_id: 178, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+  // --- work 179 ---
+  { work_id: 179, tag_id: 109, weight: 1 }, // 시대물
+  { work_id: 179, tag_id: 504, weight: 2 }, // 수인 (core)
+  { work_id: 179, tag_id: 602, weight: 1 }, // 중편
+  { work_id: 179, tag_id: 701, weight: 1 }, // 완결
+  { work_id: 179, tag_id: 801, weight: 2 }, // 윈칼 (씨피고정)
+
+  // --- work 180 ---
+  { work_id: 180, tag_id: 105, weight: 1 }, // 연예인
+  { work_id: 180, tag_id: 207, weight: 1 }, // 친구
+  { work_id: 180, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+  { work_id: 180, tag_id: 302, weight: 1 }, // 힐링
+  { work_id: 180, tag_id: 303, weight: 1 }, // 달달
+  { work_id: 180, tag_id: 603, weight: 1 }, // 장편
+  { work_id: 180, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 181 ---
+  { work_id: 181, tag_id: 216, weight: 1 }, // 재회
+  { work_id: 181, tag_id: 310, weight: 1 }, // 후회
+  { work_id: 181, tag_id: 316, weight: 1 }, // 여름
+  { work_id: 181, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 181, tag_id: 701, weight: 1 }, // 완결
 ];
 
