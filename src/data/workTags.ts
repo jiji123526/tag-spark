@@ -1321,5 +1321,49 @@ export const workTags: WorkTag[] = [
   { work_id: 181, tag_id: 316, weight: 1 }, // 여름
   { work_id: 181, tag_id: 601, weight: 1 }, // 단편
   { work_id: 181, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 182 ---
+  { work_id: 182, tag_id: 116, weight: 1 }, // 사제
+  { work_id: 182, tag_id: 216, weight: 1 }, // 재회
+  { work_id: 182, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 182, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 183 ---
+  { work_id: 183, tag_id: 105, weight: 1 }, // 연예인
+  { work_id: 183, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+  { work_id: 183, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 183, tag_id: 312, weight: 1 }, // 리얼물
+  { work_id: 183, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 183, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 184 ---
+  { work_id: 184, tag_id: 102, weight: 1 }, // 캠퍼스
+  { work_id: 184, tag_id: 202, weight: 1 }, // 선후배
+  { work_id: 184, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
+  { work_id: 184, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 184, tag_id: 303, weight: 1 }, // 달달
+  { work_id: 184, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 184, tag_id: 316, weight: 1 }, // 여름
+  { work_id: 184, tag_id: 402, weight: 1 }, // 판타지
+  { work_id: 184, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 184, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 185 ---
+  { work_id: 185, tag_id: 109, weight: 1 }, // 시대물
+  { work_id: 185, tag_id: 114, weight: 1 }, // 인외
+  { work_id: 185, tag_id: 216, weight: 1 }, // 재회
+  { work_id: 185, tag_id: 305, weight: 1 }, // 찌통
+  { work_id: 185, tag_id: 307, weight: 1 }, // 새드
+  { work_id: 185, tag_id: 402, weight: 1 }, // 판타지
+  { work_id: 185, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 185, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 186 ---
+  { work_id: 186, tag_id: 203, weight: 1 }, // 직장동료
+  { work_id: 186, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 186, tag_id: 309, weight: 2 }, // 배틀레즈 (core)
+  { work_id: 186, tag_id: 314, weight: 1 }, // 애새끼
+  { work_id: 186, tag_id: 603, weight: 1 }, // 장편
+  { work_id: 186, tag_id: 701, weight: 1 }, // 완결
 ];
 
