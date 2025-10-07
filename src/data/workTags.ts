@@ -259,12 +259,13 @@ export const workTags: WorkTag[] = [
   { work_id: 36, tag_id: 309, weight: 2 },
   { work_id: 36, tag_id: 601, weight: 1 },
   { work_id: 36, tag_id: 701, weight: 1 },
-  { work_id: 37, tag_id: 102, weight: 2 },
-  { work_id: 37, tag_id: 118, weight: 1 },
-  { work_id: 37, tag_id: 311, weight: 2 },
-  { work_id: 37, tag_id: 314, weight: 1 },
-  { work_id: 37, tag_id: 601, weight: 1 },
-  { work_id: 37, tag_id: 701, weight: 1 },
+  { work_id: 37, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+  { work_id: 37, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 37, tag_id: 215, weight: 2 }, // 윈짝칼 (core)
+  { work_id: 37, tag_id: 309, weight: 1 }, // 배틀레즈
+  { work_id: 37, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 37, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 37, tag_id: 701, weight: 1 }, // 완결
   { work_id: 38, tag_id: 107, weight: 2 },
   { work_id: 38, tag_id: 303, weight: 1 },
   { work_id: 38, tag_id: 601, weight: 1 },
