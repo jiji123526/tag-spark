@@ -49,6 +49,7 @@ export const workTags: WorkTag[] = [
   { work_id: 8, tag_id: 202, weight: 1 },
   { work_id: 8, tag_id: 214, weight: 2 },
   { work_id: 8, tag_id: 217, weight: 2 },
+  { work_id: 8, tag_id: 301, weight: 1 }, // 로코
   { work_id: 8, tag_id: 310, weight: 1 },
   { work_id: 8, tag_id: 311, weight: 2 },
   { work_id: 8, tag_id: 601, weight: 1 },
@@ -238,10 +239,12 @@ export const workTags: WorkTag[] = [
   { work_id: 32, tag_id: 601, weight: 1 },
   { work_id: 32, tag_id: 701, weight: 1 },
   { work_id: 33, tag_id: 105, weight: 1 },
+  { work_id: 33, tag_id: 301, weight: 1 }, // 로코
   { work_id: 33, tag_id: 303, weight: 1 },
   { work_id: 33, tag_id: 601, weight: 1 },
   { work_id: 33, tag_id: 701, weight: 1 },
   { work_id: 34, tag_id: 214, weight: 2 },
+  { work_id: 34, tag_id: 301, weight: 1 }, // 로코
   { work_id: 34, tag_id: 305, weight: 1 },
   { work_id: 34, tag_id: 310, weight: 1 },
   { work_id: 34, tag_id: 311, weight: 2 },
@@ -502,6 +505,7 @@ export const workTags: WorkTag[] = [
   { work_id: 76, tag_id: 701, weight: 1 },
   { work_id: 77, tag_id: 105, weight: 1 },
   { work_id: 77, tag_id: 212, weight: 1 },
+  { work_id: 77, tag_id: 301, weight: 1 }, // 로코
   { work_id: 77, tag_id: 305, weight: 1 },
   { work_id: 77, tag_id: 306, weight: 1 },
   { work_id: 77, tag_id: 308, weight: 1 },
@@ -1366,5 +1370,14 @@ export const workTags: WorkTag[] = [
   { work_id: 186, tag_id: 314, weight: 1 }, // 애새끼
   { work_id: 186, tag_id: 603, weight: 1 }, // 장편
   { work_id: 186, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 187 ---
+{ work_id: 187, tag_id: 115, weight: 1 }, // 재벌
+{ work_id: 187, tag_id: 212, weight: 1 }, // 이별
+{ work_id: 187, tag_id: 216, weight: 1 }, // 재회
+{ work_id: 187, tag_id: 305, weight: 1 }, // 찌통
+{ work_id: 187, tag_id: 306, weight: 1 }, // 피폐
+{ work_id: 187, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 187, tag_id: 701, weight: 1 }, // 완결
 ];
 

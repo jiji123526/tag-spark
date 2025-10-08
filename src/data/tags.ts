@@ -46,7 +46,7 @@ export const tags: Tag[] = [
   { id: 216, name: "재회", category: "관계" },
 
   // 분위기 (300~399)
-  { id: 301, name: "로코", category: "분위기", aliases: ["로맨틱 코미디"] },
+  { id: 301, name: "로코", category: "장르", aliases: ["로맨틱 코미디"] },
   { id: 302, name: "힐링", category: "분위기", aliases: ["치유", "따뜻함"] },
   { id: 303, name: "달달", category: "분위기", aliases: ["달달물"] },
   { id: 304, name: "풋풋", category: "분위기" },

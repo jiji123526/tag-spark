@@ -179,7 +179,8 @@ export const works = [
   { id: 181, title: "날짜 변경선", author: "에그", source_url: "https://www.postype.com/@howtomeltwinter/post/10061026", views: 6000, likes: 319, comments: 6 },
   { id: 182, title: "고슴도치 딜레마", author: "도꾸", source_url: "https://posty.pe/ee42z3", views: 4800, likes: 228, comments: 13 },
   { id: 183, title: "너의 예외", author: "도꾸", source_url: "https://posty.pe/hv86m8", views: 5400, likes: 302, comments: 19 },
-  { id: 184, title: "어린 여우 길들이기", author: "윙터레스트", source_url: "https://www.postype.com/@runtowinterplain/post/15847192", views: 342, likes: 27, comments: 1 },
+  { id: 184, title: "어린 여우 길들이기", author: "윙터레스트", source_url: "https://www.postype.com/@runtowinterplain/post/15847192", views: 850, likes: 59, comments: 1 },
   { id: 185, title: "해피 삼도천 투어", author: "해수", source_url: "https://posty.pe/5ql21s", views: 5700, likes: 370, comments: 11 },
   { id: 186, title: "버라이어티, 뭐?", author: "EVRST", source_url: "https://www.postype.com/@everlasting-transient/series/1057520", views: 5667, likes: 310, comments: 18 },
+  { id: 187, title: "Da Capo : 처음으로", author: "도꾸", source_url: "https://posty.pe/jx61ss", views: 4000, likes: 210, comments: 22 },
 ];
