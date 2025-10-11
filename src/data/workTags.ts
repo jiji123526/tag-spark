@@ -152,9 +152,10 @@ export const workTags: WorkTag[] = [
   { work_id: 21, tag_id: 115, weight: 1 },
   { work_id: 21, tag_id: 201, weight: 1 },
   { work_id: 21, tag_id: 204, weight: 1 },
-  { work_id: 21, tag_id: 205, weight: 1 },
+  { work_id: 21, tag_id: 216, weight: 1 },
   { work_id: 21, tag_id: 206, weight: 1 },
   { work_id: 21, tag_id: 305, weight: 1 },
+  { work_id: 21, tag_id: 308, weight: 1 },
   { work_id: 21, tag_id: 503, weight: 2 },
   { work_id: 21, tag_id: 603, weight: 1 },
   { work_id: 21, tag_id: 701, weight: 1 },
@@ -1383,5 +1384,12 @@ export const workTags: WorkTag[] = [
 { work_id: 187, tag_id: 306, weight: 1 }, // 피폐
 { work_id: 187, tag_id: 601, weight: 1 }, // 단편
 { work_id: 187, tag_id: 701, weight: 1 }, // 완결
+
+// --- work 188 ---
+{ work_id: 188, tag_id: 302, weight: 1 }, // 힐링
+{ work_id: 188, tag_id: 304, weight: 1 }, // 풋풋
+{ work_id: 188, tag_id: 316, weight: 1 }, // 여름
+{ work_id: 188, tag_id: 601, weight: 1 }, // 단편
+{ work_id: 188, tag_id: 701, weight: 1 }, // 완결
 ];
 

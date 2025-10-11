@@ -183,4 +183,5 @@ export const works = [
   { id: 185, title: "해피 삼도천 투어", author: "해수", source_url: "https://posty.pe/5ql21s", views: 5700, likes: 370, comments: 11 },
   { id: 186, title: "버라이어티, 뭐?", author: "EVRST", source_url: "https://www.postype.com/@everlasting-transient/series/1057520", views: 5667, likes: 310, comments: 18 },
   { id: 187, title: "Da Capo : 처음으로", author: "도꾸", source_url: "https://posty.pe/jx61ss", views: 4000, likes: 210, comments: 22 },
+  { id: 188, title: "ambulance love", author: "Parco", source_url: "https://posty.pe/jsfd3d", views: 13000, likes: 645, comments: 39 },
 ];
