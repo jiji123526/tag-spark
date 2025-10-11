@@ -19,7 +19,7 @@ export const works = [
   { id: 21, title: "제목을 입력해주세요", aliases: ["제입주"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1095496", views: 10000, likes: 542, comments: 12 },
   { id: 22, title: "코드 그레이", aliases: ["코그"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1095510", views: 6552, likes: 379, comments: 18 },
   { id: 23, title: "유대리 김사원 김하윤", aliases: ["유김김"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1082203", views: 26000, likes: 880, comments: 61 },
-  { id: 24, title: "This is not a love story", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1082206", views: 13000, likes: 417, comments: 28 },
+  { id: 24, title: "This is not a love story", aliases: ["디낫스"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1082206", views: 13000, likes: 417, comments: 28 },
   { id: 25, title: "비가역적 멜로", aliases: ["비멜"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1082210", views: 22222, likes: 656, comments: 58 },
   { id: 26, title: "Crush on you", aliases: ["크온유"], author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1155621", views: 7222, likes: 378, comments: 32 },
   { id: 27, title: "Push Now", author: "whynotme", source_url: "https://www.postype.com/@delighted-dream/series/1488612", views: 4286, likes: 279, comments: 37 },
