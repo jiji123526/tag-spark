@@ -184,4 +184,7 @@ export const works = [
   { id: 186, title: "버라이어티, 뭐?", author: "EVRST", source_url: "https://www.postype.com/@everlasting-transient/series/1057520", views: 5667, likes: 310, comments: 18 },
   { id: 187, title: "Da Capo : 처음으로", author: "도꾸", source_url: "https://posty.pe/jx61ss", views: 4000, likes: 210, comments: 22 },
   { id: 188, title: "ambulance love", author: "Parco", source_url: "https://posty.pe/jsfd3d", views: 13000, likes: 645, comments: 39 },
+  { id: 189, title: "민정이 가라사대", author: "새달", source_url: "https://t.co/QXlTKClpEe", views: 17000, likes: 1100, comments: 35 },
+  { id: 190, title: "비하인드 유", author: "쿠크", source_url: "https://posty.pe/j6amkm", views: 5400, likes: 303, comments: 7 },
+  { id: 191, title: "사막의 장미", author: "흑구", source_url: "https://posty.pe/solmeh7", views: 3889, likes: 200, comments: 13 },
 ];

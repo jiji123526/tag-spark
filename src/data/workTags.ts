@@ -490,7 +490,7 @@ export const workTags: WorkTag[] = [
   { work_id: 73, tag_id: 305, weight: 1 },
   { work_id: 73, tag_id: 319, weight: 1 },
   { work_id: 73, tag_id: 603, weight: 1 },
-  { work_id: 73, tag_id: 702, weight: 1 },
+  { work_id: 73, tag_id: 701, weight: 1 },
   { work_id: 74, tag_id: 102, weight: 2 },
   { work_id: 74, tag_id: 301, weight: 1 },
   { work_id: 74, tag_id: 309, weight: 2 },
@@ -1391,5 +1391,28 @@ export const workTags: WorkTag[] = [
 { work_id: 188, tag_id: 316, weight: 1 }, // 여름
 { work_id: 188, tag_id: 601, weight: 1 }, // 단편
 { work_id: 188, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 189 ---
+  { work_id: 189, tag_id: 102, weight: 2 }, // 캠퍼스 (core)
+  { work_id: 189, tag_id: 202, weight: 1 }, // 선후배
+  { work_id: 189, tag_id: 214, weight: 2 }, // 칼짝윈 (core)
+  { work_id: 189, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 189, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 189, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 190 ---
+  { work_id: 190, tag_id: 309, weight: 2 }, // 배틀레즈 (core)
+  { work_id: 190, tag_id: 505, weight: 2 }, // 센티넬버스 (core)
+  { work_id: 190, tag_id: 601, weight: 1 }, // 단편
+  { work_id: 190, tag_id: 701, weight: 1 }, // 완결
+
+  // --- work 191 ---
+  { work_id: 191, tag_id: 108, weight: 1 }, // 조직물
+  { work_id: 191, tag_id: 110, weight: 1 }, // 여행
+  { work_id: 191, tag_id: 301, weight: 1 }, // 로코
+  { work_id: 191, tag_id: 403, weight: 1 }, // SF
+  { work_id: 191, tag_id: 404, weight: 1 }, // 누아르
+  { work_id: 191, tag_id: 602, weight: 1 }, // 중편
+  { work_id: 191, tag_id: 701, weight: 1 }, // 완결
 ];
 
