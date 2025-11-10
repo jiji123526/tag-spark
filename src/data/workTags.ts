@@ -1422,6 +1422,7 @@ export const workTags: WorkTag[] = [
   { work_id: 192, tag_id: 215, weight: 2 }, // 윈짝칼
   { work_id: 192, tag_id: 302, weight: 1 }, // 힐링
   { work_id: 192, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 192, tag_id: 801, weight: 1 },
 
   // --- work 193 ---
   { work_id: 193, tag_id: 101, weight: 2 }, // 청레
