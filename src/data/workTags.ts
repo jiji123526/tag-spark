@@ -1414,5 +1414,43 @@ export const workTags: WorkTag[] = [
   { work_id: 191, tag_id: 404, weight: 1 }, // 누아르
   { work_id: 191, tag_id: 602, weight: 1 }, // 중편
   { work_id: 191, tag_id: 701, weight: 1 }, // 완결
+  // --- work 192 ---
+  { work_id: 192, tag_id: 101, weight: 2 }, // 청레
+  { work_id: 192, tag_id: 114, weight: 1 }, // 인외
+  { work_id: 192, tag_id: 118, weight: 1 }, // 동갑
+  { work_id: 192, tag_id: 207, weight: 1 }, // 친구
+  { work_id: 192, tag_id: 215, weight: 2 }, // 윈짝칼
+  { work_id: 192, tag_id: 302, weight: 1 }, // 힐링
+  { work_id: 192, tag_id: 304, weight: 1 }, // 풋풋
+
+  // --- work 193 ---
+  { work_id: 193, tag_id: 101, weight: 2 }, // 청레
+  { work_id: 193, tag_id: 201, weight: 1 }, // 소꿉친구
+  { work_id: 193, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 193, tag_id: 310, weight: 1 }, // 후회
+
+  // --- work 194 ---
+  { work_id: 194, tag_id: 109, weight: 1 }, // 시대물
+  { work_id: 194, tag_id: 114, weight: 1 }, // 인외
+  { work_id: 194, tag_id: 216, weight: 1 }, // 재회
+  { work_id: 194, tag_id: 305, weight: 1 }, // 찌통
+  { work_id: 194, tag_id: 306, weight: 1 }, // 피폐
+  { work_id: 194, tag_id: 313, weight: 2 }, // 노란장판
+  { work_id: 194, tag_id: 504, weight: 2 }, // 수인
+
+  // --- work 195 ---
+  { work_id: 195, tag_id: 109, weight: 1 }, // 시대물
+  { work_id: 195, tag_id: 114, weight: 1 }, // 인외
+  { work_id: 195, tag_id: 304, weight: 1 }, // 풋풋
+  { work_id: 195, tag_id: 305, weight: 1 }, // 찌통
+  { work_id: 195, tag_id: 307, weight: 1 }, // 새드
+
+  // --- work 196 ---
+  { work_id: 196, tag_id: 105, weight: 1 }, // 연예인
+  { work_id: 196, tag_id: 115, weight: 1 }, // 재벌
+  { work_id: 196, tag_id: 204, weight: 1 }, // 부부
+  { work_id: 196, tag_id: 305, weight: 1 }, // 찌통
+  { work_id: 196, tag_id: 306, weight: 1 }, // 피폐
+  { work_id: 196, tag_id: 320, weight: 1 }, // 노딱
 ];
 
