@@ -169,6 +169,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                   value={tagQuery}
                   onChange={e => { setTagQuery(e.target.value); setShowTagSuggestions(true); }}
                   onFocus={() => setShowTagSuggestions(true)}
+                  onKeyDown={e => { if (e.key === "Backspace" && !tagQuery && selectedTags.length > 0) handleRemoveTag(selectedTags[selectedTags.length - 1]); }}
                   placeholder={selectedTags.length === 0 ? "" : ""}
                 />
               </div>
