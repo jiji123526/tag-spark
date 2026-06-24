@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRef, useState, KeyboardEvent, useMemo, useEffect } from 'react';
 import ContextMenu from "../components/ContextMenu";
 import SortMenu, { SortMenuItem } from "../components/SortMenu";
+import AddWorkCompose from "../components/AddWorkCompose";
 import styles from './mobilelist.module.css';
 import backIcon from "../assets/mobileIndex/back.svg";
 import menuIcon from "../assets/mobileIndex/menu.svg";
@@ -15,8 +16,13 @@ import { tags as allTags, Tag } from "@/data/tags";
 import { workTags as mappings } from "@/data/workTags";
 
 const MobileHeader = () => {
+  const [apiWorks, setApiWorks] = useState<any[] | null>(null);
+
   useEffect(() => {
-    console.log("MobileHeader rendered");
+    fetch("/api/works")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setApiWorks(data); })
+      .catch(() => {});
   }, []);
 
   const navigate = useNavigate();
@@ -25,6 +31,7 @@ const MobileHeader = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const sortBtnRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
   const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
+  const [composeOpen, setComposeOpen] = useState(false);
 
   const compareByAuthorTitle = (a: {author: string; title: string}, b: {author: string; title: string}) => {
     const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
@@ -40,6 +47,34 @@ const MobileHeader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => {
+    // If API data is available, use it
+    if (apiWorks) {
+      const tagById = new Map(allTags.map((t) => [t.id, t]));
+      const categoryOrder: Record<string, number> = {
+        "분량": 1, "완결여부": 2, "세계관": 3, "장르": 4, "설정": 5, "관계": 6, "분위기": 7,
+      };
+      return apiWorks.map((w: any) => ({
+        id: w.id,
+        title: w.title,
+        aliases: w.aliases ?? [],
+        author: w.author,
+        source_url: w.source_url,
+        tags: (w.tags || [])
+          .map((wt: any) => tagById.get(wt.tag_id))
+          .filter(Boolean)
+          .sort((a: Tag, b: Tag) => {
+            const ca = categoryOrder[a.category] ?? 999;
+            const cb = categoryOrder[b.category] ?? 999;
+            if (ca !== cb) return ca - cb;
+            return a.name.localeCompare(b.name, "ko");
+          }),
+        views: w.views,
+        likes: w.likes,
+        comments: w.comments,
+      }));
+    }
+
+    // Fallback to static data
     const tagById = new Map(allTags.map((t) => [t.id, t]));
     const byWork = new Map<number, Tag[]>();
     for (const m of mappings) {
@@ -87,7 +122,7 @@ const MobileHeader = () => {
 
       return a.title.localeCompare(b.title, locale);
     });
-  }, []);
+  }, [apiWorks]);
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
@@ -256,7 +291,7 @@ const MobileHeader = () => {
               <div className={styles.url}>{filtered.length} Works</div>
               <div className={styles.mobilelistUrl}>Updated Nov 11</div>
             </div>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform" target="_blank" rel="noopener noreferrer">
+            <a onClick={() => setComposeOpen(true)} style={{ cursor: 'pointer' }}>
               <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />
             </a>
           </div>
@@ -280,6 +315,7 @@ const MobileHeader = () => {
       {menuOpen && (
         <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
       )}
+      <AddWorkCompose open={composeOpen} onOpenChange={setComposeOpen} />
     </>
   );
 }

@@ -1,0 +1,311 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.content {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  height: 92vh;
+  border-radius: 12px 12px 0 0;
+  background: #fff;
+  outline: none;
+}
+
+/* Drag handle area */
+.handleBar {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 0;
+  flex-shrink: 0;
+}
+
+.handle {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: #c7c7cc;
+}
+
+/* Top row: Cancel */
+.topRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px 0;
+  flex-shrink: 0;
+}
+
+.cancelBtn {
+  font-size: 17px;
+  color: #007aff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-weight: 400;
+}
+
+.sendBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sendBtn:disabled {
+  cursor: default;
+}
+
+/* Title row — title + send aligned */
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+  flex-shrink: 0;
+}
+
+/* Title — "New Message" style */
+.title {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+  margin: 4px 0 0;
+  letter-spacing: -0.5px;
+}
+
+/* Fields area */
+.fields {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #8E8E93;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.fieldInput {
+  flex: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: none;
+  color: #000;
+  padding: 0;
+}
+
+.separator {
+  height: 0.33px;
+  background: #e5e5e5;
+  margin-right: -16px;
+}
+
+/* Tag field — "To:" recipients style */
+.tagFieldContent {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+}
+
+.tagChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 122, 255, 0.1);
+  color: #007aff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  line-height: 20px;
+}
+
+.tagChip:active {
+  background: rgba(0, 122, 255, 0.2);
+}
+
+.tagInput {
+  flex: 1;
+  min-width: 60px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: none;
+  color: #000;
+  padding: 0;
+}
+
+/* Tag suggestions */
+.tagSuggestions {
+  background: #f2f2f7;
+  border-radius: 10px;
+  margin: 0 0 8px;
+  padding: 4px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tagSuggestionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 15px;
+  color: #000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tagSuggestionItem:active {
+  background: #d1d1d6;
+}
+
+.tagCategory {
+  font-size: 13px;
+  color: #3c3c43;
+  opacity: 0.6;
+}
+
+/* Body area (URL) */
+.bodyArea {
+  padding: 14px 0;
+}
+
+.bodyInput {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: none;
+  color: #000;
+  padding: 0;
+}
+
+.bodyInput::placeholder {
+  color: #3c3c43;
+  opacity: 0.3;
+}
+
+/* Keyword reference section */
+.tagReference {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 0.33px solid #e5e5e5;
+}
+
+.tagReferenceTitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #8E8E93;
+  margin-bottom: 12px;
+}
+
+.tagInfoToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 14px;
+  color: #007aff;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.tagInfoArrow {
+  font-size: 12px;
+}
+
+.tagInfoContent {
+  background: #f2f2f7;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 13px;
+  color: #3c3c43;
+  line-height: 1.5;
+}
+
+.tagInfoContent p {
+  margin: 0 0 4px;
+}
+
+.tagInfoContent p:last-child {
+  margin-bottom: 0;
+}
+
+.tagReferenceGroup {
+  margin-bottom: 12px;
+}
+
+.tagReferenceLabel {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8E8E93;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.tagReferenceChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tagReferenceChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 14px;
+  background: #f2f2f7;
+  color: #3c3c43;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tagReferenceChip:active {
+  background: #e5e5ea;
+}
+
+.tagReferenceChipSelected {
+  background: rgba(0, 122, 255, 0.12);
+  color: #007aff;
+}
