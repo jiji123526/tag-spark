@@ -17,23 +17,31 @@ function parseKoreanNumber(str) {
 export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
-  // Get the current offset, rotate through works
-  const [meta] = await sql`
-    SELECT value FROM work_meta WHERE key = 'scrape_offset' LIMIT 1
-  `.catch(() => [null]);
-
-  let offset = meta ? parseInt(meta.value, 10) : 0;
-
-  // Get batch of works to scrape
-  const works = await sql`
-    SELECT id, source_url FROM works ORDER BY id LIMIT ${BATCH_SIZE} OFFSET ${offset}
+  // Prioritize works with no stats (newly added), then rotate the rest
+  const newWorks = await sql`
+    SELECT id, source_url FROM works WHERE views = 0 OR views IS NULL ORDER BY id DESC LIMIT ${BATCH_SIZE}
   `;
 
-  // If we've gone past all works, reset
-  if (works.length === 0) {
-    offset = 0;
-    const worksRetry = await sql`SELECT id, source_url FROM works ORDER BY id LIMIT ${BATCH_SIZE} OFFSET 0`;
-    works.push(...worksRetry);
+  let works = newWorks;
+  const remaining = BATCH_SIZE - works.length;
+
+  if (remaining > 0) {
+    const [meta] = await sql`
+      SELECT value FROM work_meta WHERE key = 'scrape_offset' LIMIT 1
+    `.catch(() => [null]);
+    let offset = meta ? parseInt(meta.value, 10) : 0;
+
+    const oldWorks = await sql`
+      SELECT id, source_url FROM works WHERE views > 0 ORDER BY id LIMIT ${remaining} OFFSET ${offset}
+    `;
+    if (oldWorks.length === 0) offset = 0;
+    works = [...works, ...oldWorks];
+
+    const nextOffset = offset + remaining;
+    await sql`
+      INSERT INTO work_meta (key, value) VALUES ('scrape_offset', ${String(nextOffset)})
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    `;
   }
 
   let updated = 0;
@@ -85,12 +93,5 @@ export default async function handler(req, res) {
     }
   }
 
-  // Save next offset
-  const nextOffset = offset + BATCH_SIZE;
-  await sql`
-    INSERT INTO work_meta (key, value) VALUES ('scrape_offset', ${String(nextOffset)})
-    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
-  `;
-
-  res.status(200).json({ updated, batch: works.length, nextOffset });
+  res.status(200).json({ updated, batch: works.length });
 }
