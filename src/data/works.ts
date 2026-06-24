@@ -199,4 +199,5 @@ export const works = [
   { id: 198, title: "미로", author: "이이이", source_url: "https://posty.pe/64hyff", views: 0, likes: 0, comments: 0 },
   { id: 199, title: "이 별은 선착순", author: "이이이", source_url: "https://posty.pe/49gztt", views: 0, likes: 0, comments: 0 },
   { id: 200, title: "온이네", author: "만타", source_url: "https://posty.pe/sfv9yq1", views: 0, likes: 0, comments: 0 },
+  { id: 201, title: "콜 미 바이 유어 네임", author: "잉어", source_url: "https://posty.pe/s1fdc17", views: 0, likes: 0, comments: 0 },
 ];

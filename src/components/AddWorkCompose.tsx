@@ -211,6 +211,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                   <p><b>인외:</b> 인어, 외계인, 뱀파이어, 저승사자</p>
                   <p><b>사제:</b> 선생님, 제자, 교수, 학생</p>
                   <p><b>세계관/기타:</b> 피스틸버스, 하나하키</p>
+                  <p><b>씨피 고정:</b> 작가에 의해 씨피 고정(왼른 구분)이 명시된 경우에만 체크해주세요.</p>
                 </div>
               )}
               {["설정", "관계", "분위기", "장르", "세계관", "분량", "완결여부", "씨피고정"].map(category => {

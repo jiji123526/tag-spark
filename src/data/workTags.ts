@@ -1481,5 +1481,15 @@ export const workTags: WorkTag[] = [
   { work_id: 200, tag_id: 604, weight: 1 },
   { work_id: 200, tag_id: 702, weight: 1 },
   { work_id: 200, tag_id: 801, weight: 1 },
+  // 201: 콜 미 바이 유어 네임 - 잉어
+  { work_id: 201, tag_id: 111, weight: 1 },
+  { work_id: 201, tag_id: 203, weight: 1 },
+  { work_id: 201, tag_id: 212, weight: 1 },
+  { work_id: 201, tag_id: 216, weight: 1 },
+  { work_id: 201, tag_id: 301, weight: 1 },
+  { work_id: 201, tag_id: 305, weight: 1 },
+  { work_id: 201, tag_id: 319, weight: 1 },
+  { work_id: 201, tag_id: 602, weight: 1 },
+  { work_id: 201, tag_id: 701, weight: 1 },
 ];
 
