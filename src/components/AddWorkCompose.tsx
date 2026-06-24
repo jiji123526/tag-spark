@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 import { tags as allTags } from "@/data/tags";
+import { works as allWorks } from "@/data/works";
 import styles from "./AddWorkCompose.module.css";
 
 interface AddWorkComposeProps {
@@ -16,7 +17,16 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
   const [tagQuery, setTagQuery] = useState("");
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [showTagInfo, setShowTagInfo] = useState(false);
+  const [duplicateError, setDuplicateError] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  const checkDuplicate = (t: string, a: string, u: string) => {
+    const duplicate = allWorks.find(w =>
+      (u.trim() && w.source_url.toLowerCase() === u.trim().toLowerCase()) ||
+      (t.trim() && a.trim() && w.title.toLowerCase() === t.trim().toLowerCase() && w.author.toLowerCase() === a.trim().toLowerCase())
+    );
+    setDuplicateError(duplicate ? `이미 등록된 작품입니다: ${duplicate.title} - ${duplicate.author}` : "");
+  };
 
   const isValid = title.trim() && author.trim() && url.trim() && selectedTags.length > 0;
 
@@ -49,6 +59,17 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
 
   const handleSubmit = async () => {
     if (!isValid) return;
+
+    // Check for duplicates by URL or title+author
+    const duplicate = allWorks.find(w =>
+      w.source_url.toLowerCase() === url.trim().toLowerCase() ||
+      (w.title.toLowerCase() === title.trim().toLowerCase() && w.author.toLowerCase() === author.trim().toLowerCase())
+    );
+    if (duplicate) {
+      setDuplicateError(`이미 등록된 작품입니다: ${duplicate.title} - ${duplicate.author}`);
+      return;
+    }
+
     try {
       await fetch("/api/works", {
         method: "POST",
@@ -68,6 +89,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
     setUrl("");
     setSelectedTags([]);
     setTagQuery("");
+    setDuplicateError("");
   };
 
   return (
@@ -104,6 +126,9 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
 
           {/* Form fields */}
           <div className={styles.fields}>
+            {duplicateError && (
+              <div className={styles.duplicateError}>{duplicateError}</div>
+            )}
             {/* 제목 */}
             <div className={styles.fieldRow}>
               <span className={styles.fieldLabel}>제목:</span>
@@ -111,7 +136,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 type="text"
                 className={styles.fieldInput}
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={e => { setTitle(e.target.value); checkDuplicate(e.target.value, author, url); }}
               />
             </div>
             <div className={styles.separator} />
@@ -123,7 +148,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 type="text"
                 className={styles.fieldInput}
                 value={author}
-                onChange={e => setAuthor(e.target.value)}
+                onChange={e => { setAuthor(e.target.value); checkDuplicate(title, e.target.value, url); }}
               />
             </div>
             <div className={styles.separator} />
@@ -170,7 +195,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 type="url"
                 className={styles.bodyInput}
                 value={url}
-                onChange={e => setUrl(e.target.value)}
+                onChange={e => { setUrl(e.target.value); checkDuplicate(title, author, e.target.value); }}
                 placeholder="링크"
               />
             </div>

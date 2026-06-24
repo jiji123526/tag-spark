@@ -91,6 +91,13 @@
   padding: 0 16px;
 }
 
+.duplicateError {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 14px;
+  color: #ff3b30;
+  padding: 8px 0;
+}
+
 .fieldRow {
   display: flex;
   align-items: center;
