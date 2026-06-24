@@ -255,7 +255,7 @@ const mobilerecom:FunctionComponent = () => {
           					</div>
           					<div className={styles.card}>
                       {exactMatches.length === 0 ? (
-                        <div className={styles.pageTitle}><div className={styles.row}><b className={styles.time}>완벽 매치 작품이 없습니다.</b></div></div>
+                        <div className={styles.row}><div className={styles.time}>완벽 매치 작품이 없습니다.</div></div>
                       ) : (
                         exactMatches.map((w, i) => renderRow(w, i !== exactMatches.length - 1))
                       )}
