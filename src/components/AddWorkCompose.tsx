@@ -36,6 +36,10 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
     setSelectedTags(prev => [...prev, tagId]);
     setTagQuery("");
     setShowTagSuggestions(false);
+  };
+
+  const handleAddTagFromSuggestion = (tagId: number) => {
+    handleAddTag(tagId);
     tagInputRef.current?.focus();
   };
 
@@ -151,7 +155,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
             {showTagSuggestions && filteredTags.length > 0 && (
               <div className={styles.tagSuggestions}>
                 {filteredTags.map(t => (
-                  <button key={t.id} className={styles.tagSuggestionItem} onClick={() => handleAddTag(t.id)}>
+                  <button key={t.id} className={styles.tagSuggestionItem} onClick={() => handleAddTagFromSuggestion(t.id)}>
                     <span>{t.name}</span>
                     <span className={styles.tagCategory}>{t.category}</span>
                   </button>
