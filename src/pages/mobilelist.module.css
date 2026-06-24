@@ -189,9 +189,10 @@
     margin-bottom: 60px;
 }
 .topnavigation {
-    position: absolute;
+    position: sticky;
+    z-index: 10;
     width: 100%;
-    top: 10px;
+    top: 0;
     right: 0px;
     left: 0px;
     backdrop-filter: blur(20px);
@@ -652,9 +653,10 @@
     margin-bottom: 60px;
 }
 .topnavigation {
-    position: absolute;
+    position: sticky;
+    z-index: 10;
     width: 100%;
-    top: 10px;
+    top: 0;
     right: 0px;
     left: 0px;
     backdrop-filter: blur(20px);

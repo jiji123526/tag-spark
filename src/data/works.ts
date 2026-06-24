@@ -195,4 +195,8 @@ export const works = [
   { id: 194, title: "불온한 자들을 위한 에덴", author: "whynotme", source_url: "https://posty.pe/i7no5l", views: 5250, likes: 231, comments: 8 },
   { id: 195, title: "사미인곡(思美燐曲)", author: "whynotme", source_url: "https://posty.pe/sdqicp", views: 4900, likes: 199, comments: 22 },
   { id: 196, title: "까만 밤", author: "EXPRESS", source_url: "https://posty.pe/sc5dade", views: 7444, likes: 122, comments: 4 },
+  { id: 197, title: "미워도 다시 한번", author: "이이이", source_url: "https://www.postype.com/@kwinter0101/series/1011602", views: 8500, likes: 420, comments: 15 },
+  { id: 198, title: "미로", author: "이이이", source_url: "https://posty.pe/64hyff", views: 0, likes: 0, comments: 0 },
+  { id: 199, title: "이 별은 선착순", author: "이이이", source_url: "https://posty.pe/49gztt", views: 0, likes: 0, comments: 0 },
+  { id: 200, title: "온이네", author: "만타", source_url: "https://posty.pe/sfv9yq1", views: 0, likes: 0, comments: 0 },
 ];

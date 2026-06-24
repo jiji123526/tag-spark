@@ -1451,5 +1451,35 @@ export const workTags: WorkTag[] = [
   { work_id: 196, tag_id: 305, weight: 1 }, // 찌통
   { work_id: 196, tag_id: 306, weight: 1 }, // 피폐
   { work_id: 196, tag_id: 320, weight: 1 }, // 노딱
+  // 198: 미로 - 이이이
+  { work_id: 198, tag_id: 212, weight: 1 },
+  { work_id: 198, tag_id: 216, weight: 1 },
+  { work_id: 198, tag_id: 601, weight: 1 },
+  { work_id: 198, tag_id: 701, weight: 1 },
+  { work_id: 198, tag_id: 802, weight: 1 },
+  // 199: 이 별은 선착순 - 이이이
+  { work_id: 199, tag_id: 103, weight: 1 },
+  { work_id: 199, tag_id: 212, weight: 1 },
+  { work_id: 199, tag_id: 216, weight: 1 },
+  { work_id: 199, tag_id: 301, weight: 1 },
+  { work_id: 199, tag_id: 302, weight: 1 },
+  { work_id: 199, tag_id: 303, weight: 1 },
+  { work_id: 199, tag_id: 310, weight: 1 },
+  { work_id: 199, tag_id: 601, weight: 1 },
+  { work_id: 199, tag_id: 701, weight: 1 },
+  { work_id: 199, tag_id: 802, weight: 1 },
+  // 200: 온이네 - 만타
+  { work_id: 200, tag_id: 105, weight: 1 },
+  { work_id: 200, tag_id: 111, weight: 1 },
+  { work_id: 200, tag_id: 204, weight: 1 },
+  { work_id: 200, tag_id: 205, weight: 1 },
+  { work_id: 200, tag_id: 216, weight: 1 },
+  { work_id: 200, tag_id: 302, weight: 1 },
+  { work_id: 200, tag_id: 305, weight: 1 },
+  { work_id: 200, tag_id: 307, weight: 1 },
+  { work_id: 200, tag_id: 310, weight: 1 },
+  { work_id: 200, tag_id: 604, weight: 1 },
+  { work_id: 200, tag_id: 702, weight: 1 },
+  { work_id: 200, tag_id: 801, weight: 1 },
 ];
 

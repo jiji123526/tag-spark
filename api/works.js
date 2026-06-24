@@ -25,6 +25,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "title, author, source_url required" });
     }
 
+    // Check for duplicates
+    const [dupByUrl] = await sql`SELECT id, title, author FROM works WHERE LOWER(source_url) = LOWER(${source_url.trim()}) LIMIT 1`;
+    if (dupByUrl) {
+      return res.status(409).json({ error: `이미 등록된 작품입니다: ${dupByUrl.title} - ${dupByUrl.author}` });
+    }
+    const [dupByTitleAuthor] = await sql`SELECT id, title, author FROM works WHERE LOWER(title) = LOWER(${title.trim()}) AND LOWER(author) = LOWER(${author.trim()}) LIMIT 1`;
+    if (dupByTitleAuthor) {
+      return res.status(409).json({ error: `이미 등록된 작품입니다: ${dupByTitleAuthor.title} - ${dupByTitleAuthor.author}` });
+    }
+
     const [work] = await sql`
       INSERT INTO works (title, author, source_url, aliases)
       VALUES (${title}, ${author}, ${source_url}, ${aliases ?? []})

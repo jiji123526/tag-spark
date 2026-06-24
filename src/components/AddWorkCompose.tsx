@@ -59,23 +59,19 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
 
   const handleSubmit = async () => {
     if (!isValid) return;
-
-    // Check for duplicates by URL or title+author
-    const duplicate = allWorks.find(w =>
-      w.source_url.toLowerCase() === url.trim().toLowerCase() ||
-      (w.title.toLowerCase() === title.trim().toLowerCase() && w.author.toLowerCase() === author.trim().toLowerCase())
-    );
-    if (duplicate) {
-      setDuplicateError(`이미 등록된 작품입니다: ${duplicate.title} - ${duplicate.author}`);
-      return;
-    }
+    if (duplicateError) return;
 
     try {
-      await fetch("/api/works", {
+      const res = await fetch("/api/works", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, author, source_url: url, tags: selectedTags }),
       });
+      if (res.status === 409) {
+        const data = await res.json();
+        setDuplicateError(data.error);
+        return;
+      }
       handleReset();
       onOpenChange(false);
     } catch (e) {
