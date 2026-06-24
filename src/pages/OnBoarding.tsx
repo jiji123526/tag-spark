@@ -119,78 +119,73 @@ const OnBoarding:FunctionComponent = () => {
               							<p className={styles.p}>{`키워드를 골라 취향에 맞는 포타를 `}</p>
               							<p className={styles.p}>추천받으세요.</p>
             						</div>
-            						<img className={styles.tailIcon} alt="" src={Tail1Icon} />
           					</div>
           					<div className={styles.spacing} />
         				</div>
-      			</div>
-      			<div className={styles.OnBoarding_messageBubble3}>
-        				<div className={styles.spacing} />
-        				<div className={styles.message1}>
-          					<div className={styles.OnBoarding_message}>부가 기능</div>
-          					<img className={styles.OnBoarding_tailIcon} alt="" src={TailIcon} />
+        				<div className={styles.OnBoarding_messageBubble4}>
+          				<div className={styles.message}>
+            					<div className={styles.OnBoarding_message}>
+              						<p className={styles.p}>{`선택한 키워드와 가장 유사한 `}</p>
+              						<p className={styles.p}>작품들이 우선 순위로 추천됩니다.</p>
+            					</div>
+          				</div>
+          				<div className={styles.spacing} />
         				</div>
-      			</div>
-      			<div className={styles.OnBoarding_messageBubble4}>
-        				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>
-            						<p className={styles.p}>{`선택한 키워드와 가장 유사한 `}</p>
-            						<p className={styles.p}>작품들이 우선 순위로 추천됩니다.</p>
-          					</div>
-          					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.messageBubble5}>
+          				<div className={styles.message}>
+            					<div className={styles.OnBoarding_message}>
+              						<p className={styles.p}>{`단편: 1 - 4편 `}</p>
+              						<p className={styles.p}>중편: 5 - 9편</p>
+              						<p className={styles.p}>장편: 10편 이상으로 분류됩니다.</p>
+            					</div>
+          				</div>
+          				<div className={styles.spacing} />
         				</div>
-        				<div className={styles.spacing} />
-      			</div>
-      			<div className={styles.messageBubble5}>
-        				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>
-            						<p className={styles.p}>{`단편: 1 - 4편 `}</p>
-            						<p className={styles.p}>중편: 5 - 9편</p>
-            						<p className={styles.p}>장편: 10편 이상으로 분류됩니다.</p>
-          					</div>
-          					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.messageBubble6}>
+          				<div className={styles.message}>
+            					<div className={styles.OnBoarding_message}>검색창 아래의 모드 버튼을 사용하여<br/>포함/제외 키워드 선택이 가능합니다.</div>
+          				</div>
+          				<div className={styles.spacing} />
         				</div>
-        				<div className={styles.spacing} />
-      			</div>
-      			<div className={styles.messageBubble6}>
-        				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>검색창 아래의 모드 버튼을 사용하여<br/>포함/제외 키워드 선택이 가능합니다.</div>
-          					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.messageBubble7}>
+          				<div className={styles.message}>
+            					<div className={styles.OnBoarding_message}>
+              						<p className={styles.p}>{`키워드 미선택시 무작위로 10개의 `}</p>
+              						<p className={styles.p}>포타가 추천됩니다.</p>
+            					</div>
+            					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+          				</div>
+          				<div className={styles.spacing} />
         				</div>
-        				<div className={styles.spacing} />
-      			</div>
-      			<div className={styles.messageBubble7}>
-        				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>
-            						<p className={styles.p}>{`키워드 미선택시 무작위로 10개의 `}</p>
-            						<p className={styles.p}>포타가 추천됩니다.</p>
-          					</div>
-          					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.OnBoarding_messageBubble3}>
+          				<div className={styles.spacing} />
+          				<div className={styles.message1}>
+            					<div className={styles.OnBoarding_message}>부가 기능</div>
+            					<img className={styles.OnBoarding_tailIcon} alt="" src={TailIcon} />
+          				</div>
         				</div>
-        				<div className={styles.spacing} />
-      			</div>
-      			<div className={styles.messageBubble8}>
-        				<div className={styles.message}>
-          					<div className={styles.OnBoarding_message}>메뉴 탭에서 다음과 같은 요청이 가능합니다.</div>
-          					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.messageBubble8}>
+          				<div className={styles.message}>
+            					<div className={styles.OnBoarding_message}>메뉴 탭에서 다음과 같은 부가 기능 사용이 가능합니다.</div>
+          				</div>
+          				<div className={styles.spacing} />
         				</div>
-        				<div className={styles.spacing} />
-      			</div>
-      			<div className={styles.message17}>
-        				<div className={styles.OnBoarding_message}>현재 등록된 추천작 확인</div>
-        				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
-      			</div>
-      			<div className={styles.message19}>
-        				<div className={styles.OnBoarding_message}>내 추천작 등록하기</div>
-        				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
-      			</div>
-				<div className={styles.message20}>
-        				<div className={styles.OnBoarding_message}>키워드 변경 요청</div>
-        				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
-      			</div>
-      			<div className={styles.message21}>
-        				<div className={styles.OnBoarding_message}>{`기타 문의사항이나 개선 사항 건의는 요청폼 마지막 질문에 입력 또는 트위터(X) @cxwdwggy로 디엠 주세요. `}</div>
-        				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				<div className={styles.message17}>
+          				<div className={styles.OnBoarding_message}>현재 등록된 추천작 확인</div>
+        				</div>
+        				<div className={styles.message19}>
+          				<div className={styles.OnBoarding_message}>명대사 아카이브</div>
+        				</div>
+        				<div className={styles.message20}>
+          				<div className={styles.OnBoarding_message}>키워드 수정 요청</div>
+        				</div>
+        				<div className={styles.message20}>
+          				<div className={styles.OnBoarding_message}>추천작 리스트에서 ✏️ 버튼을 눌러 새 작품을 직접 등록할 수 있습니다.</div>
+        				</div>
+        				<div className={styles.message21}>
+          				<div className={styles.OnBoarding_message}>{`기타 문의사항이나 개선 사항 건의는 요청폼 마지막 질문에 입력 또는 트위터(X) @cxwdwggy로 디엠 주세요. `}</div>
+          				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+        				</div>
       			</div>
       			<div className={styles.inputBar}>
         				<div className={styles.plusButton}>

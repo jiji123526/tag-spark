@@ -289,7 +289,6 @@ const MobileHeader = () => {
             </div>
             <div className={styles.updatesUnread}>
               <div className={styles.url}>{filtered.length} Works</div>
-              <div className={styles.mobilelistUrl}>Updated Nov 11</div>
             </div>
             <a onClick={() => setComposeOpen(true)} style={{ cursor: 'pointer' }}>
               <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />

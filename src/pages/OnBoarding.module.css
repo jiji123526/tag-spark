@@ -2,13 +2,15 @@
     width: 100%;
     position: relative;
     border-radius: 48px;
-    height: calc( (var(--last-message-top, var(--message23-top, var(--message21-top, 855px)))) + (var(--last-message-height, var(--message23-height, var(--message21-height, 80px)))) + var(--inputbar-height, 64px) + 0px );
+    min-height: 100vh;
     overflow: hidden;
     text-align: left;
     font-size: 17px;
     color: var(--color-black);
     font-family: var(--font-sf-pro);
     --inputbar-height: 64px;
+    display: flex;
+    flex-direction: column;
 }
 .safeArea {
     position: absolute;
@@ -22,16 +24,18 @@
     display: none;
 }
 .messageBubblesGroup {
-    position: absolute;
+    position: relative;
     width: calc(100% - 32px);
-    top: 149px;
+    top: auto;
+    margin-top: 149px;
     right: 16px;
     left: 16px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: var(--gap-10);
+    gap: 2px;
+    padding: 0 8px;
 }
 .messageBubble2 {
     align-self: stretch;
@@ -109,70 +113,77 @@
     margin: 0;
 }
 .OnBoarding_messageBubble3 {
-    position: absolute;
-    top: 603px;
-    right: 16px;
+    position: relative;
+    top: auto;
+    right: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-end;
     color: var(--color-white);
+    align-self: flex-end;
+    margin-bottom: 8px;
 }
 .OnBoarding_messageBubble4 {
-    position: absolute;
-    top: 309px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 2px;
 }
 .messageBubble5 {
-    position: absolute;
-    top: 377px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 2px;
 }
 .messageBubble6 {
-    position: absolute;
-    top: 467px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 2px;
 }
 .messageBubble7 {
-    position: absolute;
-    top: 535px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 8px;
 }
 .messageBubble8 {
-    position: absolute;
-    top: 649px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 370px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 2px;
 }
 .message17 {
-    position: absolute;
-    top: 717px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: 0;
     border-radius: var(--br-16);
     background-color: var(--color-gainsboro);
     display: flex;
@@ -183,11 +194,12 @@
     box-sizing: border-box;
     gap: var(--gap-10);
     max-width: 295px;
+    margin-bottom: 2px;
 }
 .message19 {
-    position: absolute;
-    top: 763px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: 0;
     border-radius: var(--br-16);
     background-color: var(--color-gainsboro);
     display: flex;
@@ -198,11 +210,12 @@
     box-sizing: border-box;
     gap: var(--gap-10);
     max-width: 295px;
+    margin-bottom: 2px;
 }
 .message20 {
-    position: absolute;
-    top: 809px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: 0;
     border-radius: var(--br-16);
     background-color: var(--color-gainsboro);
     display: flex;
@@ -213,11 +226,12 @@
     box-sizing: border-box;
     gap: var(--gap-10);
     max-width: 295px;
+    margin-bottom: 2px;
 }
 .message21 {
-    position: absolute;
-    top: 855px;
-    left: 16px;
+    position: relative;
+    top: auto;
+    left: 0;
     border-radius: var(--br-16);
     background-color: var(--color-gainsboro);
     display: flex;
@@ -228,8 +242,7 @@
     box-sizing: border-box;
     gap: var(--gap-10);
     max-width: 295px;
-    --message21-top: 855px;
-    --message21-height: 80px;
+    margin-bottom: 2px;
 }
 .message23 {
     position: absolute;
@@ -259,11 +272,9 @@
     line-height: 22px;
 }
 .inputBar {
-    position: absolute;
+    position: sticky;
+    bottom: 0;
     width: 100%;
-    right: 0px;
-    top: calc( (var(--last-message-top, var(--message23-top, var(--message21-top)))) + (var(--last-message-height, var(--message23-height, var(--message21-height)))) + 16px );
-    bottom: 0%;
     left: 0px;
     background-color: var(--color-white);
     display: flex;
@@ -276,6 +287,7 @@
     text-align: center;
     color: var(--color-darkslategray-200);
     z-index: 8;
+    margin-top: 16px;
 }
 .plusButton {
     width: 34px;

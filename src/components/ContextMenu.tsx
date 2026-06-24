@@ -66,7 +66,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, ancho
         </div>
       </div>
       <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSf_SdK01Mas2ZVMeXG3-AOTdFsIMyjLRAyCMWFvpg3YZaFnkw/viewform?usp=sharing&ouid=103167940717310868379"
+        href="https://recom-five.vercel.app/"
         target="_blank"
         rel="noopener noreferrer"
         onClick={onClose}
@@ -74,7 +74,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, ancho
       >
         <div className={styles.tableViewRowLeft}>
           <div className={styles.stack}>
-            <div className={styles.title}>내 추천작 등록하기</div>
+            <div className={styles.title}>명대사 아카이브</div>
           </div>
         </div>
         <img className={styles.separator0pt0ptIcon} alt="separator" src={SepIcon} />
