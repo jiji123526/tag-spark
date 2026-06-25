@@ -8,7 +8,7 @@ import extraIcon from "../assets/mobileIndex/x.svg";
 import menuIcon from "../assets/mobileIndex/menu.svg";
 
 import { useNavigate } from 'react-router-dom';
-import { tags as allTags, Tag } from "@/data/tags";
+import { tags as staticTags, Tag } from "@/data/tags";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
 import ContextMenu from "../components/ContextMenu";
@@ -16,6 +16,15 @@ import ContextMenu from "../components/ContextMenu";
 const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
 	const handleBack = () => navigate(-1);
+
+  const [allTags, setAllTags] = useState<Tag[]>(staticTags);
+
+  useEffect(() => {
+    fetch("/api/tags")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setAllTags(data); })
+      .catch(() => {});
+  }, []);
 
   const selectedBarRef = useRef<HTMLDivElement | null>(null);
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
