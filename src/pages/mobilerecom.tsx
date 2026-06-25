@@ -109,8 +109,7 @@ const mobilerecom:FunctionComponent = () => {
 
   // filter out works containing excluded tag ids
   const workHasExcluded = useMemo(() => {
-    const ex = new Set(excluded);
-    if (ex.size === 0) return (id: number) => false;
+    const ex = new Set([...excluded, 900]);
     const byWork = new Map<number, number[]>();
     for (const m of mappings) {
       const list = byWork.get(m.work_id) ?? [];
@@ -168,7 +167,7 @@ const mobilerecom:FunctionComponent = () => {
         <div className={styles.iconAndText2}>
           <div className={styles.time}>#</div>
           <div className={styles.time}>
-            {(tagsByWorkId.get(w.id) || []).map((t) => t.name).join(', ')}
+            {(tagsByWorkId.get(w.id) || []).filter((t) => t.id !== 900).map((t) => t.name).join(', ')}
           </div>
         </div>
         {withSeparator && (
