@@ -13,6 +13,8 @@
   display: flex;
   flex-direction: column;
   height: 92vh;
+  max-width: 430px;
+  margin: 0 auto;
   border-radius: 12px 12px 0 0;
   background: #fff;
   outline: none;

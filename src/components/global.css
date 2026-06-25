@@ -17,6 +17,9 @@ body {
   max-width: 430px;
   margin: 0 auto;
 }
+#root:has([data-page="web-landing"]) {
+  max-width: none;
+}
 :root {
   	
   	/* Color */

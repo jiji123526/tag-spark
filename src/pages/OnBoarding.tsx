@@ -19,6 +19,29 @@ const OnBoarding:FunctionComponent = () => {
     	const root = rootRef.current;
     	if (!root) return;
 
+    	// On desktop (wide viewport), show all bubbles immediately
+    	const isDesktop = window.innerWidth > 430;
+    	if (isDesktop) {
+      		const selectors = [
+        		styles.messageBubble2,
+        		styles.messageBubble3,
+        		styles.messageBubble5,
+        		styles.messageBubble6,
+        		styles.messageBubble7,
+        		styles.messageBubble8,
+        		styles.OnBoarding_messageBubble3,
+        		styles.OnBoarding_messageBubble4,
+        		styles.message17,
+        		styles.message19,
+        		styles.message20,
+        		styles.message21,
+      		].filter(Boolean).map(c => `.${c}`).join(',');
+      		root.querySelectorAll<HTMLElement>(selectors).forEach(el => {
+        		el.classList.add(styles.revealVisible);
+      		});
+      		return;
+    	}
+
     	const selectors = [
       		styles.messageBubble2,
       		styles.messageBubble3,
