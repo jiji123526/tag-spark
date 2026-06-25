@@ -285,14 +285,15 @@ function filterOutExcludedWorks(
 // 분리형: 완벽 매칭은 전부, 유사 추천은 최대 N개
 export function computeExactAndSimilar(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number; excludeTagIds?: number[] }
+  opts?: { works?: Work[]; tags?: Tag[]; workTags?: { work_id: number; tag_id: number; weight: number }[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
   const works = opts?.works ?? ALL_WORKS;
   const tags = opts?.tags ?? ALL_TAGS;
+  const wt = opts?.workTags ?? WORK_TAGS;
   const similarMax = opts?.similarMax ?? 10;
 
   const excludeTagIds = opts?.excludeTagIds ?? [];
-  const worksFiltered = filterOutExcludedWorks(works, WORK_TAGS, [...excludeTagIds, 900]);
+  const worksFiltered = filterOutExcludedWorks(works, wt, [...excludeTagIds, 900]);
 
   // ✅ 선택 키워드가 없으면: 가중치 없이 랜덤 추천
   if (!selectedTagIds || selectedTagIds.length === 0) {
@@ -301,11 +302,11 @@ export function computeExactAndSimilar(
     return { exact: [] as Work[], similar: pool.slice(0, similarMax) };
   }
 
-  const indexed = buildWorkIndex(worksFiltered, WORK_TAGS);
-  const exact = getExactMatches(selectedTagIds, worksFiltered, WORK_TAGS);
+  const indexed = buildWorkIndex(worksFiltered, wt);
+  const exact = getExactMatches(selectedTagIds, worksFiltered, wt);
 
   const exactIds = new Set(exact.map((w) => w.id));
-  const scoreWork = buildSimilarityScorer(tags, WORK_TAGS);
+  const scoreWork = buildSimilarityScorer(tags, wt);
 
   // “선택 태그와 동일하게 겹친 개수”를 우선순위 키로 사용
   type Item = { w: WorkWithTags; s: number; overlap: number };
@@ -351,7 +352,7 @@ export function computeExactAndSimilar(
 // 원샷: exact 전부 + similar 최대 10개를 이어 붙여 반환
 export function computeRecommendations(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; similarMax?: number; excludeTagIds?: number[] }
+  opts?: { works?: Work[]; tags?: Tag[]; workTags?: { work_id: number; tag_id: number; weight: number }[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
   const { exact, similar } = computeExactAndSimilar(selectedTagIds, opts);
   return [...exact, ...similar];

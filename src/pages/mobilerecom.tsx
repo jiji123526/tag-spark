@@ -146,6 +146,7 @@ const mobilerecom:FunctionComponent = () => {
     const recos = computeRecommendations(selectedEffective, {
       works: filteredWorks,
       tags: allTags,
+      workTags: mappings,
       excludeTagIds: excluded,
     });
     const exactIds = new Set(exactMatches.map((w) => w.id));
