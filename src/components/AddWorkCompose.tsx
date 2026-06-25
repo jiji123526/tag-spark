@@ -28,7 +28,9 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
     setDuplicateError(duplicate ? `이미 등록된 작품입니다: ${duplicate.title} - ${duplicate.author}` : "");
   };
 
-  const isValid = title.trim() && author.trim() && url.trim() && selectedTags.length > 0;
+  const hasBunryang = selectedTags.some(id => id >= 601 && id <= 604);
+  const hasStatus = selectedTags.some(id => id >= 701 && id <= 702);
+  const isValid = title.trim() && author.trim() && url.trim() && selectedTags.length > 0 && hasBunryang && hasStatus;
 
   const filteredTags = useMemo(() => {
     if (!tagQuery.trim()) return [];
