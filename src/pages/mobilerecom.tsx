@@ -5,9 +5,9 @@ import MenuIcon from "../assets/mobilerecom/menu.svg";
 import MagIcon from "../assets/mobilerecom/tag.svg";
 import styles from './mobilerecom.module.css';
 
-import { works as allWorks } from "@/data/works";
-import { tags as allTags, Tag } from "@/data/tags";
-import { workTags as mappings } from "@/data/workTags";
+import { works as staticWorks } from "@/data/works";
+import { tags as staticTags, Tag } from "@/data/tags";
+import { workTags as staticMappings } from "@/data/workTags";
 import { computeRecommendations } from "@/lib/reco";
 
 import ContextMenu from "../components/ContextMenu";
@@ -28,6 +28,24 @@ const mobilerecom:FunctionComponent = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch data from API, fallback to static
+  const [allWorks, setAllWorks] = useState<any[]>(staticWorks);
+  const [allTags, setAllTags] = useState<Tag[]>(staticTags);
+  const [mappings, setMappings] = useState<any[]>(staticMappings);
+
+  useEffect(() => {
+    fetch("/api/reco-data")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setAllWorks(data.works);
+          setAllTags(data.tags);
+          setMappings(data.workTags.map((wt: any) => ({ work_id: wt.work_id, tag_id: wt.tag_id, weight: wt.weight })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // selected / excluded ids from query
   const selected = useMemo(() => {
@@ -87,7 +105,7 @@ const mobilerecom:FunctionComponent = () => {
       out.set(workId, list.map((x) => x.tag));
     }
     return out;
-  }, []);
+  }, [allTags, mappings]);
 
   // filter out works containing excluded tag ids
   const workHasExcluded = useMemo(() => {
