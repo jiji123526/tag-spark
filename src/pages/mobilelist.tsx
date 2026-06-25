@@ -32,6 +32,7 @@ const MobileHeader = () => {
   const sortBtnRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
   const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
   const [composeOpen, setComposeOpen] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const compareByAuthorTitle = (a: {author: string; title: string}, b: {author: string; title: string}) => {
     const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
@@ -220,7 +221,7 @@ const MobileHeader = () => {
         <b className={styles.title2}>현재 등록된 추천작</b>
       </div>
 
-      <div className={styles.mobilelist}>
+      <div className={styles.mobilelist} ref={listRef}>
         <div className={styles.topnavigation}>
           <div className={styles.extra}>
             <div className={styles.searchfield}>
@@ -303,11 +304,11 @@ const MobileHeader = () => {
           onClose={() => setSortOpen(false)}
           anchorRef={sortBtnRef as any}
           items={[
-            { label: '가나다순', onClick: () => setSortKey('author_asc') },
-            { label: '조회수순', onClick: () => setSortKey('views_desc') },
-            { label: '좋아요순', onClick: () => setSortKey('likes_desc') },
-            { label: '댓글순', onClick: () => setSortKey('comments_desc') },
-            { label: '인기순', onClick: () => setSortKey('popular_desc') },
+            { label: '가나다순', onClick: () => { setSortKey('author_asc'); listRef.current?.scrollTo(0, 0); } },
+            { label: '조회수순', onClick: () => { setSortKey('views_desc'); listRef.current?.scrollTo(0, 0); } },
+            { label: '좋아요순', onClick: () => { setSortKey('likes_desc'); listRef.current?.scrollTo(0, 0); } },
+            { label: '댓글순', onClick: () => { setSortKey('comments_desc'); listRef.current?.scrollTo(0, 0); } },
+            { label: '인기순', onClick: () => { setSortKey('popular_desc'); listRef.current?.scrollTo(0, 0); } },
           ]}
         />
       )}

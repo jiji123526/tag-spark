@@ -71,7 +71,7 @@ const mobilerecom:FunctionComponent = () => {
       selectedEffective
         .map((id) => allTags.find((t) => t.id === id))
         .filter((t): t is NonNullable<typeof t> => !!t),
-    [selectedEffective]
+    [selectedEffective, allTags]
   );
 
   const selectedText = useMemo(() => {
@@ -121,9 +121,9 @@ const mobilerecom:FunctionComponent = () => {
       const tags = byWork.get(id) || [];
       return tags.some((tid) => ex.has(tid));
     };
-  }, [excluded]);
+  }, [excluded, mappings]);
 
-  const filteredWorks = useMemo(() => allWorks.filter((w) => !workHasExcluded(w.id)), [workHasExcluded]);
+  const filteredWorks = useMemo(() => allWorks.filter((w) => !workHasExcluded(w.id)), [workHasExcluded, allWorks]);
 
   // exact matches (contains all selectedEffective)
   const exactMatches = useMemo(() => {
@@ -138,7 +138,7 @@ const mobilerecom:FunctionComponent = () => {
       return selectedEffective.every((id) => id in tagWeights);
     });
     return shuffle(hits);
-  }, [selectedEffective, filteredWorks]);
+  }, [selectedEffective, filteredWorks, mappings]);
 
   // similar (page-less here; keep 10 like original)
   const similar = useMemo(() => {
@@ -152,7 +152,7 @@ const mobilerecom:FunctionComponent = () => {
     const exactIds = new Set(exactMatches.map((w) => w.id));
     const onlySimilar = recos.filter((w) => !exactIds.has(w.id));
     return onlySimilar.sort((a, b) => b.similarity - a.similarity).slice(0, PAGE_SIZE);
-  }, [selectedEffective, excluded, filteredWorks, exactMatches]);
+  }, [selectedEffective, excluded, filteredWorks, exactMatches, allTags, mappings]);
 
   useEffect(() => { document.title = '키워드 추천 결과'; }, []);
 
