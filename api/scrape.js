@@ -51,7 +51,11 @@ export default async function handler(req, res) {
         headers: { "User-Agent": "Mozilla/5.0 (compatible; bot)" },
         redirect: "follow",
       });
-      if (!resp.ok) continue;
+      if (!resp.ok) {
+        // Post is unavailable/deleted — tag it as '터짐'
+        await sql`INSERT INTO work_tags (work_id, tag_id, weight) VALUES (${work.id}, 900, 1) ON CONFLICT DO NOTHING`;
+        continue;
+      }
       const html = await resp.text();
       const finalUrl = resp.url || work.source_url;
 

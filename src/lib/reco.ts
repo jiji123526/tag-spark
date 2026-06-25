@@ -292,7 +292,7 @@ export function computeExactAndSimilar(
   const similarMax = opts?.similarMax ?? 10;
 
   const excludeTagIds = opts?.excludeTagIds ?? [];
-  const worksFiltered = filterOutExcludedWorks(works, WORK_TAGS, excludeTagIds);
+  const worksFiltered = filterOutExcludedWorks(works, WORK_TAGS, [...excludeTagIds, 900]);
 
   // ✅ 선택 키워드가 없으면: 가중치 없이 랜덤 추천
   if (!selectedTagIds || selectedTagIds.length === 0) {
