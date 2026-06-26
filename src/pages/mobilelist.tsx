@@ -72,6 +72,7 @@ const MobileHeader = () => {
       id: w.id,
       title: w.title,
       aliases: w.aliases ?? [],
+      author_aliases: w.author_aliases ?? [],
       author: w.author,
       source_url: w.source_url,
       tags: (byWork.get(w.id) ?? [])
@@ -96,6 +97,7 @@ const MobileHeader = () => {
         if (r.title.toLowerCase().includes(k)) return true;
         if (r.author.toLowerCase().includes(k)) return true;
         if ((r.aliases ?? []).some((a: string) => a.toLowerCase().includes(k))) return true;
+        if ((r.author_aliases ?? []).some((a: string) => a.toLowerCase().includes(k))) return true;
         return r.tags.some(t =>
           t.name.toLowerCase().includes(k) ||
           (t.aliases ?? []).some((a) => a.toLowerCase().includes(k))

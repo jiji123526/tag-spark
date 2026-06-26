@@ -11,6 +11,7 @@ export type Work = {
   author: string;
   source_url: string;
   aliases?: string[];
+  author_aliases?: string[];
   views: number;
   likes: number;
   comments: number;
