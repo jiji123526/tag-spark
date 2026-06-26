@@ -1,7 +1,5 @@
 // src/lib/reco.ts
-import { tags as ALL_TAGS, Tag } from "@/data/tags";
-import { works as ALL_WORKS, Work } from "@/data/works";
-import { workTags as WORK_TAGS } from "@/data/workTags";
+import { Tag, Work, WorkTag } from "@/lib/types";
 import { buildAliasSet, aliasOverlap } from "@/lib/utils";
 
 type Category = Tag["category"];
@@ -94,8 +92,8 @@ function makeSimLookup(graph: Record<TagId, SimRow>) {
 // -------------------------------------------------------------
 // works + workTags → tagIds 부여
 function buildWorkIndex(
-  works = ALL_WORKS,
-  workTags = WORK_TAGS
+  works: Work[],
+  workTags: WorkTag[]
 ): WorkWithTags[] {
   const map = new Map<number, number[]>();
   for (const wt of workTags) {
@@ -108,8 +106,8 @@ function buildWorkIndex(
 // 선택 태그 모두 포함(완벽 매칭) 목록 + weight 합으로 정렬
 function getExactMatches(
   selectedTagIds: number[],
-  works = ALL_WORKS,
-  workTags = WORK_TAGS
+  works: Work[],
+  workTags: WorkTag[]
 ): Work[] {
   if (selectedTagIds.length === 0) return [];
 
@@ -140,7 +138,7 @@ function getExactMatches(
 
 // -------------------------------------------------------------
 // 별칭/부분/카테고리 + “태그↔태그 유사도(튜플 기반)”까지 포함한 유사도 점수
-function buildSimilarityScorer(allTags: Tag[], workTags = WORK_TAGS) {
+function buildSimilarityScorer(allTags: Tag[], workTags: WorkTag[]) {
   const tagById = new Map(allTags.map((t) => [t.id, t]));
   const aliasSetById = new Map<number, Set<string>>();
   for (const t of allTags) {
@@ -267,11 +265,11 @@ function expandExcludedTagIds(allTags: Tag[], base: number[]): Set<number> {
 // helper: exclude 태그가 붙은 작품 필터링
 function filterOutExcludedWorks(
   works: Work[],
-  workTags = WORK_TAGS,
+  workTags: WorkTag[],
   excludeTagIds: number[] = []
 ): Work[] {
   if (!excludeTagIds || excludeTagIds.length === 0) return works;
-  const exclude = expandExcludedTagIds(ALL_TAGS, excludeTagIds);
+  const exclude = new Set(excludeTagIds);
   const byWork: Record<number, number[]> = {};
   for (const wt of workTags) {
     (byWork[wt.work_id] ??= []).push(wt.tag_id);
@@ -285,12 +283,12 @@ function filterOutExcludedWorks(
 // 분리형: 완벽 매칭은 전부, 유사 추천은 최대 N개
 export function computeExactAndSimilar(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; workTags?: { work_id: number; tag_id: number; weight: number }[]; similarMax?: number; excludeTagIds?: number[] }
+  opts: { works: Work[]; tags: Tag[]; workTags: WorkTag[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
-  const works = opts?.works ?? ALL_WORKS;
-  const tags = opts?.tags ?? ALL_TAGS;
-  const wt = opts?.workTags ?? WORK_TAGS;
-  const similarMax = opts?.similarMax ?? 10;
+  const works = opts.works;
+  const tags = opts.tags;
+  const wt = opts.workTags;
+  const similarMax = opts.similarMax ?? 10;
 
   const excludeTagIds = opts?.excludeTagIds ?? [];
   const worksFiltered = filterOutExcludedWorks(works, wt, [...excludeTagIds, 900]);
@@ -352,7 +350,7 @@ export function computeExactAndSimilar(
 // 원샷: exact 전부 + similar 최대 10개를 이어 붙여 반환
 export function computeRecommendations(
   selectedTagIds: number[],
-  opts?: { works?: Work[]; tags?: Tag[]; workTags?: { work_id: number; tag_id: number; weight: number }[]; similarMax?: number; excludeTagIds?: number[] }
+  opts: { works: Work[]; tags: Tag[]; workTags: WorkTag[]; similarMax?: number; excludeTagIds?: number[] }
 ) {
   const { exact, similar } = computeExactAndSimilar(selectedTagIds, opts);
   return [...exact, ...similar];

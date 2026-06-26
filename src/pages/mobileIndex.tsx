@@ -8,7 +8,7 @@ import extraIcon from "../assets/mobileIndex/x.svg";
 import menuIcon from "../assets/mobileIndex/menu.svg";
 
 import { useNavigate } from 'react-router-dom';
-import { tags as staticTags, Tag } from "@/data/tags";
+import { Tag } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
 import ContextMenu from "../components/ContextMenu";
@@ -17,7 +17,7 @@ const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
 	const handleBack = () => navigate(-1);
 
-  const [allTags, setAllTags] = useState<Tag[]>(staticTags);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
 
   useEffect(() => {
     fetch("/api/tags")

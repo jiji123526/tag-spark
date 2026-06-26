@@ -5,9 +5,7 @@ import MenuIcon from "../assets/mobilerecom/menu.svg";
 import MagIcon from "../assets/mobilerecom/tag.svg";
 import styles from './mobilerecom.module.css';
 
-import { works as staticWorks } from "@/data/works";
-import { tags as staticTags, Tag } from "@/data/tags";
-import { workTags as staticMappings } from "@/data/workTags";
+import { Tag, Work, WorkTag } from "@/lib/types";
 import { computeRecommendations } from "@/lib/reco";
 
 import ContextMenu from "../components/ContextMenu";
@@ -29,10 +27,10 @@ const mobilerecom:FunctionComponent = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
 
-  // Fetch data from API, fallback to static
-  const [allWorks, setAllWorks] = useState<any[]>(staticWorks);
-  const [allTags, setAllTags] = useState<Tag[]>(staticTags);
-  const [mappings, setMappings] = useState<any[]>(staticMappings);
+  // Fetch data from API
+  const [allWorks, setAllWorks] = useState<Work[]>([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [mappings, setMappings] = useState<WorkTag[]>([]);
 
   useEffect(() => {
     fetch("/api/reco-data")

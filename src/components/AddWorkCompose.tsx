@@ -1,7 +1,6 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
-import { tags as allTags } from "@/data/tags";
-import { works as allWorks } from "@/data/works";
+import { Tag, Work } from "@/lib/types";
 import styles from "./AddWorkCompose.module.css";
 
 interface AddWorkComposeProps {
@@ -18,7 +17,16 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [showTagInfo, setShowTagInfo] = useState(false);
   const [duplicateError, setDuplicateError] = useState("");
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [allWorks, setAllWorks] = useState<Work[]>([]);
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/reco-data")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) { setAllTags(data.tags); setAllWorks(data.works); } })
+      .catch(() => {});
+  }, []);
 
   const checkDuplicate = (t: string, a: string, u: string) => {
     const duplicate = allWorks.find(w =>

@@ -11,17 +11,23 @@ import microphoneIcon from "../assets/mobilelist/x.svg";
 import chevronRightIcon from "../assets/mobilelist/chevron.right.svg";
 import line3HorizontalIcon from "../assets/mobilelist/sort.svg";
 import squareAndPencilIcon from "../assets/mobilelist/square.and.pencil.svg";
-import { works as allWorks } from "@/data/works";
-import { tags as allTags, Tag } from "@/data/tags";
-import { workTags as mappings } from "@/data/workTags";
+import { Tag, Work, WorkTag } from "@/lib/types";
 
 const MobileHeader = () => {
-  const [apiWorks, setApiWorks] = useState<any[] | null>(null);
+  const [allWorks, setAllWorks] = useState<Work[]>([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [mappings, setMappings] = useState<WorkTag[]>([]);
 
   useEffect(() => {
-    fetch("/api/works")
+    fetch("/api/reco-data")
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setApiWorks(data); })
+      .then(data => {
+        if (data) {
+          setAllWorks(data.works);
+          setAllTags(data.tags);
+          setMappings(data.workTags);
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -48,34 +54,6 @@ const MobileHeader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => {
-    // If API data is available, use it
-    if (apiWorks) {
-      const tagById = new Map(allTags.map((t) => [t.id, t]));
-      const categoryOrder: Record<string, number> = {
-        "분량": 1, "완결여부": 2, "세계관": 3, "장르": 4, "설정": 5, "관계": 6, "분위기": 7,
-      };
-      return apiWorks.map((w: any) => ({
-        id: w.id,
-        title: w.title,
-        aliases: w.aliases ?? [],
-        author: w.author,
-        source_url: w.source_url,
-        tags: (w.tags || [])
-          .map((wt: any) => tagById.get(wt.tag_id))
-          .filter(Boolean)
-          .sort((a: Tag, b: Tag) => {
-            const ca = categoryOrder[a.category] ?? 999;
-            const cb = categoryOrder[b.category] ?? 999;
-            if (ca !== cb) return ca - cb;
-            return a.name.localeCompare(b.name, "ko");
-          }),
-        views: w.views,
-        likes: w.likes,
-        comments: w.comments,
-      }));
-    }
-
-    // Fallback to static data
     const tagById = new Map(allTags.map((t) => [t.id, t]));
     const byWork = new Map<number, Tag[]>();
     for (const m of mappings) {
@@ -87,43 +65,28 @@ const MobileHeader = () => {
     }
 
     const categoryOrder: Record<string, number> = {
-      "분량": 1,
-      "완결여부": 2,
-      "세계관": 3,
-      "장르": 4,
-      "설정": 5,
-      "관계": 6,
-      "분위기": 7,
+      "분량": 1, "완결여부": 2, "세계관": 3, "장르": 4, "설정": 5, "관계": 6, "분위기": 7,
     };
 
     return allWorks.map((w) => ({
       id: w.id,
       title: w.title,
-      aliases: (w as any).aliases ?? [],
+      aliases: w.aliases ?? [],
       author: w.author,
       source_url: w.source_url,
-      tags: (byWork.get(w.id) ?? []).sort((a, b) => {
-        const ca = categoryOrder[a.category] ?? 999;
-        const cb = categoryOrder[b.category] ?? 999;
-        if (ca !== cb) return ca - cb;
-        return a.name.localeCompare(b.name, "ko");
-      }),
+      tags: (byWork.get(w.id) ?? [])
+        .filter((t) => t.id !== 900)
+        .sort((a, b) => {
+          const ca = categoryOrder[a.category] ?? 999;
+          const cb = categoryOrder[b.category] ?? 999;
+          if (ca !== cb) return ca - cb;
+          return a.name.localeCompare(b.name, "ko");
+        }),
       views: w.views,
       likes: w.likes,
       comments: w.comments,
-    })).sort((a, b) => {
-      const ak = a.author.charCodeAt(0) >= 0xac00 && a.author.charCodeAt(0) <= 0xd7a3;
-      const bk = b.author.charCodeAt(0) >= 0xac00 && b.author.charCodeAt(0) <= 0xd7a3;
-
-      if (ak !== bk) return ak ? -1 : 1;
-
-      const locale = ak ? "ko" : "en";
-      const authorCompare = a.author.localeCompare(b.author, locale);
-      if (authorCompare !== 0) return authorCompare;
-
-      return a.title.localeCompare(b.title, locale);
-    });
-  }, [apiWorks]);
+    }));
+  }, [allWorks, allTags, mappings]);
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
