@@ -62,15 +62,20 @@ export default async function handler(req, res) {
       let views = null, likes = null, comments = null;
 
       if (finalUrl.includes("/series/")) {
-        // Series: use aria-label and divide by episodes
-        const viewsMatch = html.match(/aria-label="조회\s+([^"]+)"/);
-        const likesMatch = html.match(/aria-label="좋아요\s+([^"]+)"/);
-        const commentsMatch = html.match(/aria-label="댓글\s+([^"]+)"/);
-        const episodeMatch = html.match(/총\s+(\d+)화/);
-        const divisor = episodeMatch ? parseInt(episodeMatch[1], 10) || 1 : 1;
-        views = viewsMatch ? Math.round(parseKoreanNumber(viewsMatch[1]) / divisor) : null;
-        likes = likesMatch ? Math.round(parseKoreanNumber(likesMatch[1]) / divisor) : null;
-        comments = commentsMatch ? Math.round(parseKoreanNumber(commentsMatch[1]) / divisor) : null;
+        // Series: use JSON data, divide by postCount
+        const viewMatches = [...html.matchAll(/viewCount\\":\s*(\d+)/g)];
+        const likeMatches = [...html.matchAll(/likeCount\\":\s*(\d+)/g)];
+        const commentMatches = [...html.matchAll(/commentCount\\":\s*(\d+)/g)];
+        const postCountMatches = [...html.matchAll(/postCount\\":\s*(\d+)/g)];
+        // Second occurrence is the series stats
+        const rawViews = viewMatches.length >= 2 ? parseInt(viewMatches[1][1], 10) : null;
+        const rawLikes = likeMatches.length >= 2 ? parseInt(likeMatches[1][1], 10) : null;
+        const rawComments = commentMatches.length >= 2 ? parseInt(commentMatches[1][1], 10) : null;
+        const postCount = postCountMatches.length >= 2 ? parseInt(postCountMatches[1][1], 10) : 1;
+        const divisor = postCount || 1;
+        views = rawViews !== null ? Math.round(rawViews / divisor) : null;
+        likes = rawLikes !== null ? Math.round(rawLikes / divisor) : null;
+        comments = rawComments !== null ? Math.round(rawComments / divisor) : null;
       } else {
         // Single post: use JSON data (second occurrence = post stats)
         const viewMatches = [...html.matchAll(/viewCount\\":\s*(\d+)/g)];
