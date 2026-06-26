@@ -199,12 +199,13 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
             {/* URL — Body area */}
             <div className={styles.bodyArea}>
               <input
-                type="url"
+                type="text"
                 className={styles.bodyInput}
                 value={url}
                 onChange={e => { setUrl(e.target.value); checkDuplicate(title, author, e.target.value); }}
                 placeholder="링크"
               />
+              {!url && <div className={styles.bodyHint}>중/장편 - 시리즈 링크 (없으면 첫 포스트)</div>}
             </div>
 
             {/* Keyword reference list */}

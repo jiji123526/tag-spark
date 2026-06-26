@@ -222,11 +222,22 @@
   background: none;
   color: #000;
   padding: 0;
+  resize: none;
+  line-height: 22px;
 }
 
 .bodyInput::placeholder {
   color: #3c3c43;
   opacity: 0.3;
+}
+
+.bodyHint {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  color: #3c3c43;
+  opacity: 0.4;
+  margin-top: 4px;
 }
 
 /* Keyword reference section */
