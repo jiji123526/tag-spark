@@ -67,7 +67,6 @@ export default function WeatherPopup({ onClose }: Props) {
       setPhase("result");
     } catch {
       setPhase("error");
-      setTimeout(onClose, 1500);
     }
   };
 
@@ -150,7 +149,11 @@ export default function WeatherPopup({ onClose }: Props) {
       <div className={styles.overlay}>
         <div className={styles.popup}>
           <div className={styles.popupBody}>
-            <p className={styles.question}>위치를 가져올 수 없어요 😢</p>
+            <p className={styles.title}>위치를 가져올 수 없어요</p>
+            <p className={styles.subtitle}>위치 권한을 허용해주시면<br />날씨 기반 추천을 받을 수 있어요.</p>
+          </div>
+          <div className={styles.buttons}>
+            <button className={styles.accept} onClick={onClose}>확인</button>
           </div>
         </div>
       </div>

@@ -36,10 +36,14 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
 
 export function getLocation(): Promise<{ lat: number; lon: number }> {
   return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation not supported"));
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       (err) => reject(err),
-      { timeout: 10000 }
+      { timeout: 30000, enableHighAccuracy: false, maximumAge: 300000 }
     );
   });
 }
