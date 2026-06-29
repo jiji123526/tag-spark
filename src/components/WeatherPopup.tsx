@@ -195,7 +195,16 @@ export default function WeatherPopup({ onClose }: Props) {
 function ImageCarousel() {
   const [current, setCurrent] = useState(0);
   const startX = useRef(0);
-  const slides = 3;
+  const [images] = useState(() => {
+    const imgs = [
+      new URL("../assets/images/popup/spring.png", import.meta.url).href,
+      new URL("../assets/images/popup/summer.png", import.meta.url).href,
+      new URL("../assets/images/popup/fall.png", import.meta.url).href,
+      new URL("../assets/images/popup/winter.png", import.meta.url).href,
+    ];
+    return imgs.sort(() => Math.random() - 0.5);
+  });
+  const slides = images.length;
 
   const handleTouchStart = (e: TouchEvent) => {
     startX.current = e.touches[0].clientX;
@@ -215,15 +224,17 @@ function ImageCarousel() {
         onTouchEnd={handleTouchEnd}
       >
         <div className={styles.carouselTrack} style={{ transform: `translateX(-${current * 100}%)` }}>
-          <div className={styles.carouselSlide}><span className={styles.imagePlaceholder}>🖼️</span></div>
-          <div className={styles.carouselSlide}><span className={styles.imagePlaceholder}>🖼️</span></div>
-          <div className={styles.carouselSlide}><span className={styles.imagePlaceholder}>🖼️</span></div>
+          {images.map((src, i) => (
+            <div key={i} className={styles.carouselSlide}>
+              <img src={src} alt="" className={styles.carouselImage} />
+            </div>
+          ))}
         </div>
-      </div>
-      <div className={styles.dots}>
-        {[0, 1, 2].map(i => (
-          <span key={i} className={i === current ? styles.dotActive : styles.dot} onClick={() => setCurrent(i)} />
-        ))}
+        <div className={styles.dots}>
+          {images.map((_, i) => (
+            <span key={i} className={i === current ? styles.dotActive : styles.dot} onClick={() => setCurrent(i)} />
+          ))}
+        </div>
       </div>
     </>
   );
