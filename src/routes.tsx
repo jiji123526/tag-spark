@@ -7,6 +7,7 @@ import Onboarding from "./pages/Onboarding";
 import Index from "./pages/Index";
 import Recommend from "./pages/Recommend";
 import List from "./pages/List";
+import WeatherTest from "./pages/WeatherTest";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
@@ -22,6 +23,7 @@ const AppRoutes = () => (
     <Route path="/mobile-index" element={<Index />} />
     <Route path="/mobile-recom" element={<Recommend />} />
     <Route path="/mobile-list" element={<List />} />
+    <Route path="/weather-test" element={<WeatherTest />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

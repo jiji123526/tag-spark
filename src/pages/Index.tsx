@@ -12,6 +12,7 @@ import { Tag } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
 import ContextMenu from "../components/ContextMenu";
+import WeatherPopup from "../components/WeatherPopup";
 
 const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
@@ -48,6 +49,7 @@ const MobileIndex: FunctionComponent = () => {
   const [excluded, setExcluded] = useState<number[]>([]);
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showWeather, setShowWeather] = useState(() => !sessionStorage.getItem("weather-popup-shown"));
   const handleMenuToggle = () => setMenuOpen((v) => !v);
 
   const goToResults = () => {
@@ -312,6 +314,9 @@ const MobileIndex: FunctionComponent = () => {
 
         {menuOpen && (
           <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
+        )}
+        {showWeather && (
+          <WeatherPopup onClose={() => { setShowWeather(false); sessionStorage.setItem("weather-popup-shown", "1"); }} />
         )}
         <footer className="py-4 text-center text-sm text-muted-foreground border-t">
           © 2025 @cxwdxggy <br /> 문의는 메뉴 탭의 요청 폼 또는 트위터(X) 디엠 주세요.
