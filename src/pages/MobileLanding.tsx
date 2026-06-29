@@ -1,19 +1,19 @@
 import { FunctionComponent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './MobileLanding.module.css';
-import wallpaper from "../assets/Wallpaper.png";
-import flashlight from "../assets/Flashlight.svg";
-import camera from "../assets/Camera.svg";
-import mobileSignal from "../assets/Mobile Signal.svg";
-import wifi from "../assets/Wifi.svg";
-import outline from "../assets/_StatusBar-battery.svg";
-import batteryEnd from "../assets/_LockScreen-widget.svg";
-import fill from "../assets/moon.fill.svg";
-import imagePng from "../assets/Image.png";
-import closeSvg from "../assets/Close.svg";
-import appclipIcon from "../assets/_AppClip-icon.svg";
-import logoSvg from "../assets/Logo.svg";
-import chevronForward from "../assets/chevron.forward.svg";
+import wallpaper from "../assets/images/Wallpaper.png";
+import flashlight from "../assets/icons/Flashlight.svg";
+import camera from "../assets/icons/Camera.svg";
+import mobileSignal from "../assets/icons/Mobile Signal.svg";
+import wifi from "../assets/icons/Wifi.svg";
+import outline from "../assets/icons/_StatusBar-battery.svg";
+import batteryEnd from "../assets/illustrations/_LockScreen-widget.svg";
+import fill from "../assets/icons/moon.fill.svg";
+import imagePng from "../assets/images/Image.png";
+import closeSvg from "../assets/icons/Close.svg";
+import appclipIcon from "../assets/illustrations/_AppClip-icon.svg";
+import logoSvg from "../assets/illustrations/Logo.svg";
+import chevronForward from "../assets/icons/chevron.forward.svg";
 
 
 const MobileLanding:FunctionComponent = () => {

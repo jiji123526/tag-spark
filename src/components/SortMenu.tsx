@@ -2,8 +2,8 @@ import { FunctionComponent, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styles from './SortMenu.module.css';
-import ArrowIcon from "../assets/contextmenu/Arrow.svg";
-import SepIcon from "../assets/contextmenu/sep.svg";
+import ArrowIcon from "../assets/icons/contextmenu/Arrow.svg";
+import SepIcon from "../assets/icons/contextmenu/sep.svg";
 
 export type SortMenuItem = {
   label: string;

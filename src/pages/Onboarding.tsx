@@ -1,14 +1,14 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './OnBoarding.module.css';
+import styles from './Onboarding.module.css';
 
-import TailIcon from "../assets/OnBoarding/Tail.svg";
-import Tail1Icon from "../assets/OnBoarding/Tail-1.svg";
-import AvatarIcon from "../assets/OnBoarding/Avatar.svg";
-import ChevronIcon from "../assets/OnBoarding/Chevron.svg";
-import BackIcon from "../assets/OnBoarding/Back.svg";
-import PlusIcon from "../assets/OnBoarding/plus.svg";
-import MicIcon from "../assets/OnBoarding/sending.svg";
+import TailIcon from "../assets/icons/onboarding/Tail.svg";
+import Tail1Icon from "../assets/icons/onboarding/Tail-1.svg";
+import AvatarIcon from "../assets/icons/onboarding/Avatar.svg";
+import ChevronIcon from "../assets/icons/onboarding/Chevron.svg";
+import BackIcon from "../assets/icons/onboarding/Back.svg";
+import PlusIcon from "../assets/icons/onboarding/plus.svg";
+import MicIcon from "../assets/icons/onboarding/sending.svg";
 
 
 const OnBoarding:FunctionComponent = () => {

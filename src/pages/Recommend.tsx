@@ -1,9 +1,9 @@
 import { FunctionComponent, useMemo, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import LeftIcon from "../assets/mobilerecom/left.svg";
-import MenuIcon from "../assets/mobilerecom/menu.svg";
-import MagIcon from "../assets/mobilerecom/tag.svg";
-import styles from './mobilerecom.module.css';
+import LeftIcon from "../assets/icons/recommend/left.svg";
+import MenuIcon from "../assets/icons/recommend/menu.svg";
+import MagIcon from "../assets/icons/recommend/tag.svg";
+import styles from './Recommend.module.css';
 
 import { Tag, Work, WorkTag } from "@/lib/types";
 import { computeRecommendations } from "@/lib/reco";

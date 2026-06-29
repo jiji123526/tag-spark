@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import styles from './WebLanding.module.css';
 
 // Import assets (SVGs) from src/assets
-import wallpaperLight from '../assets/Light-mode.svg';
-import appsInDock from '../assets/Apps in Dock.svg';
-import statusBar from '../assets/Status Bar.svg';
-import appStorePopup from '../assets/AppStore.svg';
+import wallpaperLight from '../assets/illustrations/Light-mode.svg';
+import appsInDock from '../assets/illustrations/Apps in Dock.svg';
+import statusBar from '../assets/illustrations/Status Bar.svg';
+import appStorePopup from '../assets/illustrations/AppStore.svg';
 
 const WebLanding: FunctionComponent = () => {
   return (

@@ -1,11 +1,11 @@
 import { FunctionComponent, useState, KeyboardEvent, useEffect, useRef } from 'react';
-import styles from './mobileIndex.module.css';
+import styles from './Index.module.css';
 
-import backIcon from "../assets/mobileIndex/back.svg";
-import groupSvg from "../assets/mobileIndex/Group.svg";
-import magnifyingGlass from "../assets/mobileIndex/Magnifyingglass.svg";
-import extraIcon from "../assets/mobileIndex/x.svg";
-import menuIcon from "../assets/mobileIndex/menu.svg";
+import backIcon from "../assets/icons/index/back.svg";
+import groupSvg from "../assets/icons/index/Group.svg";
+import magnifyingGlass from "../assets/icons/index/Magnifyingglass.svg";
+import extraIcon from "../assets/icons/index/x.svg";
+import menuIcon from "../assets/icons/index/menu.svg";
 
 import { useNavigate } from 'react-router-dom';
 import { Tag } from "@/lib/types";

@@ -1,159 +1,99 @@
-# 🌟 Tag-Spark: Tag-based Recommendation Tool  
+# Tag Spark
 
-**Tag-Spark** is a web application that recommends online novels based on selected tags.  
-Built with **React**, **Vite**, **TypeScript**, **Tailwind**, and **shadcn/ui**.  
+태그 기반 작품 추천 웹앱. 사용자가 선호하는 태그를 선택하면 유사한 작품을 추천해줍니다.
 
----
+## Tech Stack
 
-## ✨ Key Features  
+- **Frontend:** React 18, TypeScript, Vite
+- **Styling:** Tailwind CSS + CSS Modules
+- **UI Components:** shadcn/ui (Radix primitives)
+- **Database:** Neon (serverless Postgres)
+- **Deployment:** Vercel (static frontend + serverless API)
 
-- 🔍 **Tag Search & Selection**  
-  - Search tags (with aliases) and filter by category.  
-
-- ✅ **Exact Match Recommendations**  
-  - Works containing *all* selected tags appear at the top.  
-
-- 🔄 **Similarity-based Recommendations**  
-  - Up to 10 additional works suggested using tag, alias, and category similarity.  
-
-- 🏷 **Tag Chips**  
-  - Selected tags displayed as interactive chips on the results page.  
-
-- 🔗 **Direct Links**  
-  - Click a title to open its original source.  
-
-- 📋 **Catalog View**  
-  - Searchable, filterable catalog of works with title, author, and tags.  
-
-- 📂 **Navigation Menu**  
-  - Access recommendations, add works, or request tag edits.  
-
----
-
-## 📊 Product Planning Highlights 
-
-- **MVP Definition:**  
-  - Core flow: Tag selection → Recommendation results.  
-  - Focused on speed and intuitive interaction.  
-
-- **Next Steps:**  
-  - Collect anonymous interaction logs (popular tags, click-throughs).  
-  - Enhance recommendation pipeline with clustering logic.  
-  - Add persistence and personalization via Firebase/Supabase.  
-
-- **Expansion Opportunities:**  
-  - Integrate AI-powered content summaries (LLM API).  
-  - Run A/B testing on recommendation ranking and UI variations.  
-  - Build an admin dashboard to track usage trends and tag popularity.  
-
-## 🧩 System Pipeline  
-
-1. **Input: Tag Selection**  
-   - Users search and select tags.  
-   - Aliases and categories are automatically resolved.  
-
-2. **Processing: Recommendation Engine**  
-   - **Exact Match**: Filters works containing all chosen tags.  
-   - **Similarity Match**: Calculates similarity scores based on:  
-     - Shared tags  
-     - Alias matching  
-     - Category overlap  
-   - Sorts results by weight and limits similar matches to top 10.  
-
-3. **Output: Recommendation Results**  
-   - Displays prioritized exact matches, followed by similar works.  
-   - Includes direct links and tag chips for context.  
-
----
-
-## 🛠 Tech Stack  
-
-- ⚛️ React 18  
-- ⚡ Vite  
-- 🟦 TypeScript  
-- 🗺 React Router  
-- 🎨 Tailwind CSS  
-- 🧩 shadcn/ui  
-- ☁️ Deployment: Vercel  
-
----
-
-## 📂 Project Structure  
-
-```
-src/  
- ├─ components/   # UI components (Header, WorkCard, etc.)  
- ├─ data/         # Static data: tags.ts, works.ts, workTags.ts  
- ├─ lib/          # Core logic (recommendation pipeline)  
- ├─ pages/        # App pages (Index, Loading, Recommendations, CatalogSheet)  
-```  
-
----
-
-## 🚀 Getting Started  
+## Getting Started
 
 ```bash
-# 1. Install dependencies
-npm ci
+# Install dependencies
+npm install
 
-# 2. Start development server
+# Set up environment
+cp .env.example .env
+# Add your Neon DATABASE_URL to .env
+
+# Start dev server
 npm run dev
+```
 
-# 3. Optional: Type checking
-npm run typecheck
-```  
+The app runs at `http://localhost:8080`.
 
----
+## Project Structure
 
-## 📦 Build & Deployment  
+```
+tag-spark/
+├── api/                        # Vercel serverless functions
+│   ├── reco-data.js            # Returns works, tags, work_tags
+│   ├── scrape.js               # Cron: scrapes work metadata
+│   ├── tags.js                 # Returns all tags
+│   └── works.js                # CRUD for works
+├── src/
+│   ├── assets/
+│   │   ├── icons/              # UI icons (per-page subfolders)
+│   │   ├── images/             # Raster images
+│   │   └── illustrations/      # Large decorative SVGs
+│   ├── components/
+│   │   ├── ui/                 # shadcn/ui primitives
+│   │   ├── AddWorkCompose.tsx  # Add work form
+│   │   ├── ContextMenu.tsx     # Long-press context menu
+│   │   ├── Header.tsx          # Page header
+│   │   ├── SortMenu.tsx        # Sort options menu
+│   │   └── WorkCard.tsx        # Work display card
+│   ├── hooks/
+│   │   └── use-toast.ts
+│   ├── lib/
+│   │   ├── reco.ts             # Recommendation algorithm
+│   │   ├── types.ts            # Shared TypeScript types
+│   │   └── utils.ts            # Utility functions
+│   ├── pages/
+│   │   ├── Index.tsx           # Tag selection (mobile)
+│   │   ├── List.tsx            # Work list with filters
+│   │   ├── Loading.tsx         # Loading screen
+│   │   ├── MobileLanding.tsx   # Mobile landing/lock screen
+│   │   ├── NotFound.tsx        # 404
+│   │   ├── Onboarding.tsx      # First-time onboarding
+│   │   ├── Recommend.tsx       # Recommendation results
+│   │   └── WebLanding.tsx      # Desktop landing
+│   ├── styles/
+│   │   └── global.css          # Global styles & fonts
+│   ├── App.tsx                 # Root component (providers)
+│   ├── routes.tsx              # Route definitions
+│   └── main.tsx                # Entry point
+├── .env                        # DATABASE_URL (not committed)
+├── vercel.json                 # Vercel config (cron + rewrites)
+├── vite.config.ts              # Vite config + local API middleware
+└── tailwind.config.ts
+```
 
-- **Deploy to Vercel**:  
-  1. Push repository to GitHub  
-  2. On Vercel: Add New → Project → Select Repo  
-  3. Framework: Vite  
-  4. Build command: `npm run build`  
-  5. Output directory: `dist`  
-  6. Deploy → Automatic on `main` branch  
+## Scripts
 
----
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
 
-## 📊 Data Model  
+## Environment Variables
 
-**Tags (tags.ts)**  
-```ts
-{id: number, name: string, category: string, aliases?: string[]}
-```  
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Neon Postgres connection string |
 
-**Works (works.ts)**  
-```ts
-{id: number, title: string, author: string, source_url: string}
-```  
+## How It Works
 
-**Tag Mapping (workTags.ts)**  
-```ts
-{work_id: number, tag_id: number, weight: number}
-```  
+1. User selects tags that describe their preferences
+2. The recommendation engine (`src/lib/reco.ts`) scores works based on tag overlap, category weights, and alias matching
+3. Results are ranked and displayed with relevant metadata
 
----
+## Deployment
 
-## 📈 Routes  
-
-- `/` — Tag selection  
-- `/loading` — Loading screen  
-- `/recommendations?tags=…` — Recommendation results  
-- `/catalog-sheet` — Catalog of all works  
-
----
-
-## ⚠️ Common Issues  
-
-- Changes not reflected → check Vercel branch or trigger force deploy.  
-- Dev server errors → run `npm ci && npm run dev`.  
-
----
-
-## 📜 License  
-
-Free for personal/non-commercial use.  
-For commercial use, please contact the repository owner.  
-
+Push to main → Vercel auto-deploys. The `api/` directory becomes serverless functions, and `vercel.json` configures a daily scrape cron at 3 AM UTC.
