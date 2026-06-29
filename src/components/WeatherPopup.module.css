@@ -99,13 +99,15 @@
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.6);
   letter-spacing: -0.02em;
+  margin: 14px 0;
+  padding: 0;
 }
 
 .buttons {
   display: flex;
   flex-direction: column;
   border-top: 0.5px solid rgba(60, 60, 67, 0.18);
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .accept, .decline {
