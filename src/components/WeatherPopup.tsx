@@ -1,4 +1,4 @@
-import { useState, useRef, TouchEvent } from "react";
+import { useState } from "react";
 import { getLocation, fetchWeather } from "@/lib/weather";
 import { mapWeatherToTags, WeatherRecommendation, pickWeightedTags } from "@/lib/weather-tags";
 import { Tag, Work, WorkTag } from "@/lib/types";
@@ -201,49 +201,17 @@ export default function WeatherPopup({ onClose }: Props) {
 }
 
 function ImageCarousel() {
-  const [current, setCurrent] = useState(0);
-  const startX = useRef(0);
-  const [images] = useState(() => {
+  const [image] = useState(() => {
     const imgs = [
       new URL("../assets/images/popup/spring.png", import.meta.url).href,
       new URL("../assets/images/popup/summer.png", import.meta.url).href,
       new URL("../assets/images/popup/fall.png", import.meta.url).href,
       new URL("../assets/images/popup/winter.png", import.meta.url).href,
     ];
-    return imgs.sort(() => Math.random() - 0.5);
+    return imgs[Math.floor(Math.random() * imgs.length)];
   });
-  const slides = images.length;
-
-  const handleTouchStart = (e: TouchEvent) => {
-    startX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: TouchEvent) => {
-    const diff = startX.current - e.changedTouches[0].clientX;
-    if (diff > 40 && current < slides - 1) setCurrent(current + 1);
-    if (diff < -40 && current > 0) setCurrent(current - 1);
-  };
 
   return (
-    <>
-      <div
-        className={styles.carousel}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className={styles.carouselTrack} style={{ transform: `translateX(-${current * 100}%)` }}>
-          {images.map((src, i) => (
-            <div key={i} className={styles.carouselSlide}>
-              <img src={src} alt="" className={styles.carouselImage} />
-            </div>
-          ))}
-        </div>
-        <div className={styles.dots}>
-          {images.map((_, i) => (
-            <span key={i} className={i === current ? styles.dotActive : styles.dot} onClick={() => setCurrent(i)} />
-          ))}
-        </div>
-      </div>
-    </>
+    <img src={image} alt="" className={styles.carouselImage} />
   );
 }
