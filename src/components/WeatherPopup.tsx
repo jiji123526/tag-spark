@@ -20,7 +20,15 @@ export default function WeatherPopup({ onClose }: Props) {
   const handleAccept = async () => {
     setPhase("loading");
     try {
-      const { lat, lon } = await getLocation();
+      let lat = 37.5665;
+      let lon = 126.978;
+      try {
+        const loc = await getLocation();
+        lat = loc.lat;
+        lon = loc.lon;
+      } catch {
+        // Fall back to Seoul, Korea
+      }
       const weather = await fetchWeather(lat, lon);
       const rec = mapWeatherToTags(weather, lat);
       setWeatherRec(rec);
