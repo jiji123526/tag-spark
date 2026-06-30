@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
 import ContextMenu from "../components/ContextMenu";
 import WeatherPopup from "../components/WeatherPopup";
+import EditWorkTags from "../components/EditWorkTags";
 
 const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
@@ -49,6 +50,7 @@ const MobileIndex: FunctionComponent = () => {
   const [excluded, setExcluded] = useState<number[]>([]);
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [showWeather, setShowWeather] = useState(() => !sessionStorage.getItem("weather-popup-shown"));
   const handleMenuToggle = () => setMenuOpen((v) => !v);
 
@@ -313,8 +315,9 @@ const MobileIndex: FunctionComponent = () => {
           </section>
 
         {menuOpen && (
-          <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
+          <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
         )}
+        <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} />
         {showWeather && (
           <WeatherPopup onClose={() => { setShowWeather(false); sessionStorage.setItem("weather-popup-shown", "1"); }} />
         )}

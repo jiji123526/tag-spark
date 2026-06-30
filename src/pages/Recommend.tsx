@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo, useEffect, useState, useRef } from 'react';
+import { FunctionComponent, useMemo, useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import LeftIcon from "../assets/icons/recommend/left.svg";
 import MenuIcon from "../assets/icons/recommend/menu.svg";
@@ -9,6 +9,7 @@ import { Tag, Work, WorkTag } from "@/lib/types";
 import { computeRecommendations } from "@/lib/reco";
 
 import ContextMenu from "../components/ContextMenu";
+import EditWorkTags from "../components/EditWorkTags";
 
 const PAGE_SIZE = 10;
 function shuffle<T>(arr: T[]): T[] {
@@ -25,6 +26,7 @@ const mobilerecom:FunctionComponent = () => {
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editTagsOpen, setEditTagsOpen] = useState(false);
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch data from API
@@ -32,18 +34,22 @@ const mobilerecom:FunctionComponent = () => {
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [mappings, setMappings] = useState<WorkTag[]>([]);
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
     fetch("/api/reco-data")
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
           setAllWorks(data.works);
           setAllTags(data.tags);
-          setMappings(data.workTags.map((wt: any) => ({ work_id: wt.work_id, tag_id: wt.tag_id, weight: wt.weight })));
+          setMappings(data.workTags.map((workTag: WorkTag) => ({ work_id: workTag.work_id, tag_id: workTag.tag_id, weight: workTag.weight })));
         }
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // selected / excluded ids from query
   const selected = useMemo(() => {
@@ -289,9 +295,10 @@ const mobilerecom:FunctionComponent = () => {
                 								</div>
                 								</div>
                 								{menuOpen && (
-                            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
+                            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
                           )}
+                          <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={loadData} />
                 								</div>);
-              							};
-              							
-              							export default mobilerecom;
+};
+
+export default mobilerecom;

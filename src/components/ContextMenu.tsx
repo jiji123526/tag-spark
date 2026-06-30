@@ -8,10 +8,11 @@ import SepIcon from "../assets/icons/contextmenu/sep.svg";
 type ContextMenuProps = {
   open: boolean;
   onClose: () => void;
+  onEditTags: () => void;
   anchorRef?: React.RefObject<HTMLElement>;
 };
 
-const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, anchorRef }) => {
+const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, onEditTags, anchorRef }) => {
 	const navigate = useNavigate();
 
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -86,11 +87,9 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, ancho
           </div>
         </div>
       </a>
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLScU-elPQxC2vlIifZkISf8Z6jhAC3zZA1Anw8-Xa8kY7gc-Sg/viewform"
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onClose}
+      <button
+        type="button"
+        onClick={() => { onClose(); onEditTags(); }}
         className={styles.tableViewRow}
       >
         <div className={styles.tableViewRowLeft}>
@@ -105,7 +104,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, ancho
             </div>
           </div>
         </div>
-      </a>
+      </button>
     </div>,
     document.body
   );

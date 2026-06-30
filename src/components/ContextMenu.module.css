@@ -18,6 +18,15 @@
   align-self: stretch;
   position: relative;
   height: 44px;
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .tableViewRowLeft {
   position: absolute;

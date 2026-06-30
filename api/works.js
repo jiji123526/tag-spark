@@ -54,5 +54,57 @@ export default async function handler(req, res) {
     return res.status(201).json(work);
   }
 
+  if (req.method === "PATCH") {
+    const workId = Number(req.body?.work_id);
+    const requestedTags = Array.isArray(req.body?.tags) ? req.body.tags : null;
+    const tagIds = requestedTags
+      ? [...new Set(requestedTags.map(Number))].filter(Number.isInteger)
+      : [];
+
+    if (!Number.isInteger(workId) || !requestedTags || tagIds.length !== requestedTags.length) {
+      return res.status(400).json({ error: "유효한 작품과 키워드를 선택해주세요." });
+    }
+
+    const [work] = await sql`SELECT id FROM works WHERE id = ${workId}`;
+    if (!work) {
+      return res.status(404).json({ error: "작품을 찾을 수 없습니다." });
+    }
+
+    const selectedTags = await sql`
+      SELECT id, category
+      FROM tags
+      WHERE id IN (
+        SELECT value::int
+        FROM jsonb_array_elements_text(${JSON.stringify(tagIds)}::jsonb)
+      )
+    `;
+
+    if (selectedTags.length !== tagIds.length) {
+      return res.status(400).json({ error: "존재하지 않는 키워드가 포함되어 있습니다." });
+    }
+
+    const categories = new Set(selectedTags.map((tag) => tag.category));
+    if (!categories.has("분량") || !categories.has("완결여부")) {
+      return res.status(400).json({ error: "분량과 완결여부 키워드를 각각 하나 이상 선택해주세요." });
+    }
+
+    await sql`
+      WITH desired AS (
+        SELECT value::int AS tag_id
+        FROM jsonb_array_elements_text(${JSON.stringify(tagIds)}::jsonb)
+      ), deleted AS (
+        DELETE FROM work_tags
+        WHERE work_id = ${workId}
+          AND tag_id NOT IN (SELECT tag_id FROM desired)
+      )
+      INSERT INTO work_tags (work_id, tag_id, weight)
+      SELECT ${workId}, tag_id, 1
+      FROM desired
+      ON CONFLICT DO NOTHING
+    `;
+
+    return res.status(200).json({ work_id: workId, tags: tagIds });
+  }
+
   res.status(405).json({ error: "Method not allowed" });
 }

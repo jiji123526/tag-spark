@@ -3,6 +3,7 @@ import { useRef, useState, KeyboardEvent, useMemo, useEffect } from 'react';
 import ContextMenu from "../components/ContextMenu";
 import SortMenu, { SortMenuItem } from "../components/SortMenu";
 import AddWorkCompose from "../components/AddWorkCompose";
+import EditWorkTags from "../components/EditWorkTags";
 import styles from './List.module.css';
 import backIcon from "../assets/icons/index/back.svg";
 import menuIcon from "../assets/icons/index/menu.svg";
@@ -18,7 +19,7 @@ const MobileHeader = () => {
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [mappings, setMappings] = useState<WorkTag[]>([]);
 
-  useEffect(() => {
+  const loadData = () => {
     fetch("/api/reco-data")
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -29,6 +30,10 @@ const MobileHeader = () => {
         }
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
   const navigate = useNavigate();
@@ -38,6 +43,7 @@ const MobileHeader = () => {
   const sortBtnRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
   const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
   const [composeOpen, setComposeOpen] = useState(false);
+  const [editTagsOpen, setEditTagsOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const compareByAuthorTitle = (a: {author: string; title: string}, b: {author: string; title: string}) => {
@@ -278,9 +284,10 @@ const MobileHeader = () => {
         />
       )}
       {menuOpen && (
-        <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} anchorRef={menuBtnRef} />
+        <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
       )}
       <AddWorkCompose open={composeOpen} onOpenChange={setComposeOpen} />
+      <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={loadData} />
     </>
   );
 }
