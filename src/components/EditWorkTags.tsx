@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 import { Tag, Work, WorkTag } from "@/lib/types";
 import styles from "./EditWorkTags.module.css";
@@ -36,6 +36,16 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const closeTimerRef = useRef<number | null>(null);
+  const fieldsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => () => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (selectedWorkId !== null) fieldsRef.current?.scrollTo({ top: 0 });
+  }, [selectedWorkId]);
 
   useEffect(() => {
     if (!open) return;
@@ -137,6 +147,20 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
     setMessage("");
   };
 
+  const close = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setSelectedWorkId(null);
+    setSelectedTagIds([]);
+    setOriginalTagIds([]);
+    setWorkQuery("");
+    setTagQuery("");
+    setMessage("");
+    onOpenChange(false);
+  };
+
   const save = async () => {
     if (!canSave || selectedWorkId === null) return;
     setSaving(true);
@@ -155,21 +179,12 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
       setOriginalTagIds(selectedTagIds);
       onSaved?.();
       setMessage("키워드가 수정되었습니다.");
+      closeTimerRef.current = window.setTimeout(close, 3000);
     } catch {
       setMessage("수정에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setSaving(false);
     }
-  };
-
-  const close = () => {
-    setSelectedWorkId(null);
-    setSelectedTagIds([]);
-    setOriginalTagIds([]);
-    setWorkQuery("");
-    setTagQuery("");
-    setMessage("");
-    onOpenChange(false);
   };
 
   const handleCancel = () => {
@@ -206,7 +221,7 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
             )}
           </div>
 
-          <div className={composeStyles.fields}>
+          <div ref={fieldsRef} className={composeStyles.fields}>
             {message && <div className={message.includes("되었습니다") ? styles.success : composeStyles.duplicateError}>{message}</div>}
             {loading ? (
               <div className={styles.empty}>불러오는 중...</div>

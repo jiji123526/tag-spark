@@ -136,7 +136,7 @@
   height: 17px;
 }
 
-.currentKeywordsRow {
+.currentKeywordsRow.currentKeywordsRow {
   align-items: flex-start;
 }
 
@@ -222,7 +222,10 @@
 .requirement, .error { color: #ff3b30; font-size: 13px; }
 .requirement { margin: 9px 2px 0; }
 .error, .success { margin-bottom: 10px; border-radius: 8px; padding: 9px 10px; background: #f2f2f7; }
-.success { color: #248a3d; font-size: 13px; }
+.success {
+  color: #007aff;
+  font-size: 13px;
+}
 
 .tagButton {
   border: none;
