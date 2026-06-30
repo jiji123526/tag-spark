@@ -273,7 +273,7 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
                   <div className={composeStyles.tagFieldContent}>
                     {selectedTagIds.map((tagId) => {
                       const tag = tags.find((candidate) => candidate.id === tagId);
-                      if (!tag) return null;
+                      if (!tag || tag.id === 900) return null;
                       return (
                         <button
                           type="button"
@@ -292,7 +292,7 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
                 <div className={`${composeStyles.tagReference} ${styles.keywordList}`}>
                   <div className={composeStyles.tagReferenceTitle}>키워드 목록</div>
                   {categories.map((category) => {
-                    const categoryTags = tags.filter((tag) => tag.category === category);
+                    const categoryTags = tags.filter((tag) => tag.category === category && tag.id !== 900);
                     if (categoryTags.length === 0) return null;
                     return (
                       <section key={category} className={composeStyles.tagReferenceGroup}>
