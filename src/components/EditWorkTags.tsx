@@ -29,7 +29,6 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
   const [tags, setTags] = useState<Tag[]>([]);
   const [mappings, setMappings] = useState<WorkTag[]>([]);
   const [workQuery, setWorkQuery] = useState("");
-  const [tagQuery, setTagQuery] = useState("");
   const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [originalTagIds, setOriginalTagIds] = useState<number[]>([]);
@@ -111,15 +110,6 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
     return [...matchingWorks].sort(compareByAuthorTitle);
   }, [tagsByWorkId, workQuery, works]);
 
-  const filteredTags = useMemo(() => {
-    const query = tagQuery.trim().toLowerCase();
-    if (!query) return tags;
-    return tags.filter((tag) =>
-      tag.name.toLowerCase().includes(query) ||
-      (tag.aliases ?? []).some((alias) => alias.toLowerCase().includes(query))
-    );
-  }, [tagQuery, tags]);
-
   const selectedWork = works.find((work) => work.id === selectedWorkId);
   const selectedCategories = new Set(
     tags.filter((tag) => selectedTagIds.includes(tag.id)).map((tag) => tag.category)
@@ -137,7 +127,6 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
     setSelectedTagIds(workTagIds);
     setOriginalTagIds(workTagIds);
     setMessage("");
-    setTagQuery("");
   };
 
   const toggleTag = (tagId: number) => {
@@ -156,7 +145,6 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
     setSelectedTagIds([]);
     setOriginalTagIds([]);
     setWorkQuery("");
-    setTagQuery("");
     setMessage("");
     onOpenChange(false);
   };
@@ -195,7 +183,6 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
     setSelectedWorkId(null);
     setSelectedTagIds([]);
     setOriginalTagIds([]);
-    setTagQuery("");
     setMessage("");
   };
 
@@ -295,26 +282,11 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
                     })}
                   </div>
                 </div>
-                <div className={`${styles.searchBar} ${styles.tagSearchBar}`}>
-                  <img className={styles.searchIcon} src={magnifyingglassIcon} alt="" />
-                  <input
-                    className={styles.searchInput}
-                    value={tagQuery}
-                    onChange={(event) => setTagQuery(event.target.value)}
-                    placeholder="키워드 검색"
-                    aria-label="키워드 검색"
-                  />
-                  {tagQuery && (
-                    <button type="button" className={styles.clearButton} onClick={() => setTagQuery("")} aria-label="검색어 지우기">
-                      <img src={clearIcon} alt="" />
-                    </button>
-                  )}
-                </div>
                 {!hasRequiredTags && <p className={styles.requirement}>분량과 완결여부 키워드를 각각 하나 이상 선택해주세요.</p>}
-                <div className={composeStyles.tagReference}>
+                <div className={`${composeStyles.tagReference} ${styles.keywordList}`}>
                   <div className={composeStyles.tagReferenceTitle}>키워드 목록</div>
                   {categories.map((category) => {
-                    const categoryTags = filteredTags.filter((tag) => tag.category === category);
+                    const categoryTags = tags.filter((tag) => tag.category === category);
                     if (categoryTags.length === 0) return null;
                     return (
                       <section key={category} className={composeStyles.tagReferenceGroup}>
