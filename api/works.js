@@ -1,5 +1,30 @@
 import { neon } from "@neondatabase/serverless";
 
+function normalizeTagIds(requestedTags) {
+  if (!Array.isArray(requestedTags)) return null;
+  const tagIds = [...new Set(requestedTags.map(Number))].filter(Number.isInteger);
+  return tagIds.length === requestedTags.length ? tagIds : null;
+}
+
+async function getSelectedTags(sql, tagIds) {
+  return sql`
+    SELECT id, category
+    FROM tags
+    WHERE id IN (
+      SELECT value::int
+      FROM jsonb_array_elements_text(${JSON.stringify(tagIds)}::jsonb)
+    )
+  `;
+}
+
+function hasValidSingleSelectionCategories(selectedTags) {
+  const counts = selectedTags.reduce((result, tag) => {
+    result[tag.category] = (result[tag.category] ?? 0) + 1;
+    return result;
+  }, {});
+  return counts["분량"] === 1 && counts["완결여부"] === 1;
+}
+
 export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
@@ -25,6 +50,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "title, author, source_url required" });
     }
 
+    const tagIds = normalizeTagIds(tags);
+    if (!tagIds) {
+      return res.status(400).json({ error: "유효한 키워드를 선택해주세요." });
+    }
+    const selectedTags = await getSelectedTags(sql, tagIds);
+    if (selectedTags.length !== tagIds.length) {
+      return res.status(400).json({ error: "존재하지 않는 키워드가 포함되어 있습니다." });
+    }
+    if (!hasValidSingleSelectionCategories(selectedTags)) {
+      return res.status(400).json({ error: "분량과 완결여부 키워드를 각각 하나씩 선택해주세요." });
+    }
+
     // Check for duplicates
     const [dupByUrl] = await sql`SELECT id, title, author FROM works WHERE LOWER(source_url) = LOWER(${source_url.trim()}) LIMIT 1`;
     if (dupByUrl) {
@@ -41,8 +78,8 @@ export default async function handler(req, res) {
       RETURNING *
     `;
 
-    if (tags && tags.length > 0) {
-      for (const tagId of tags) {
+    if (tagIds.length > 0) {
+      for (const tagId of tagIds) {
         await sql`
           INSERT INTO work_tags (work_id, tag_id, weight)
           VALUES (${work.id}, ${tagId}, 1)
@@ -57,11 +94,9 @@ export default async function handler(req, res) {
   if (req.method === "PATCH") {
     const workId = Number(req.body?.work_id);
     const requestedTags = Array.isArray(req.body?.tags) ? req.body.tags : null;
-    const tagIds = requestedTags
-      ? [...new Set(requestedTags.map(Number))].filter(Number.isInteger)
-      : [];
+    const tagIds = normalizeTagIds(requestedTags);
 
-    if (!Number.isInteger(workId) || !requestedTags || tagIds.length !== requestedTags.length) {
+    if (!Number.isInteger(workId) || !tagIds) {
       return res.status(400).json({ error: "유효한 작품과 키워드를 선택해주세요." });
     }
 
@@ -70,22 +105,14 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "작품을 찾을 수 없습니다." });
     }
 
-    const selectedTags = await sql`
-      SELECT id, category
-      FROM tags
-      WHERE id IN (
-        SELECT value::int
-        FROM jsonb_array_elements_text(${JSON.stringify(tagIds)}::jsonb)
-      )
-    `;
+    const selectedTags = await getSelectedTags(sql, tagIds);
 
     if (selectedTags.length !== tagIds.length) {
       return res.status(400).json({ error: "존재하지 않는 키워드가 포함되어 있습니다." });
     }
 
-    const categories = new Set(selectedTags.map((tag) => tag.category));
-    if (!categories.has("분량") || !categories.has("완결여부")) {
-      return res.status(400).json({ error: "분량과 완결여부 키워드를 각각 하나 이상 선택해주세요." });
+    if (!hasValidSingleSelectionCategories(selectedTags)) {
+      return res.status(400).json({ error: "분량과 완결여부 키워드를 각각 하나씩 선택해주세요." });
     }
 
     await sql`

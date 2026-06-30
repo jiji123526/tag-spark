@@ -53,7 +53,16 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
   }, [tagQuery, selectedTags]);
 
   const handleAddTag = (tagId: number) => {
-    setSelectedTags(prev => [...prev, tagId]);
+    const tag = allTags.find(candidate => candidate.id === tagId);
+    setSelectedTags(prev => {
+      if (!tag || (tag.category !== "분량" && tag.category !== "완결여부")) {
+        return prev.includes(tagId) ? prev : [...prev, tagId];
+      }
+      const withoutSameCategory = prev.filter(id =>
+        allTags.find(candidate => candidate.id === id)?.category !== tag.category
+      );
+      return [...withoutSameCategory, tagId];
+    });
     setTagQuery("");
     setShowTagSuggestions(false);
   };

@@ -130,9 +130,15 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
   };
 
   const toggleTag = (tagId: number) => {
-    setSelectedTagIds((current) =>
-      current.includes(tagId) ? current.filter((id) => id !== tagId) : [...current, tagId]
-    );
+    const tag = tags.find(candidate => candidate.id === tagId);
+    setSelectedTagIds((current) => {
+      if (current.includes(tagId)) return current.filter((id) => id !== tagId);
+      if (!tag || (tag.category !== "분량" && tag.category !== "완결여부")) return [...current, tagId];
+      const withoutSameCategory = current.filter(id =>
+        tags.find(candidate => candidate.id === id)?.category !== tag.category
+      );
+      return [...withoutSameCategory, tagId];
+    });
     setMessage("");
   };
 
