@@ -295,7 +295,7 @@ const mobilerecom:FunctionComponent = () => {
                 								</div>
                 								</div>
                 								{menuOpen && (
-                            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
+                            <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} currentPath="/mobile-recom" anchorRef={menuBtnRef} />
                           )}
                           <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={loadData} />
                 								</div>);

@@ -54,9 +54,14 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
 
   if (anchorRef?.current) {
     const r = anchorRef.current.getBoundingClientRect();
+    // Clamp within the visible page area (max 430px centered)
+    const pageWidth = Math.min(430, window.innerWidth);
+    const pageLeft = (window.innerWidth - pageWidth) / 2;
+    const pageRight = pageLeft + pageWidth;
+
     const left = Math.min(
-      window.innerWidth - MENU_WIDTH - 8,
-      Math.max(8, r.right - MENU_WIDTH)
+      pageRight - MENU_WIDTH - 8,
+      Math.max(pageLeft + 8, r.left)
     );
     // 앵커 위로 띄우는 기존 포지셔닝 유지
     style.bottom = window.innerHeight - r.top + 8;

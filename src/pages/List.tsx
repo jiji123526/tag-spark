@@ -12,6 +12,8 @@ import microphoneIcon from "../assets/icons/list/x.svg";
 import chevronRightIcon from "../assets/icons/list/chevron.right.svg";
 import line3HorizontalIcon from "../assets/icons/list/sort.svg";
 import squareAndPencilIcon from "../assets/icons/list/square.and.pencil.svg";
+import sepIcon from "../assets/icons/contextmenu/sep.svg";
+import arrowIcon from "../assets/icons/contextmenu/Arrow.svg";
 import { Tag, Work, WorkTag } from "@/lib/types";
 
 const MobileHeader = () => {
@@ -44,6 +46,7 @@ const MobileHeader = () => {
   const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
   const [composeOpen, setComposeOpen] = useState(false);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
+  const [pencilMenuOpen, setPencilMenuOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const compareByAuthorTitle = (a: {author: string; title: string}, b: {author: string; title: string}) => {
@@ -262,9 +265,36 @@ const MobileHeader = () => {
             <div className={styles.updatesUnread}>
               <div className={styles.url}>{filtered.length} Works</div>
             </div>
-            <a onClick={() => setComposeOpen(true)} style={{ cursor: 'pointer' }}>
-              <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />
-            </a>
+            <div style={{ position: 'relative' }}>
+              <a onClick={() => setPencilMenuOpen((v) => !v)} style={{ cursor: 'pointer' }}>
+                <img className={styles.sfSymbolSquareandpencil} alt="" src={squareAndPencilIcon} />
+              </a>
+              {pencilMenuOpen && (
+                <>
+                  <div
+                    style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+                    onClick={() => setPencilMenuOpen(false)}
+                  />
+                  <div className={styles.pencilMenu}>
+                    <button
+                      className={styles.pencilMenuItem}
+                      onClick={() => { setPencilMenuOpen(false); setComposeOpen(true); }}
+                    >
+                      <span>새 작품 추가</span>
+                      <img className={styles.pencilMenuArrow} alt="" src={arrowIcon} />
+                    </button>
+                    <img className={styles.pencilMenuSeparator} alt="" src={sepIcon} />
+                    <button
+                      className={styles.pencilMenuItem}
+                      onClick={() => { setPencilMenuOpen(false); setEditTagsOpen(true); }}
+                    >
+                      <span>키워드 수정</span>
+                      <img className={styles.pencilMenuArrow} alt="" src={arrowIcon} />
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <div className={styles.homeindicator} />
         </div>
@@ -284,7 +314,7 @@ const MobileHeader = () => {
         />
       )}
       {menuOpen && (
-        <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
+        <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} currentPath="/mobile-list" anchorRef={menuBtnRef} />
       )}
       <AddWorkCompose open={composeOpen} onOpenChange={setComposeOpen} />
       <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={loadData} />

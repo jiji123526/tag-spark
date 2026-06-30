@@ -8,11 +8,24 @@ import SepIcon from "../assets/icons/contextmenu/sep.svg";
 type ContextMenuProps = {
   open: boolean;
   onClose: () => void;
-  onEditTags: () => void;
+  onEditTags?: () => void;
+  currentPath?: string;
   anchorRef?: React.RefObject<HTMLElement>;
 };
 
-const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, onEditTags, anchorRef }) => {
+type MenuItem = {
+  label: string;
+  path?: string;
+  href?: string;
+};
+
+const allItems: MenuItem[] = [
+  { label: '키워드 선택하기', path: '/mobile-index' },
+  { label: '현재 등록된 추천작', path: '/mobile-list' },
+  { label: '명대사 아카이브', href: 'https://recom-five.vercel.app/' },
+];
+
+const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, currentPath, anchorRef }) => {
 	const navigate = useNavigate();
 
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +47,8 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, onEdi
 
   if (!open) return null;
 
+  const items = allItems.filter((item) => item.path !== currentPath);
+
   const MENU_WIDTH = 240; // px
   const style: React.CSSProperties = { position: 'fixed', zIndex: 2000, width: MENU_WIDTH };
   if (anchorRef?.current) {
@@ -51,60 +66,51 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, onEdi
 
   return createPortal(
     <div className={styles.contextMenu} style={style} ref={menuRef} role="menu" aria-orientation="vertical">
-      <div className={styles.tableViewRow} onClick={() => { onClose(); navigate('/mobile-list'); }}>
-        <div className={styles.tableViewRowLeft}>
-          <div className={styles.stack}>
-            <div className={styles.title}>현재 등록된 추천작</div>
-          </div>
-        </div>
-        <img className={styles.separator0pt0ptIcon} alt="separator" src={SepIcon} />
-        <div className={styles.row}>
-          <div className={styles.tableViewRowRight}>
-            <div className={styles.arrow}>
-              <img className={styles.icon} alt="arrow" src={ArrowIcon} />
+      {items.map((item, idx) => {
+        const isLast = idx === items.length - 1;
+        const content = (
+          <>
+            <div className={styles.tableViewRowLeft}>
+              <div className={styles.stack}>
+                <div className={styles.title}>{item.label}</div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <a
-        href="https://recom-five.vercel.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onClose}
-        className={styles.tableViewRow}
-      >
-        <div className={styles.tableViewRowLeft}>
-          <div className={styles.stack}>
-            <div className={styles.title}>명대사 아카이브</div>
-          </div>
-        </div>
-        <img className={styles.separator0pt0ptIcon} alt="separator" src={SepIcon} />
-        <div className={styles.row}>
-          <div className={styles.tableViewRowRight}>
-            <div className={styles.arrow}>
-              <img className={styles.icon} alt="arrow" src={ArrowIcon} />
+            {!isLast && <img className={styles.separator0pt0ptIcon} alt="separator" src={SepIcon} />}
+            <div className={styles.row}>
+              <div className={styles.tableViewRowRight}>
+                <div className={styles.arrow}>
+                  <img className={styles.icon} alt="arrow" src={ArrowIcon} />
+                </div>
+              </div>
             </div>
+          </>
+        );
+
+        if (item.href) {
+          return (
+            <a
+              key={item.label}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className={styles.tableViewRow}
+            >
+              {content}
+            </a>
+          );
+        }
+
+        return (
+          <div
+            key={item.label}
+            className={styles.tableViewRow}
+            onClick={() => { onClose(); navigate(item.path!); }}
+          >
+            {content}
           </div>
-        </div>
-      </a>
-      <button
-        type="button"
-        onClick={() => { onClose(); onEditTags(); }}
-        className={styles.tableViewRow}
-      >
-        <div className={styles.tableViewRowLeft}>
-          <div className={styles.stack}>
-            <div className={styles.title}>키워드 수정</div>
-          </div>
-        </div>
-        <div className={styles.row}>
-          <div className={styles.tableViewRowRight}>
-            <div className={styles.arrow}>
-              <img className={styles.icon} alt="arrow" src={ArrowIcon} />
-            </div>
-          </div>
-        </div>
-      </button>
+        );
+      })}
     </div>,
     document.body
   );

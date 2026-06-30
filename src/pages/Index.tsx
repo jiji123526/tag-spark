@@ -315,7 +315,7 @@ const MobileIndex: FunctionComponent = () => {
           </section>
 
         {menuOpen && (
-          <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} onEditTags={() => setEditTagsOpen(true)} anchorRef={menuBtnRef} />
+          <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} currentPath="/mobile-index" anchorRef={menuBtnRef} />
         )}
         <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} />
         {showWeather && (

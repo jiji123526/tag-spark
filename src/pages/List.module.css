@@ -376,13 +376,14 @@
     border-top: 0.5px solid var(--color-darkslategray-100);
     box-sizing: border-box;
     height: 60px;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     padding: var(--padding-10) 0px 0px;
     font-size: var(--font-size-11);
+    z-index: 50;
 }
 .content9 {
     align-self: stretch;
@@ -842,13 +843,14 @@
     border-top: 0.5px solid var(--color-darkslategray-100);
     box-sizing: border-box;
     height: 60px;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     padding: var(--padding-10) 0px 0px;
     font-size: var(--font-size-11);
+    z-index: 50;
 }
 .content9 {
     align-self: stretch;
@@ -892,3 +894,66 @@
     height: 34px;
 }
 
+
+.pencilMenu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  backdrop-filter: blur(48px);
+  background-color: var(--color-gray);
+  border-radius: 13px;
+  overflow: hidden;
+  z-index: 100;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 17px;
+  color: var(--color-black);
+  font-family: var(--font-sf-pro);
+}
+
+.pencilMenuItem {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 16px;
+  border: none;
+  background: none;
+  font-size: 17px;
+  font-family: var(--font-sf-pro);
+  color: var(--color-black);
+  letter-spacing: -0.41px;
+  line-height: 22px;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pencilMenuArrow {
+  width: 8px;
+  height: 14px;
+  opacity: 0.6;
+}
+
+.pencilMenuItem:hover {
+  filter: brightness(0.98);
+}
+
+.pencilMenuItem:active {
+  opacity: 0.8;
+}
+
+.pencilMenuSeparator {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  height: 2px;
+  transform: scale(1.5);
+  transform-origin: center;
+}
