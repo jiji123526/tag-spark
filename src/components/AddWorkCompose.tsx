@@ -205,7 +205,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 onChange={e => { setUrl(e.target.value); checkDuplicate(title, author, e.target.value); }}
                 placeholder="링크"
               />
-              {!url && <div className={styles.bodyHint}>중/장편 - 시리즈 링크 (없으면 첫 포스트)</div>}
+              {!url && <div className={styles.bodyHint}>시리즈로 묶여있는 경우 시리즈 링크</div>}
             </div>
 
             {/* Keyword reference list */}
