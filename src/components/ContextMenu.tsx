@@ -94,7 +94,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, onEdi
       >
         <div className={styles.tableViewRowLeft}>
           <div className={styles.stack}>
-            <div className={styles.title}>키워드 수정 요청</div>
+            <div className={styles.title}>키워드 수정</div>
           </div>
         </div>
         <div className={styles.row}>

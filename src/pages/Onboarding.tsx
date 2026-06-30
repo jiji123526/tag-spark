@@ -200,7 +200,7 @@ const OnBoarding:FunctionComponent = () => {
           				<div className={styles.OnBoarding_message}>명대사 아카이브</div>
         				</div>
         				<div className={styles.message20}>
-          				<div className={styles.OnBoarding_message}>키워드 수정 요청</div>
+          				<div className={styles.OnBoarding_message}>키워드 수정</div>
         				</div>
         				<div className={styles.message20}>
           				<div className={styles.OnBoarding_message}>추천작 리스트에서 ✏️ 버튼을 눌러 새 작품을 직접 등록할 수 있습니다.</div>

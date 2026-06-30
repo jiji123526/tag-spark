@@ -191,13 +191,13 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
       <DrawerPrimitive.Portal>
         <DrawerPrimitive.Overlay className={composeStyles.overlay} />
         <DrawerPrimitive.Content className={composeStyles.content} aria-describedby={undefined}>
-          <DrawerPrimitive.Title className={styles.srOnly}>키워드 수정 요청</DrawerPrimitive.Title>
+          <DrawerPrimitive.Title className={styles.srOnly}>키워드 수정</DrawerPrimitive.Title>
           <div className={composeStyles.handleBar}><div className={composeStyles.handle} /></div>
           <div className={composeStyles.topRow}>
             <button type="button" className={composeStyles.cancelBtn} onClick={handleCancel}>Cancel</button>
           </div>
           <div className={composeStyles.titleRow}>
-            <h1 className={composeStyles.title}>키워드 수정 요청</h1>
+            <h1 className={composeStyles.title}>키워드 수정</h1>
             {selectedWorkId !== null && (
               <button type="button" className={composeStyles.sendBtn} disabled={!canSave || saving} onClick={save} aria-label="키워드 저장">
                 <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
