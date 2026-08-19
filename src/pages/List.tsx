@@ -16,6 +16,15 @@ import sepIcon from "../assets/icons/contextmenu/sep.svg";
 import arrowIcon from "../assets/icons/contextmenu/Arrow.svg";
 import { Tag, Work, WorkTag } from "@/lib/types";
 
+const NEW_WORK_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isNewWork(postedAt: string | null) {
+  if (!postedAt) return false;
+
+  const age = Date.now() - Date.parse(postedAt);
+  return Number.isFinite(age) && age >= 0 && age <= NEW_WORK_WINDOW_MS;
+}
+
 const MobileHeader = () => {
   const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -242,7 +251,12 @@ const MobileHeader = () => {
             >
               <div className={styles.mobilelistcontent}>
                 <div className={styles.contactTime}>
-                  <div className={styles.contactName}>{r.title}</div>
+                  <div className={styles.contactName}>
+                    {r.title}
+                    {isNewWork(r.posted_at) && (
+                      <span className={styles.newBadge}>New</span>
+                    )}
+                  </div>
                   <div className={styles.timeChevron}>
                     <img className={styles.sfSymbolChevronright} alt="" src={chevronRightIcon} />
                   </div>
