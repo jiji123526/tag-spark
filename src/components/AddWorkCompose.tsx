@@ -1,5 +1,7 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { recoDataQueryOptions } from "@/lib/queries";
 import { Tag, Work } from "@/lib/types";
 import styles from "./AddWorkCompose.module.css";
 
@@ -8,7 +10,12 @@ interface AddWorkComposeProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const EMPTY_TAGS: Tag[] = [];
+const EMPTY_WORKS: Work[] = [];
+
 export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposeProps) {
+  const queryClient = useQueryClient();
+  const { data } = useQuery(recoDataQueryOptions);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -17,16 +24,9 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [showTagInfo, setShowTagInfo] = useState(false);
   const [duplicateError, setDuplicateError] = useState("");
-  const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [allWorks, setAllWorks] = useState<Work[]>([]);
+  const allTags = data?.tags ?? EMPTY_TAGS;
+  const allWorks = data?.works ?? EMPTY_WORKS;
   const tagInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetch("/api/reco-data")
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) { setAllTags(data.tags); setAllWorks(data.works); } })
-      .catch(() => {});
-  }, []);
 
   const checkDuplicate = (t: string, a: string, u: string) => {
     const duplicate = allWorks.find(w =>
@@ -50,7 +50,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
         (t.aliases ?? []).some(a => a.toLowerCase().includes(q))
       )
       .slice(0, 8);
-  }, [tagQuery, selectedTags]);
+  }, [allTags, tagQuery, selectedTags]);
 
   const handleAddTag = (tagId: number) => {
     const tag = allTags.find(candidate => candidate.id === tagId);
@@ -91,6 +91,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
         setDuplicateError(data.error);
         return;
       }
+      await queryClient.invalidateQueries({ queryKey: recoDataQueryOptions.queryKey });
       handleReset();
       onOpenChange(false);
     } catch (e) {

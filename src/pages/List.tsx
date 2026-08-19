@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useRef, useState, KeyboardEvent, useMemo, useEffect } from 'react';
+import { useRef, useState, KeyboardEvent, useMemo } from 'react';
+import { useQuery } from "@tanstack/react-query";
 import ContextMenu from "../components/ContextMenu";
 import SortMenu, { SortMenuItem } from "../components/SortMenu";
 import AddWorkCompose from "../components/AddWorkCompose";
@@ -14,7 +15,8 @@ import line3HorizontalIcon from "../assets/icons/list/sort.svg";
 import squareAndPencilIcon from "../assets/icons/list/square.and.pencil.svg";
 import sepIcon from "../assets/icons/contextmenu/sep.svg";
 import arrowIcon from "../assets/icons/contextmenu/Arrow.svg";
-import { Tag, Work, WorkTag } from "@/lib/types";
+import { Tag } from "@/lib/types";
+import { recoDataQueryOptions } from "@/lib/queries";
 
 const NEW_WORK_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -26,26 +28,7 @@ function isNewWork(postedAt: string | null) {
 }
 
 const MobileHeader = () => {
-  const [allWorks, setAllWorks] = useState<Work[]>([]);
-  const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [mappings, setMappings] = useState<WorkTag[]>([]);
-
-  const loadData = () => {
-    fetch("/api/reco-data")
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) {
-          setAllWorks(data.works);
-          setAllTags(data.tags);
-          setMappings(data.workTags);
-        }
-      })
-      .catch(() => {});
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const { data, refetch } = useQuery(recoDataQueryOptions);
 
   const navigate = useNavigate();
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
@@ -72,9 +55,11 @@ const MobileHeader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => {
-    const tagById = new Map(allTags.map((t) => [t.id, t]));
+    if (!data) return [];
+
+    const tagById = new Map(data.tags.map((t) => [t.id, t]));
     const byWork = new Map<number, Tag[]>();
-    for (const m of mappings) {
+    for (const m of data.workTags) {
       const tag = tagById.get(m.tag_id);
       if (!tag) continue;
       const list = byWork.get(m.work_id) ?? [];
@@ -86,7 +71,7 @@ const MobileHeader = () => {
       "분량": 1, "완결여부": 2, "세계관": 3, "장르": 4, "설정": 5, "관계": 6, "분위기": 7,
     };
 
-    return allWorks.map((w) => ({
+    return data.works.map((w) => ({
       id: w.id,
       title: w.title,
       aliases: w.aliases ?? [],
@@ -106,7 +91,7 @@ const MobileHeader = () => {
       comments: w.comments,
       posted_at: w.posted_at,
     }));
-  }, [allWorks, allTags, mappings]);
+  }, [data]);
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
@@ -339,7 +324,7 @@ const MobileHeader = () => {
         <ContextMenu open={menuOpen} onClose={() => setMenuOpen(false)} currentPath="/mobile-list" anchorRef={menuBtnRef} />
       )}
       <AddWorkCompose open={composeOpen} onOpenChange={setComposeOpen} />
-      <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={loadData} />
+      <EditWorkTags open={editTagsOpen} onOpenChange={setEditTagsOpen} onSaved={() => void refetch()} />
     </>
   );
 }

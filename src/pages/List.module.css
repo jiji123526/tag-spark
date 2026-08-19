@@ -271,6 +271,8 @@
     width: 393px;
     background-color: var(--color-white);
     min-height: 80px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 80px;
     overflow: visible;
     flex-shrink: 0;
     display: flex;
@@ -751,6 +753,8 @@
     min-width: 0;
     background-color: var(--color-white);
     min-height: 80px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 80px;
     overflow: visible;
     flex-shrink: 0;
     display: flex;

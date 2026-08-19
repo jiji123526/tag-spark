@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { useEffect } from "react";
-import { tagsQueryOptions } from "@/lib/queries";
+import { recoDataQueryOptions, tagsQueryOptions } from "@/lib/queries";
 import "./styles/global.css";
 import AppRoutes from "./routes";
 
@@ -13,6 +13,16 @@ const queryClient = new QueryClient();
 const App = () => {
   useEffect(() => {
     void queryClient.prefetchQuery(tagsQueryOptions);
+
+    const prefetchRecoData = () => {
+      void queryClient.prefetchQuery(recoDataQueryOptions);
+    };
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(prefetchRecoData, { timeout: 3000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(prefetchRecoData, 1000);
+    return () => window.clearTimeout(id);
   }, []);
 
   return (
