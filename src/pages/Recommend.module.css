@@ -292,8 +292,12 @@
     align-items: flex-start;
     justify-content: center;
 
-    padding: 11px var(--padding-20);
+    padding: 11px var(--padding-20) 9px;
     position: relative;
+}
+.card > .pageTitle:last-child .row,
+.card > .row:last-child {
+    padding-bottom: 13px;
 }
 .title5 {
     align-self: stretch;
