@@ -15,6 +15,7 @@ export type Work = {
   views: number;
   likes: number;
   comments: number;
+  posted_at: string | null;
 };
 
 export type WorkTag = {

@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
           server.middlewares.use('/api/reco-data', async (req, res) => {
             try {
               const [works, tags, workTags] = await Promise.all([
-                sql`SELECT id, title, author, source_url, aliases, author_aliases, views, likes, comments FROM works ORDER BY id`,
+                sql`SELECT id, title, author, source_url, aliases, author_aliases, views, likes, comments, posted_at FROM works ORDER BY id`,
                 sql`SELECT id, name, category, aliases FROM tags ORDER BY id`,
                 sql`SELECT work_id, tag_id, weight FROM work_tags`,
               ]);

@@ -79,6 +79,7 @@ tag-spark/
 |---------|-------------|
 | `npm run dev` | Start dev server with HMR |
 | `npm run build` | Production build |
+| `npm run backfill:posted-at` | Add and backfill scraped publication dates |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
 

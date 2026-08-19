@@ -42,8 +42,8 @@ const MobileHeader = () => {
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
-  const sortBtnRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
-  const [sortKey, setSortKey] = useState<'author_asc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
+  const sortBtnRef = useRef<HTMLDivElement | null>(null);
+  const [sortKey, setSortKey] = useState<'author_asc' | 'posted_desc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
   const [composeOpen, setComposeOpen] = useState(false);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [pencilMenuOpen, setPencilMenuOpen] = useState(false);
@@ -95,6 +95,7 @@ const MobileHeader = () => {
       views: w.views,
       likes: w.likes,
       comments: w.comments,
+      posted_at: w.posted_at,
     }));
   }, [allWorks, allTags, mappings]);
 
@@ -116,6 +117,13 @@ const MobileHeader = () => {
     if (sortKey === 'author_asc') {
       // copy before sort to avoid mutating memoized arrays
       return [...base].sort(compareByAuthorTitle);
+    }
+    if (sortKey === 'posted_desc') {
+      return [...base].sort((a, b) => {
+        const aTime = a.posted_at ? Date.parse(a.posted_at) : Number.NEGATIVE_INFINITY;
+        const bTime = b.posted_at ? Date.parse(b.posted_at) : Number.NEGATIVE_INFINITY;
+        return bTime - aTime || b.id - a.id;
+      });
     }
     if (sortKey === 'views_desc') {
       return [...base].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
@@ -253,7 +261,7 @@ const MobileHeader = () => {
           <div className={styles.content9}>
             <div
               className={styles.sortButton}
-              ref={sortBtnRef as any}
+              ref={sortBtnRef}
               role="button"
               tabIndex={0}
               aria-label="정렬 옵션 열기"
@@ -303,9 +311,9 @@ const MobileHeader = () => {
         <SortMenu
           open={sortOpen}
           onClose={() => setSortOpen(false)}
-          anchorRef={sortBtnRef as any}
+          anchorRef={sortBtnRef}
           items={[
-            { label: '가나다순', onClick: () => { setSortKey('author_asc'); listRef.current?.scrollTo(0, 0); } },
+            { label: '최신순', onClick: () => { setSortKey('posted_desc'); listRef.current?.scrollTo(0, 0); } },
             { label: '조회수순', onClick: () => { setSortKey('views_desc'); listRef.current?.scrollTo(0, 0); } },
             { label: '좋아요순', onClick: () => { setSortKey('likes_desc'); listRef.current?.scrollTo(0, 0); } },
             { label: '댓글순', onClick: () => { setSortKey('comments_desc'); listRef.current?.scrollTo(0, 0); } },
