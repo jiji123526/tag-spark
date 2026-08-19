@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
             try {
               const tags = await sql`SELECT id, name, category, aliases FROM tags ORDER BY id`;
               res.setHeader('Content-Type', 'application/json');
+              res.setHeader('Cache-Control', 'public, max-age=60');
               res.end(JSON.stringify(tags));
             } catch (e) { res.statusCode = 500; res.end('[]'); }
           });

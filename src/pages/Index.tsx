@@ -9,8 +9,10 @@ import menuIcon from "../assets/icons/index/menu.svg";
 
 import { useNavigate } from 'react-router-dom';
 import { Tag } from "@/lib/types";
+import { tagsQueryOptions } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 import { Check, MinusCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import ContextMenu from "../components/ContextMenu";
 import WeatherPopup from "../components/WeatherPopup";
 import EditWorkTags from "../components/EditWorkTags";
@@ -19,14 +21,7 @@ const MobileIndex: FunctionComponent = () => {
 	const navigate = useNavigate();
 	const handleBack = () => navigate(-1);
 
-  const [allTags, setAllTags] = useState<Tag[]>([]);
-
-  useEffect(() => {
-    fetch("/api/tags")
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setAllTags(data); })
-      .catch(() => {});
-  }, []);
+  const { data: allTags = [] } = useQuery(tagsQueryOptions);
 
   const selectedBarRef = useRef<HTMLDivElement | null>(null);
   const menuBtnRef = useRef<HTMLDivElement | null>(null);
@@ -84,10 +79,10 @@ const MobileIndex: FunctionComponent = () => {
   })();
 
   const groupedTags = (() => {
-    return filteredTags.reduce<Record<Tag["category"], typeof allTags>>( (acc, tag) => {
-      (acc[tag.category] ||= [] as any).push(tag);
+    return filteredTags.reduce<Record<Tag["category"], Tag[]>>((acc, tag) => {
+      (acc[tag.category] ??= []).push(tag);
       return acc;
-    }, { 설정: [] as any, 관계: [] as any, 분위기: [] as any, 장르: [] as any, 세계관: [] as any, 분량: [] as any, 완결여부: [] as any });
+    }, {});
   })();
 
   const toggleTag = (id: number) => {
