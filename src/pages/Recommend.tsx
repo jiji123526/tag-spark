@@ -157,8 +157,6 @@ const mobilerecom:FunctionComponent = () => {
     return onlySimilar.sort((a, b) => b.similarity - a.similarity).slice(0, PAGE_SIZE);
   }, [selectedEffective, excluded, filteredWorks, exactMatches, allTags, mappings]);
 
-  useEffect(() => { document.title = '키워드 추천 결과'; }, []);
-
   // row renderer matching the current visual layout
   const renderRow = (w: any, withSeparator: boolean) => (
     <div className={styles.pageTitle} key={w.id}>
