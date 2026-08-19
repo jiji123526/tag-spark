@@ -747,7 +747,6 @@
   letter-spacing: -0.43px;
   line-height: 22px;
   margin-left: 2px;
-  margin-top: 4px;
   color: var(--color-dodgerblue);
 }
 
@@ -897,4 +896,3 @@
   gap: var(--gap-3);
   z-index: 2;
 }
-
