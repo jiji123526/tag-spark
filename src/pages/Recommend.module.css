@@ -292,7 +292,7 @@
     align-items: flex-start;
     justify-content: center;
 
-    padding: 11px var(--padding-20) 9px;
+    padding: 11px var(--padding-20);
     position: relative;
 }
 .title5 {
