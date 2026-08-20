@@ -588,3 +588,13 @@
     letter-spacing: 0.07px;
     font-family: var(--font-sf-pro-text);
 }
+
+:global(.dark) .OnBoarding,
+:global(.dark) .inputBar {
+    background-color: #0f141b;
+}
+
+:global(.dark) .input {
+    background-color: #171d25;
+    border-color: rgba(255, 255, 255, 0.12);
+}

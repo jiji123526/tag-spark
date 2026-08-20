@@ -594,3 +594,20 @@
   padding: 7px 8px;
   z-index: 1;
 }
+
+:global(.dark) .mobilerecom {
+  background-color: #0c1016;
+}
+
+:global(.dark) .card {
+  background-color: #121821;
+}
+
+:global(.dark) .inputChangeOpacity {
+  background-color: #232b35;
+  opacity: 0.95;
+}
+
+:global(.dark) .separator {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}

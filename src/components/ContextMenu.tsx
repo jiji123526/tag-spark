@@ -61,7 +61,7 @@ const ContextMenu: FunctionComponent<ContextMenuProps> = ({ open, onClose, curre
     style.left = left;
   } else {
     style.top = 80;
-    (style as any).right = 16;
+    style.right = 16;
   }
 
   return createPortal(

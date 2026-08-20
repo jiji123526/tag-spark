@@ -896,3 +896,33 @@
   gap: var(--gap-3);
   z-index: 2;
 }
+
+:global(.dark) .mobileIndex,
+:global(.dark) .navigationBar,
+:global(.dark) .controlssegmentedControlsli,
+:global(.dark) .mobileIndex_mask,
+:global(.dark) .searchField,
+:global(.dark) .menuSheet,
+:global(.dark) .menuItem {
+  background-color: #0f141b;
+}
+
+:global(.dark) .mobilelistSearchfield,
+:global(.dark) .selectedChip,
+:global(.dark) .selectedexcludedChip,
+:global(.dark) .menuLink {
+  background-color: #171d25;
+}
+
+:global(.dark) .searchField,
+:global(.dark) .menuSheet,
+:global(.dark) .menuItem,
+:global(.dark) .selectedChip,
+:global(.dark) .selectedexcludedChip {
+  color: var(--color-black);
+}
+
+:global(.dark) .menuLink:hover,
+:global(.dark) .clearBtn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}

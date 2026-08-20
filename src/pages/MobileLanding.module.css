@@ -652,4 +652,19 @@
     font-family: "Apple SD Gothic Neo Bold Korean", var(--font-sf-pro-display), sans-serif;
   }
 
+:global(.dark) .appclip {
+  background-color: rgba(17, 22, 29, 0.92);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+:global(.dark) .separator {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+:global(.dark) .truedepthCamera,
+:global(.dark) .facetimeCamera,
+:global(.dark) .statusbarDynamicisland {
+  background-color: #000;
+}
+
   

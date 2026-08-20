@@ -248,3 +248,34 @@
   cursor: pointer;
 }
 .tagSelected { background: #007aff; color: #fff; }
+
+:global(.dark) .content,
+:global(.dark) .stickySearch,
+:global(.dark) .workRow {
+  background: #11161d;
+  color: var(--color-black);
+}
+
+:global(.dark) .handle {
+  background: #424b59;
+}
+
+:global(.dark) .searchInput,
+:global(.dark) .fieldValue,
+:global(.dark) .workAuthor,
+:global(.dark) .workTags,
+:global(.dark) .selectedWork span,
+:global(.dark) .tag {
+  color: var(--color-black);
+}
+
+:global(.dark) .searchBar,
+:global(.dark) .tag {
+  background: #171d25;
+}
+
+:global(.dark) .selectedWork,
+:global(.dark) .success,
+:global(.dark) .error {
+  background: rgba(255, 255, 255, 0.06);
+}

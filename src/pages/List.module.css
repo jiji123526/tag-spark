@@ -975,3 +975,24 @@
   transform: scale(1.5);
   transform-origin: center;
 }
+
+:global(.dark) .mobileIndex,
+:global(.dark) .mobilelist,
+:global(.dark) .topnavigation,
+:global(.dark) .mobilelistThread,
+:global(.dark) .tabBar {
+  background-color: #0f141b;
+}
+
+:global(.dark) .mobilelistSearchfield,
+:global(.dark) .pencilMenu {
+  background-color: #171d25;
+}
+
+:global(.dark) .pencilMenuItem:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+:global(.dark) .pencilMenuItem:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}

@@ -266,3 +266,33 @@
   object-fit: cover;
   opacity: 0.8;
 }
+
+:global(.dark) .popup {
+  background: rgba(18, 23, 30, 0.84);
+}
+
+:global(.dark) .title,
+:global(.dark) .message,
+:global(.dark) .workTitle {
+  color: var(--color-black);
+}
+
+:global(.dark) .imageArea,
+:global(.dark) .workItem,
+:global(.dark) .carouselSlide {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:global(.dark) .dot {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+:global(.dark) .dotActive {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+:global(.dark) .accept:active,
+:global(.dark) .decline:active,
+:global(.dark) .workItem:active {
+  background: rgba(255, 255, 255, 0.1);
+}

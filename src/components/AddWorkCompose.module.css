@@ -329,3 +329,35 @@
   background: rgba(0, 122, 255, 0.12);
   color: #007aff;
 }
+
+:global(.dark) .content {
+  background: #11161d;
+  color: var(--color-black);
+}
+
+:global(.dark) .handle {
+  background: #424b59;
+}
+
+:global(.dark) .fieldInput,
+:global(.dark) .tagInput,
+:global(.dark) .bodyInput,
+:global(.dark) .tagSuggestionItem {
+  color: var(--color-black);
+}
+
+:global(.dark) .separator,
+:global(.dark) .tagReference {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global(.dark) .tagSuggestions,
+:global(.dark) .tagInfoContent,
+:global(.dark) .tagReferenceChip {
+  background: #171d25;
+}
+
+:global(.dark) .tagSuggestionItem:active {
+  background: rgba(255, 255, 255, 0.08);
+}
