@@ -146,7 +146,7 @@
   }
   
   /* 제목 텍스트 컨테이너 */
-  .titleContainer {
+.titleContainer {
     align-self: stretch;
     display: flex;
     flex-direction: column;
@@ -156,6 +156,8 @@
     font-size: 34px;
     width: 100%;
     box-sizing: border-box;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .title2 {

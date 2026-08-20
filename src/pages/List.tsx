@@ -53,6 +53,9 @@ const MobileHeader = () => {
 
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollListToTop = () => {
+    listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const rows = useMemo(() => {
     if (!data) return [];
@@ -193,7 +196,19 @@ const MobileHeader = () => {
         </div>
       </div>
 
-      <div className={styles.titleContainer}>
+      <div
+        className={styles.titleContainer}
+        role="button"
+        tabIndex={0}
+        aria-label="목록 맨 위로 이동"
+        onClick={scrollListToTop}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            scrollListToTop();
+          }
+        }}
+      >
         <b className={styles.title2}>현재 등록된 추천작</b>
       </div>
 
