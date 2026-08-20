@@ -1,6 +1,5 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 import styles from './SortMenu.module.css';
 import ArrowIcon from "../assets/icons/contextmenu/Arrow.svg";
 import SepIcon from "../assets/icons/contextmenu/sep.svg";
@@ -17,10 +16,10 @@ type SortMenuProps = {
   onClose: () => void;
   anchorRef?: React.RefObject<HTMLElement>;
   items: SortMenuItem[]; // 페이지별로 재사용할 동적 항목
+  width?: number;
 };
 
-const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, items }) => {
-  const navigate = useNavigate();
+const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, items, width }) => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -31,6 +30,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
     };
 
     const onDocClick = (e: MouseEvent) => {
+      if (anchorRef?.current?.contains(e.target as Node)) return;
       if (!menuRef.current) return;
       // 메뉴 영역 외부 클릭 시 닫기
       if (!menuRef.current.contains(e.target as Node)) {
@@ -45,12 +45,12 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('mousedown', onDocClick);
     };
-  }, [open, onClose]);
+  }, [anchorRef, open, onClose]);
 
   if (!open) return null;
 
-  const MENU_WIDTH = 240; // px
-  const style: React.CSSProperties = { position: 'fixed', zIndex: 2000, width: MENU_WIDTH };
+  const menuWidth = width ?? 240;
+  const style: React.CSSProperties = { position: 'fixed', zIndex: 2000, width: menuWidth };
 
   if (anchorRef?.current) {
     const r = anchorRef.current.getBoundingClientRect();
@@ -60,7 +60,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
     const pageRight = pageLeft + pageWidth;
 
     const left = Math.min(
-      pageRight - MENU_WIDTH - 8,
+      pageRight - menuWidth - 8,
       Math.max(pageLeft + 8, r.left)
     );
     // 앵커 위로 띄우는 기존 포지셔닝 유지
@@ -68,7 +68,7 @@ const SortMenu: FunctionComponent<SortMenuProps> = ({ open, onClose, anchorRef, 
     style.left = left;
   } else {
     style.top = 80;
-    (style as any).right = 16;
+    style.right = 16;
   }
 
   const RowLeft = ({ label }: { label: string }) => (

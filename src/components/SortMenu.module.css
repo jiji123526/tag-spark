@@ -27,7 +27,7 @@
     position: absolute;
     top: calc(50% - 22px);
     left: 0px;
-    width: 256px;
+    right: 44px;
     height: 44px;
   }
   .stack {
@@ -61,13 +61,14 @@
     position: absolute;
     top: calc(50% - 22px);
     right: 0px;
+    width: 44px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
   }
   .tableViewRowRight {
-    width: 119px;
+    width: 44px;
     position: relative;
     height: 43px;
   }

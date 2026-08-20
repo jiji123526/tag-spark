@@ -326,6 +326,7 @@ const MobileHeader = () => {
           open={sortOpen}
           onClose={() => setSortOpen(false)}
           anchorRef={sortBtnRef}
+          width={188}
           items={[
             { label: '최신순', onClick: () => { setSortKey('posted_desc'); listRef.current?.scrollTo(0, 0); } },
             { label: '조회수순', onClick: () => { setSortKey('views_desc'); listRef.current?.scrollTo(0, 0); } },
