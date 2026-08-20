@@ -330,7 +330,7 @@
     flex: 1;
     position: relative;
     line-height: 22px;
-    color: black;
+    color: var(--color-black);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
