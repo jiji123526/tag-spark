@@ -273,7 +273,10 @@
 
 :global(.dark) .title,
 :global(.dark) .message,
-:global(.dark) .workTitle {
+:global(.dark) .workTitle,
+:global(.dark) .subtitle,
+:global(.dark) .workAuthor,
+:global(.dark) .noResult {
   color: var(--color-black);
 }
 
@@ -289,6 +292,12 @@
 
 :global(.dark) .dotActive {
   background: rgba(255, 255, 255, 0.82);
+}
+
+:global(.dark) .imagePlaceholder,
+:global(.dark) .loadingDots span {
+  color: rgba(244, 247, 251, 0.55);
+  background: rgba(244, 247, 251, 0.28);
 }
 
 :global(.dark) .accept:active,

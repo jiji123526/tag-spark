@@ -1,9 +1,11 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from "next-themes";
 import styles from './Onboarding.module.css';
 
 import TailIcon from "../assets/icons/onboarding/Tail.svg";
 import Tail1Icon from "../assets/icons/onboarding/Tail-1.svg";
+import Tail1DarkIcon from "../assets/icons/onboarding/Tail-1-dark.svg";
 import AvatarIcon from "../assets/icons/onboarding/Avatar.svg";
 import ChevronIcon from "../assets/icons/onboarding/Chevron.svg";
 import BackIcon from "../assets/icons/onboarding/Back.svg";
@@ -14,6 +16,8 @@ import MicIcon from "../assets/icons/onboarding/sending.svg";
 const OnBoarding:FunctionComponent = () => {
   	const navigate = useNavigate();
   	const rootRef = useRef<HTMLDivElement | null>(null);
+    const { resolvedTheme } = useTheme();
+    const incomingTailIcon = resolvedTheme === "dark" ? Tail1DarkIcon : Tail1Icon;
 
   	useEffect(() => {
     	const root = rootRef.current;
@@ -125,7 +129,7 @@ const OnBoarding:FunctionComponent = () => {
         				<div className={styles.messageBubble2}>
           					<div className={styles.message}>
             						<div className={styles.OnBoarding_message}>스크롤을 내려 사용 방법을 확인하세요.</div>
-            						<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+                        <img className={styles.tailIcon} alt="" src={incomingTailIcon} />
           					</div>
           					<div className={styles.spacing} />
         				</div>
@@ -176,7 +180,7 @@ const OnBoarding:FunctionComponent = () => {
               						<p className={styles.p}>{`키워드 미선택시 무작위로 10개의 `}</p>
               						<p className={styles.p}>포타가 추천됩니다.</p>
             					</div>
-            					<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+                    <img className={styles.tailIcon} alt="" src={incomingTailIcon} />
           				</div>
           				<div className={styles.spacing} />
         				</div>
@@ -207,7 +211,7 @@ const OnBoarding:FunctionComponent = () => {
         				</div>
         				<div className={styles.message21}>
           				<div className={styles.OnBoarding_message}>{`기타 문의사항이나 개선 사항 건의는 요청폼 마지막 질문에 입력 또는 트위터(X) @cxwdwggy로 디엠 주세요. `}</div>
-          				<img className={styles.tailIcon} alt="" src={Tail1Icon} />
+                <img className={styles.tailIcon} alt="" src={incomingTailIcon} />
         				</div>
       			</div>
       			<div className={styles.inputBar}>
@@ -244,4 +248,4 @@ const OnBoarding:FunctionComponent = () => {
               							</div>);
             						};
             						
-            						export default OnBoarding;
+export default OnBoarding;

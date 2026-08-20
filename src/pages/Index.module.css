@@ -922,6 +922,16 @@
   color: var(--color-black);
 }
 
+:global(.dark) .option1[aria-selected="true"] .label1,
+:global(.dark) .option2[aria-selected="true"] .label1 {
+  color: #0f141b;
+}
+
+:global(.dark) .option1[aria-selected="false"] .label1,
+:global(.dark) .option2[aria-selected="false"] .label1 {
+  color: var(--color-black);
+}
+
 :global(.dark) .menuLink:hover,
 :global(.dark) .clearBtn:hover {
   background-color: rgba(255, 255, 255, 0.08);

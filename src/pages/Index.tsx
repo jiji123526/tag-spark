@@ -184,7 +184,6 @@ const MobileIndex: FunctionComponent = () => {
                 aria-label="키워드 검색"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                style={{ color: "black" }}
               />
               <img className={styles.magnifyingglassIcon} alt="Search" src={magnifyingGlass} />
               <img className={styles.mobileIndex_icon} alt="Extra" src={extraIcon} onClick={resetSelection} />
