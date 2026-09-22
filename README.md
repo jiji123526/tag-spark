@@ -92,7 +92,7 @@ tag-spark/
 Tag Spark follows an "interpretable baseline → data-driven → learned"
 progression. **Phase 1** is what ships today; **Phase 2** is the planned
 direction. Detailed design lives in the
-[portfolio page](https://jiwoojeong.com/work/tag-spark-recommendations).
+[portfolio docs](https://github.com/jiji123526/portfolio).
 
 ### Phase 1 — Current Production (shipped)
 
@@ -160,6 +160,15 @@ Treat tags by measurement type:
 Place works in this space for "similar mood" exploration. Grounded in the
 Valence–Arousal model, the Power–Danger reinterpretation for fiction
 (ousiometrics), and CMU's FicSim tag-based similarity methodology.
+
+The major literary similarity axes are **already covered by existing data — no
+text collection needed**: Plot maps to the setting category (19 tags: school,
+office, celebrity, chaebol, regression, …), Character States to mood,
+Relationship Dynamics to the relationship category, Time to setting/season tags,
+and **Style is proxied by author metadata** (same author ≈ similar style, as
+FicSim itself found). Tags are 100% human-assigned; there is no auto-tagging.
+So the axes rely on the curated tag dataset plus author metadata, not on
+embedding summaries or full text.
 
 **2-3. Platform-aware consumption — desktop map / mobile list.**
 The value of the embedding is the *distance* (similarity), not showing every
