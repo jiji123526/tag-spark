@@ -92,7 +92,7 @@ tag-spark/
 Tag Spark follows an "interpretable baseline → data-driven → learned"
 progression. **Phase 1** is what ships today; **Phase 2** is the planned
 direction. Detailed design lives in the
-[portfolio docs](https://github.com/jiji123526/portfolio).
+[portfolio page](https://jiwoojeong.com/work/tag-spark-recommendations).
 
 ### Phase 1 — Current Production (shipped)
 
@@ -200,10 +200,18 @@ inter-annotator agreement (IAA — Cohen's / Krippendorff), then learn tag weigh
 via Bradley-Terry / logistic regression. Validate with an A/B test once there is
 user traffic.
 
-**2-7. Learned similarity (embeddings).**
-Compute tag co-occurrence or embedding cosine offline, write high-confidence
-pairs as `source='embedding'`, and keep curated edges as an interpretable
-backbone. A/B or blend curated / derived / embedding edges.
+**2-7. Learned similarity (embeddings) — only if the domain grows.**
+This project is scoped to a single K-pop group (RPS fanfiction), so the catalog
+is small and fixed (~229 works is near the ceiling). Learned embeddings —
+especially tag co-occurrence — need a large, growing corpus to produce reliable
+patterns, so they are **not a good fit at this scale**: the statistics are too
+sparse (rare tags worst of all). The right method here is the human-curated
+tags (read all 229 works) as the backbone plus **pairwise work comparisons** to
+learn axis weights (small catalog makes this practical — a few hundred
+comparisons suffice). If the product later expands to multiple groups and the
+corpus grows, learned edges can be computed offline, written as
+`source='embedding'`, and blended on top of the curated backbone — but only
+then.
 
 ## How It Works (today)
 
