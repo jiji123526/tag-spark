@@ -86,6 +86,22 @@ TagSpark은 모바일 우선 서비스다. 작은 화면에 수백 개 점을 �
 - 지도가 아니라 **"이 작품과 비슷한 작품 리스트"**가 모바일에선 임베딩의 가장 자연스러운 소비 형태.
 - 교훈: 멋진 시각화보다 **실제 사용 맥락(모바일)에 맞는 표현**을 우선한다.
 
+### 4.5 축 결정 과정 — 직관을 데이터로 교정 (확정: Forward 어두움 × 긴장)
+
+축을 고르는 과정에서 직관을 데이터로 두 번 교정했다:
+
+1. **"어두움 × 친밀도" 직관 → 데이터로 뒤집힘.** 로맨스라 친밀도가 좋겠다 싶었으나, 4분면 분포를 보니 친밀도−(정략결혼류)가 희귀해 쏠림(7/54). 어두움 × 권력차가 더 균형(20/47)이었다.
+2. **"어두움이 주축" 가정 → PCA로 재검토.** 태그 PCA에서 어두움은 PC4였고 상위 축은 배경·관계·씨피고정이었다 (명목/필터로 밀어낸 것이 강한 축으로 emerge).
+
+로맨스 도메인이라 관계 역학 축(친밀도·권력차)이 무드 축과 **−0.11~+0.01로 독립** 임도 확인했다.
+
+**확정:** 여러 후보(어두움·긴장·친밀도·권력차)를 저울질한 끝에, **Forward 방식으로 어두움 × 긴장 두 축부터 시작**하기로 했다. 실행은 2단계 하이브리드:
+
+- 1단계: 태그 쌍 비교로 가중치 확정 → 작품 사전 배치(pre-map)
+- 2단계: pre-map에서 가까운(불확실한) 작품끼리만 쌍 비교로 미세 조정 (능동 샘플링)
+
+**정직한 미결:** 어두움×긴장은 두 축 상관 −0.39로 4분면 쏠림이 있어, 시각화가 목적이면 권력차 축으로 교체·보완할 수 있다. 축은 아직 최종 미결이며, 이 검증 과정 자체가 설계의 핵심이다.
+
 ---
 
 ## 5. 학술적 근거 (Grounding)
@@ -135,7 +151,7 @@ TagSpark은 모바일 우선 서비스다. 작은 화면에 수백 개 점을 �
 
 ## 9. English Pitch (인터뷰용)
 
-> TagSpark's recommender hardcoded tag similarity as a single global constant. I moved it to a data-driven, per-edge model, then extended it into a multi-axis embedding map for exploration. The hard part was that the tags are subjective ("does this story feel darker than that one?"), so there was no absolute ground truth. Instead of trusting a single judgment, I used pairwise comparisons and inter-annotator agreement to validate which signals are actually shared, and kept the hand-curated tags as an interpretable backbone. I separated tags by measurement type — continuous (mood → spatial axes), binary (school setting → filters), nominal (genre → color) — and limited the screen to 2–3 axes. I grounded the axes in the Valence–Arousal–Dominance model and the Power–Danger reinterpretation for fiction, and I confirmed my method matched CMU's FicSim: derive similarity from author tags, embed the tags, validate with triplet comparisons and Cohen's Kappa. Because FicSim showed that even modern embeddings miss fine-grained literary similarity and over-index on style, I deliberately kept human tags as the trusted backbone and relied only on existing data — the curated tags plus author metadata as a style proxy — rather than collecting summaries or full text (Plot maps to the setting category, Style to author). Tags stay 100% human-assigned. Because the product is mobile-first, I reframed the map itself: instead of forcing a dense scatterplot onto a small screen, I surface the embedding as mood sliders that filter into a ranked list, and as a "similar works" list, treating the embedding as a distance function rather than a screen-filling picture.
+> TagSpark's recommender hardcoded tag similarity as a single global constant. I moved it to a data-driven, per-edge model, then extended it into a multi-axis embedding map for exploration. The hard part was that the tags are subjective ("does this story feel darker than that one?"), so there was no absolute ground truth. Instead of trusting a single judgment, I used pairwise comparisons and inter-annotator agreement to validate which signals are actually shared, and kept the hand-curated tags as an interpretable backbone. I separated tags by measurement type — continuous (mood → spatial axes), binary (school setting → filters), nominal (genre → color) — and limited the screen to 2–3 axes. I grounded the axes in the Valence–Arousal–Dominance model and the Power–Danger reinterpretation for fiction, and I confirmed my method matched CMU's FicSim: derive similarity from author tags, embed the tags, validate with triplet comparisons and Cohen's Kappa. Because FicSim showed that even modern embeddings miss fine-grained literary similarity and over-index on style, I deliberately kept human tags as the trusted backbone and relied only on existing data — the curated tags plus author metadata as a style proxy — rather than collecting summaries or full text (Plot maps to the setting category, Style to author). Tags stay 100% human-assigned. Because the product is mobile-first, I reframed the map itself: instead of forcing a dense scatterplot onto a small screen, I surface the embedding as mood sliders that filter into a ranked list, and as a "similar works" list, treating the embedding as a distance function rather than a screen-filling picture. On axes, I corrected my own intuition with data twice — a plausible "darkness × intimacy" split was actually unbalanced, and PCA showed darkness wasn't even the top axis — then committed to a forward darkness × tension start validated by pairwise tag comparisons, while honestly leaving the final axis choice open.
 
 ---
 
