@@ -1,14 +1,19 @@
 # Tag Spark
 
-A tag-based recommendation web app for Korean web fiction. Users explicitly
+A tag-based recommendation web app for Korean web fiction. The source platform
+had no tagging at all, so there was no way to curate "works that feel like this."
+Tag Spark starts by solving that gap: I read all 229 works, derived a **tag
+taxonomy from scratch** (9 categories, 76 tags with alias sets) inductively from
+the recurring patterns, and **hand-annotated every work** in the catalog. On top of that dataset, users explicitly
 select the tags they want (include) or want to avoid (exclude), and Tag Spark
-surfaces matching works. Instead of inferring taste from a hidden profile, the
-user stays in **explicit control**.
+surfaces matching works — the user stays in **explicit control** rather than
+having taste inferred from a hidden profile.
 
-> Language Engineer lens: this is less "a tag-based recommender" and more a
-> lexical-resource project — structuring messy, user-generated tags into
-> comparable signals through alias normalization, a hand-built similarity
-> thesaurus, and hierarchical weighted scoring.
+> Language Engineer lens: the core contribution isn't "a tag-based recommender"
+> — it's building the lexical resource a recommender needs before it can rank
+> anything: designing the tag schema, curating the dataset, and normalizing
+> messy human tags into comparable signals via alias sets, a hand-built
+> similarity thesaurus, and hierarchical weighted scoring.
 
 ## Tech Stack
 
@@ -87,11 +92,17 @@ tag-spark/
 Tag Spark follows an "interpretable baseline → data-driven → learned"
 progression. **Phase 1** is what ships today; **Phase 2** is the planned
 direction. Detailed design lives in the
-[portfolio page](https://jiwoojeong.com/work/tag-spark-recommendations#tagspark-phase-two).
+[portfolio page](https://jiwoojeong.com/work/tag-spark-recommendations).
 
 ### Phase 1 — Current Production (shipped)
 
 What runs today, grounded in the actual `src/lib/reco.ts` code.
+
+**1-0. Tag taxonomy + curated dataset (the foundation).**
+The source platform had no tags at all. I read all 229 works, derived the tag
+schema inductively (9 categories, 76 tags with aliases), and hand-annotated
+every work — a full-coverage, from-scratch language dataset. Everything below
+sits on top of this.
 
 **1-1. Explicit preference control.**
 Users search, add, remove, and reverse preference tags. Included tags define the
@@ -187,6 +198,10 @@ backbone. A/B or blend curated / derived / embedding edges.
 
 ## How It Works (today)
 
+0. **Foundation (built first):** with no tags on the source platform, I read all
+   229 works, derived a tag taxonomy inductively (9 categories, 76 tags +
+   aliases), and hand-annotated every work — the metadata the platform never
+   provided.
 1. The user selects tags describing their preferences (include / exclude).
 2. The recommendation engine (`src/lib/reco.ts`) scores works by tag overlap,
    category weights, and alias matching, using the layered scoring above.
