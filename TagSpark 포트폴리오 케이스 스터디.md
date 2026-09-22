@@ -1,666 +1,524 @@
-# 작품 임베딩 페이지 설계 문서 (Embedding Map Page)
+# TagSpark 포트폴리오 페이지 — 수정 위치 상세 가이드
 
-> 목적: TagSpark에 태그 추천과는 **별개의 탐색 페이지**를 만든다. 작품을 "임베딩 클러스터"처럼 2D 공간에 배치해, 비슷한 분위기·성격의 작품을 시각적으로 탐색하게 한다. 이산 태그로는 담기 어려운 **미세한 차이** (예: "A가 B보다 더 어둡다")를 연속 축으로 표현하는 것이 핵심이다. 이 문서는 데이터 분석 결과에 근거한다. 실제 데이터: 작품 229개, 태그 76개, work_tags 1,630개, 9개 카테고리. **작품 본문 텍스트는 데이터에 없음** (제목·작가·조회수만 존재) → 임베딩은 **태그 기반**이어야 한다.
-
----
-
-## 0. 핵심 설계 결정 요약 (TL;DR)
-
-1. **화면 축은 2~3개로 제한한다.** 76개 태그를 통째로 2D로 투영하면 분산의 11.9%만 설명된다(실측). 대신 **연속 태그만** 골라 해석 가능한 소수 축을 손수 정의한다.
-2. **태그를 측정 성격에 따라 3종으로 나눈다.** 하나의 방식으로 통일하지 않는다.- 연속(comparison) → **공간 축**
-
-- 이진(binary) → **필터 토글**
-- 명목(nominal) → **색상/모양**
-
-1. **어두움 축은 이미 검증되었다.** 힐링·달달(+) ↔ 피폐·새드·찌통(−)로 −3.2 ~ +2.8 범위에서 사람이 봐도 타당한 배치가 나온다.
-2. **backbone + augmentation 철학을 유지한다.** 이산 태그(해석 가능, 신뢰 가능)를 척추로 두고, 쌍 비교로 복원한 연속 축을 그 위에 얹는다.
+> 대상 저장소: [https://github.com/jiji123526/portfolio](https://github.com/jiji123526/portfolio) 목적: 이번 세션 산출물(임베딩 지도·콜드스타트·무드 슬라이더·개인화·검증 로드맵)을 포트폴리오 페이지에 반영할 때 **어느 파일의 어디를, 어떤 코드로** 고치는지 정리. 작성 기준: main 브랜치 현재 상태 (2026-09-22 확인). 관련 산출물: `artifacts/embedding_page_plan.md`, `artifacts/tag-spark_README.md`, `artifacts/tagspark_portfolio_case_study.md`.
 
 ---
 
-## 1. 데이터 현황 (실측)
+## 0. 문제 재정의 (⚠️ 반영 필수)
 
-### 1.1 규모
+**정정:** 이 프로젝트의 진짜 문제는 "태그로 어떻게 추천하나"가 아니다. 원래 플랫폼(포스타입 등 웹소설 연재처)이 **세밀한 태그를 지원하지 않아, 큐레이션된 작품 리스트를 만들 방법 자체가 없었다.** 그래서 Jiwoo가 **태그 체계(taxonomy)를 처음부터 직접 설계**하고 작품에 부여했다.
 
-| 항목 | 값 |
+**확정된 사실 (사용자 확인):**
+
+- 원 플랫폼에는 **태그가 아예 없었다** (거친 장르 분류조차 없음).
+- Jiwoo가 **229개 작품을 전부 직접 읽고**, 반복되는 패턴에서 태그를 귀납적으로 도출했다 (하향식 사전 정의가 아니라 코퍼스에서 상향식으로).
+- **229개 작품 전부에 직접 태그를 부여했다** (전수 어노테이션, 부분 샘플 아님).
+
+즉 핵심 기여는 알고리즘이 아니라 **from-scratch 언어 데이터 구축**이다:
+
+1. **코퍼스 정독** — 229개 작품을 전부 읽음 (스키마의 근거).
+2. **스키마 귀납적 도출** — 반복 패턴에서 9개 카테고리(분위기·관계·설정·세계관· 장르·분량·완결여부·씨피고정·시스템), 76개 태그, alias 집합을 정의.
+3. **전수 어노테이션** — 229개 작품 전부에 직접 태그 부여.
+4. 그 위에 추천/정규화/스코어링을 얹음.
+
+**페이지 반영 원칙:** PRODUCT 섹션의 문제 정의를 "주관적 태그를 다루기"에서 **"빈약한 메타데이터 환경에서 taxonomy와 큐레이션 데이터셋을 처음부터 구축하기"**로 바로잡는다. 이는 Language Engineer JD의 *dataset construction, semantic schemas, annotation guidelines*와 직접 대응하며, 기존 "태그 기반 추천기" 프레이밍보다 강하다.
+
+### PRODUCT 섹션 카피 초안 (`tagspark-problem`)
+
+```
+eyebrow: PRODUCT CONTEXT
+h2: The platform had no tags at all. So I read every work and built the taxonomy.
+
+The source platform offered no tagging whatsoever, so there was no way to curate
+"works that feel like this." I read all 229 works, derived a tag taxonomy
+inductively from the recurring patterns I saw — 9 categories, 76 tags with alias
+sets — and hand-annotated every work in the catalog. Only then does
+recommendation become possible: alias normalization, a curated similarity
+thesaurus, and layered weighted scoring sit on top of that hand-built dataset.
+
+(problem statement) How do you build a controllable recommendation signal when
+the source platform provides no usable metadata to begin with?
+
+```
+
+이 프레이밍은 이후 모든 Phase 1/2 섹션의 전제가 된다 — "먼저 데이터셋을 만들었고, 그 위에 시스템을 얹었다."
+
+---
+
+## 1. 파일 전체 지도
+
+| 파일 | 역할 | 수정 |
+| --- | --- | --- |
+| `components/tagspark-case-content.tsx` | **케이스 페이지 본문(핵심)** — 모든 섹션 JSX | ⭐ 주 편집 |
+| `components/tagspark-section-nav.tsx` | 섹션 네비게이션 배열 | ⭐ id 동기화 |
+| `components/tagspark-preference-media.tsx` | include/exclude 데모 미디어 | 무드 슬라이더 데모 후보 |
+| `components/tagspark-ranking-media.tsx` | 랭킹/스코어 데모 미디어 | 관련작·이웃 데모 후보 |
+| `components/tagspark-ambient-thumbnail.tsx` | 썸네일 배경 | 보통 수정 불필요 |
+| `components/TagSparkThumbnailScreen.tsx` `.module.css` | 작업 인덱스 썸네일 | 보통 수정 불필요 |
+| `app/work/[slug]/page.tsx` | 케이스 라우팅/렌더 (3개 프로젝트 공용) | 섹션 추가만이면 불필요 |
+| `docs/tagspark_portfolio/case_study_language_engineer.md` | 서술 원문(md) | ⭐ 로드맵 서술 보강 |
+| `docs/tagspark_portfolio/cluster_thesaurus_db_design.md` | thesaurus→DB 설계 | 이미 존재, 근거 |
+| `docs/tagspark_portfolio/ui_and_interactive_guide.md` | UI/인터랙션 가이드 | 데모 추가 시 갱신 |
+
+**핵심:** 실제 렌더되는 페이지 본문은 `tagspark-case-content.tsx` 하나. `docs/*.md`는 서술/설계 노트이고 페이지에 직접 렌더되지 않는다.
+
+---
+
+## 2. ⚠️ nav ↔ content id 불일치 (수정 전 반드시 확인)
+
+`section-nav.tsx`의 섹션 id와 `case-content.tsx`의 실제 id가 다르다. 새 섹션 추가 전에 이 불일치를 정리해야 nav가 정상 작동한다.
+
+### section-nav.tsx가 기대하는 id (10개)
+
+| id | 라벨 | 본문 존재? |
+| --- | --- | --- |
+| `tagspark-problem` | PRODUCT | ✅ |
+| `tagspark-control` | INPUT | ✅ |
+| `tagspark-baseline` | BASELINE | ❌ (본문은 normalization/thesaurus/scoring로 분리됨) |
+| `tagspark-operations` | DATA | ✅ |
+| `tagspark-phase-two` | PHASE 2 | ❌ 신규 |
+| `tagspark-model` | MODEL | ❌ 신규 |
+| `tagspark-axes` | AXES | ❌ 신규 |
+| `tagspark-experience` | EXPERIENCE | ❌ 신규 |
+| `tagspark-validation` | VALIDATION | ❌ 신규 |
+| `tagspark-roadmap` | ROADMAP | ❌ 신규 |
+
+### case-content.tsx에 실제 존재하는 id (8개)
+
+| id | eyebrow |
 | --- | --- |
-| 작품 (works) | 229 |
-| 태그 (tags) | 76 |
-| work_tags (연결) | 1,630 |
-| 작품당 평균 태그 수 | 7.1개 (min 2, max 14) |
-| 태그를 가진 작품 | 229 / 229 (전부) |
-| work_tag weight 값 | 1 (1,399개) 또는 2 (231개) |
+| `tagspark-problem` | PRODUCT CONTEXT |
+| `tagspark-control` | 01 · EXPLICIT PREFERENCE CONTROL |
+| `tagspark-normalization` | 02 · ALIAS NORMALIZATION |
+| `tagspark-thesaurus` | 03 · CURATED SIMILARITY GRAPH |
+| `tagspark-scoring` | 04 · LAYERED ADDITIVE SCORING |
+| `tagspark-results` | 05 · RESULT MODEL |
+| `tagspark-operations` | 06 · CATALOG + OPERATIONS |
+| `tagspark-tagging` | PLANNED EXPERIMENT · REVIEWED TAGGING |
+| `tagspark-takeaways` | LIMITATIONS + NEXT STEPS |
 
-### 1.2 태그 카테고리 (9종)
+### 정리 방침 (권장)
 
-| 카테고리 | 태그 수 | 측정 성격 | 지도에서의 역할 |
-| --- | --- | --- | --- |
-| 분위기 | 21 | **혼합** (연속 + 명목) | 어두움 축 + 관계긴장 축 |
-| 설정 | 19 | 이진 | 필터 토글 |
-| 관계 | 16 | 이진/명목 | 필터 + 일부 축 기여 |
-| 세계관 | 6 | 명목 | 색상/구역 |
-| 장르 | 5 | 명목 | 색상 |
-| 분량 | 4 | 명목(순서형) | 필터 (점 크기 후보) |
-| 완결여부 | 2 | 이진 | 필터 |
-| 씨피고정 | 2 | 이진 | 필터 |
-| 시스템 | 1 | 이진 | 필터 |
+두 파일의 id를 **하나의 최종 목록**으로 맞춘다. 권장 최종 순서(Phase 구조 반영):
 
-### 1.3 태그 분포의 롱테일
+```
+tagspark-problem        PRODUCT      (Phase 1)
+tagspark-control        INPUT        (Phase 1) 01
+tagspark-normalization  NORMALIZE    (Phase 1) 02
+tagspark-thesaurus      THESAURUS    (Phase 1) 03
+tagspark-scoring        SCORING      (Phase 1) 04
+tagspark-results        RESULTS      (Phase 1) 05
+tagspark-operations     DATA         (Phase 1) 06
+tagspark-phase-two      PHASE 2      (구분 헤더)
+tagspark-axes           AXES         (Phase 2) 07
+tagspark-experience     EXPERIENCE   (Phase 2) 08
+tagspark-model          MODEL        (Phase 2) 09
+tagspark-validation     VALIDATION   (Phase 2) 10
+tagspark-roadmap        ROADMAP      (Phase 2) 11
 
-- 최다: 완결(215) · 단편(133) · 로코(74) · 찌통(72)
-- 중앙값: 작품 13개
-- ≤2개 작품에만 달린 희귀 태그: 9개 (예: 리얼물 2, 가을 0)
-- → **IDF 가중치 필수.** 흔한 태그(완결)는 변별력이 없어 낮춰야 한다.
+```
 
-### 1.4 데이터가 강제하는 제약
-
-- **작품 본문 텍스트 없음** → 텍스트→임베딩 불가. 태그 벡터 기반으로 간다.
-- **작품당 태거 1명, 자동 확정** → 어노테이터 합의(IAA) 기반 검증 불가. 텍스트가 아니라 **태그 자체의 내적 일관성**과 **쌍 비교**로 검증해야 함.
-- **조회수·좋아요·댓글 존재** → 약한 사후 검증 신호로 활용 가능.
+`tagspark-tagging`은 `tagspark-validation`에 흡수하거나 별도 유지 중 택1. `tagspark-takeaways`는 마지막(로드맵 뒤)에 그대로 둔다.
 
 ---
 
-## 2. 차원 아키텍처 (이 설계의 핵심)
+## 3. 세션 작업 → Phase / 섹션 매핑
 
-모든 태그를 동일하게 벡터화하지 않는다. 태그의 **측정 성격**에 따라 세 층으로 나눈다.
+`tag-spark_README.md`의 Phase 구조와 정렬:
 
-```
-공간 축 (Spatial axes) = 2~3개   ← 연속 태그만 (어두움, 관계 긴장)
-        ↓ 작품을 이 축 위에 배치
-표현 (Encoding)        = 색상·크기·모양  ← 명목 태그 (장르, 세계관)
-        ↓ 점을 꾸민다
-필터 (Filters)         = on/off 토글    ← 이진 태그 (학원물, 완결, 씨피고정)
-        ↓ 부분집합만 표시
+### Phase 1 — 현재 프로덕션 (이미 페이지에 있음, 카피 다듬기만)
 
-```
-
-### 2.1 왜 축은 2~3개인가
-
-- 화면은 2D(또는 회전 3D)이고, 사람이 공간적으로 인지할 수 있는 축은 실질적으로 2~3개가 한계다.
-- 나머지 정보는 색·크기·필터로 밀어내는 것이 시각화의 정석.
-- 76개를 다 축으로 만들면 아무도 읽지 못한다.
-
-### 2.2 태그 유형별 표현 방식
-
-| 유형 | 성격 | 예시 | 표현 |
-| --- | --- | --- | --- |
-| 연속 (비교 가능) | 정도 차이 있음 | 분위기(어두움), 감정 강도 | 실수 좌표 (축) |
-| 이진 (범주형) | 있다/없다 | 청레(학원물), 완결여부, 씨피고정 | 0/1 필터 |
-| 명목 (다중 범주) | 여럿 중 하나 | 장르, 세계관 | 색상/모양 |
-
-핵심: "학원물"에 0.5 같은 연속값을 주는 것은 무의미하다 — 학원물이거나 아니거나이기 때문이다. 반대로 "피폐"와 "힐링"을 단순 on/off로만 다루면 그 사이의 정도 차이를 잃는다.
-
----
-
-## 3. 축 설계 (연속 차원)
-
-### 3.1 축 1 — 어두움 (Darkness) ✅ 검증 완료
-
-감정 톤의 밝음↔어두움 스펙트럼. **실제 데이터로 이미 검증됨.**
-
-```
-밝음/따뜻함  ─────────────────────────────  어두움/고통
-  힐링   풋풋   달달      │      후회  이별  찌통  피폐  새드
-
-```
-
-초기 가중치 (길 A, 이산 근사):
-
-| 밝은 쪽 | 가중치 | 어두운 쪽 | 가중치 |
-| --- | --- | --- | --- |
-| 달달 | +1.0 | 피폐 | −1.0 |
-| 힐링 | +1.0 | 새드 | −1.0 |
-| 풋풋 | +0.8 | 찌통 | −0.8 |
-|  |  | 후회 | −0.7 |
-|  |  | 이별 | −0.7 |
-
-**검증 결과 (실측, −3.2 ~ +2.8):**
-
-- 가장 어두움: 「낮은 밤」, 「안녕, 트래블러」, 「나의 자서전」 (이별·찌통·피폐·후회·새드)
-- 가장 밝음: 「시고르자브종」, 「꿈★은 이루어진다」 (힐링·달달·풋풋)
-
-사람이 봐도 납득 가능한 배치. **지금 데이터로 바로 사용 가능.**
-
-### 3.2 축 2 — 관계 긴장 (Relational tension)
-
-인물 관계의 편안함↔갈등. 어두움과는 **독립적인** 차원이다.
-
-```
-편안/화목  ───────────────────────  갈등/긴장
-  달달  힐링    │    쌍방삽질  오해  엇갈림  혐관
-
-```
-
-- 분위기 카테고리 중 관계 역학에 해당: 혐관, 쌍방삽질, 오해, 엇갈림, 애새끼
-- 관계 카테고리(16개) 일부도 기여 가능
-
-### 3.3 축 3 (선택) — 감정 강도 (Intensity)
-
-잔잔함↔격렬함. 축 1·2와 상관이 높으면 생략한다. 3D 회전 뷰를 쓸 때만 고려.
-
-### 3.4 축에서 제외 (노이즈)
-
-- 계절(여름·겨울·봄·가을) → 무드 축을 흐린다. 필터로만.
-- 분량(단편·장편) → 점 크기 후보이지 축은 아님.
-
----
-
-## 4. 차원 축소 방법 (기술)
-
-### 4.1 두 가지 배치 전략
-
-**전략 A — 손수 정의한 해석 가능 축 (권장 시작점)**
-
-- 3장의 어두움·관계긴장 축을 X·Y로 직접 사용.
-- 장점: 완전히 해석 가능, 각 축의 의미가 명확.
-- 이것이 backbone.
-
-**전략 B — 전체 태그 임베딩 후 비선형 투영 (탐색 보강)**
-
-- 76차원 태그 벡터(TF-IDF 가중) → UMAP/t-SNE로 2D.
-- 주의: **PCA(선형)는 부적합** — 실측 분산 11.9%. 태그 공간은 본질적으로 고차원이라 선형 투영으로 안 눌린다.
-- **sklearn은 이 환경에 없음.** 실제 페이지는 **브라우저(JS)에서 UMAP**을 돌리는 것이 정답 (umap-js 등). 또는 서버 배치 잡으로 좌표 사전 계산.
-
-권장: **A를 기본 축으로, B를 "유사 작품" 이웃 계산에 사용**하는 하이브리드.
-
-### 4.2 작품 벡터 만들기 (공통)
-
-```
-작품벡터[tag] = work_tag.weight × IDF(tag)
-IDF(tag) = log(전체작품수 / 그 태그를 가진 작품수)
-
-```
-
-- 흔한 태그(완결, 215개) → IDF 낮음 → 거의 무시
-- 희귀 태그(정략결혼 등) → IDF 높음 → 강한 신호
-- 벡터는 L2 정규화 (코사인 유사도 기하)
-
----
-
-## 5. "slight tagging" — 쌍 비교로 연속 축 정밀화 (길 B)
-
-이산 태그 근사(길 A)의 한계: 같은 "피폐"라도 정도 차이를 못 잡는다. 이를 쌍 비교로 보강한다.
-
-### 5.1 수집 방식
-
-- **절대 점수 금지** ("이 작품 어두움 몇 점?"은 사람마다 기준이 달라 부정확).
-- **상대 비교 사용:** "A와 B 중 어느 쪽이 더 어둡나요?"
-- 사람은 절대 점수보다 상대 비교를 훨씬 일관되게 답한다.
-
-### 5.2 좌표 복원
-
-| 기법 | 아이디어 |
-| --- | --- |
-| Bradley-Terry / TrueSkill | 쌍 비교 승패로 축별 점수 (체스 레이팅 원리) |
-| Thurstonian scaling | 쌍 비교 → 잠재 연속 척도 |
-| Ordinal embedding (t-STE) | "A는 B보다 C에 가깝다" 삼중 비교로 좌표 학습 |
-
-### 5.3 비용 관리 — 능동 샘플링
-
-- 모든 쌍은 N²(229² ≈ 52,000) → 폭발.
-- **불확실한 쌍만** 골라서 물어본다 (현재 순위상 가까운 쌍 우선).
-- 소량(수백 쌍)으로도 축을 안정화할 수 있다.
-
-### 5.4 방법 1 — 쌍 비교로 가중치 직접 학습 (권장 시작점)
-
-핵심: 개별 태그 가중치를 사람에게 직접 묻지 않는다. **작품 쌍 비교**를 묻고, 그로부터 **태그 가중치를 역산**한다.
-
-```
-수집: "작품 A가 B보다 어둡다"  (사람 판단)
-        ↓
-모델: 각 작품의 어두움 점수 = Σ(태그 가중치 × 태그 유무)
-      A의 점수 > B의 점수일 확률이 실제 비교와 맞도록 가중치를 최적화
-        ↓
-결과: 피폐 = −1.0, 찌통 = −0.7 ... 각 태그 가중치가 데이터에서 나옴
-
-```
-
-- **Bradley-Terry / 로지스틱 회귀:** "A>B" 비교를 A·B의 태그 차이 벡터에 대한 로지스틱 회귀로 풀면 **회귀 계수 = 태그 가중치**가 된다. 즉 지금 손으로 정한 ±1.0, −0.7 값을 데이터로 대체한다.
-- **규모 현실성:** 무드 축 관련 태그는 ~10개, 작품 229개 → 수백 건의 쌍 비교로 가중치가 안정화된다.
-
-### 5.5 방법 2 — A/B 테스트로 검증 (유저 확보 후)
-
-가중치 세트를 만든 뒤, 어느 세트가 실제로 나은지 A/B로 확인한다.
-
-|  | 그룹 A | 그룹 B |
+| README | 페이지 섹션 | 상태 |
 | --- | --- | --- |
-| 가중치 | 손수 정한 v1 | 쌍 비교로 학습한 v2 |
-| 측정 | 클릭률·체류시간·탐색 깊이 | 동일 |
+| 1-1 Explicit preference control | `tagspark-control` | 존재 |
+| 1-2 Alias normalization | `tagspark-normalization` | 존재 |
+| 1-3 Hand-built thesaurus | `tagspark-thesaurus` | 존재 |
+| 1-4 Hierarchical scoring | `tagspark-scoring` | 존재 |
+| 1-5 Catalog + operations | `tagspark-operations` | 존재 |
 
-- **제약:** A/B는 실유저 트래픽이 있어야 의미. 유저 전에는 오프라인 검증으로 대체.
-- **주의:** A/B 테스트는 가중치를 **만들지 못한다** — 어느 쪽이 나은지 고를 뿐. 가중치는 5.4(쌍 비교 학습)로 만들고, A/B는 그 결과를 검증한다.
+### Phase 2 — 추가 계획 (신규 섹션 작성)
 
-### 5.6 올바른 순서
-
-```
-1. 쌍 비교 수집 (신뢰 그룹 3~5명)              ← 지금 가능
-        ↓
-2. Bradley-Terry / 로지스틱 회귀로 가중치 학습   ← 지금 가능 (오프라인)
-        ↓
-3. held-out 쌍 비교로 오프라인 검증             ← 지금 가능
-   (학습 가중치 vs 손수 가중치, Kendall's tau)
-        ↓
-4. 유저 확보 후 A/B 테스트로 최종 검증           ← 나중 (클릭률·체류시간)
-
-```
-
----
-
-## 6. 측정 (Evaluation)
-
-작품당 태거 1명이라 표준 IAA는 못 쓴다. 대신:
-
-| 측정 대상 | 방법 |
-| --- | --- |
-| 축 타당성 | 어두움 축 양 끝 작품을 사람이 보고 "맞다" 동의하는지 (소규모 검토) |
-| 이웃 보존 | 2D에서 가까운 작품이 태그 공간에서도 가까운지 (trustworthiness score) |
-| 길 A vs 길 B 일치 | 쌍 비교 순위 vs 이산 근사 축의 Kendall's tau — 어긋나는 지점이 "태그가 놓친 미묘함" |
-| 쌍 비교 재현 | held-out 쌍 비교를 복원 좌표가 맞게 예측하는지 |
-| 사후 신호 (약) | views/likes 패턴이 클러스터와 관련 있는지 |
-
----
-
-## 7. 구현 로드맵 (안전·점진적)
-
-1. **태그 벡터 + IDF 계산** (지금 데이터로 가능). L2 정규화.
-2. **어두움 축 계산** (길 A). 229개 작품 좌표 산출 — 이미 검증됨.
-3. **관계 긴장 축 추가** → 2D 좌표 완성.
-4. **인터랙티브 지도 프로토타입:** 점 = 작품, 색 = 장르, 크기 = 조회수(선택), 필터 = 이진 태그(학원물/완결 등), 호버 = 제목·태그.
-5. **유사 작품 이웃:** 태그 코사인 top-K로 "이 작품과 비슷한 작품".
-6. **쌍 비교 수집 UI** (길 B) + 능동 샘플링.
-7. **Bradley-Terry로 축 정밀화** → 이산 축을 연속 축으로 업그레이드.
-8. **측정 대시보드:** 축 타당성·이웃 보존·순위 일치.
-
-각 단계는 되돌릴 수 있고, 앞 단계가 없어도 뒤 단계의 baseline이 된다.
-
----
-
-## 8. 태그 추천 시스템과의 관계
-
-- 이 페이지는 태그 추천을 **대체하지 않고 보완**한다.
-- 이산 태그(신뢰의 backbone) + 연속 축(탐색 레이어) = 일관된 철학.
-- `tag_similarity` 그래프(별도 설계)를 유사 작품 이웃 계산에 재사용 가능.
-- 즉 시스템 전체가 "curated backbone + augmentation" 하나의 원칙 위에 선다.
-
----
-
-## 9. 확정된 설계 결정
-
-| # | 질문 | 결정 | 근거 |
+| README | 신규 섹션 id | eyebrow 후보 | 근거 (embedding_page_plan.md) |
 | --- | --- | --- | --- |
-| Q1 | 축 개수 | **2개로 시작** (어두움 + 관계 긴장). 3D는 세 번째 축의 독립성이 측정으로 확인된 뒤 확장 | 어두움 축 검증됨. 감정 강도 축은 앞 두 축과 상관 높을 가능성 |
-| Q2 | 관계 긴장 축 구성 | **분위기 태그(혐관·쌍방삽질·오해·엇갈림·애새끼)를 주축**으로, 관계 카테고리 16개는 소수만 낮은 가중치로 | 관계 카테고리 다수는 "씨피 구성"이라 긴장도와 무관 → 섞으면 축이 흐려짐 |
-| Q3 | 쌍 비교 수집 주체 | **소수 신뢰 그룹 3~5명**이 겹쳐서 비교 | 단일 태거의 IAA 불가 문제를 우회 — 겹침이 있어야 합의도(IAA) 측정 가능 |
-| Q4 | 무드 없는 27개 작품 | **지도에 표시하되 회색·반투명 ("무드 미분류")**. 제외하지 않음 | 제외 시 혼란. 회색 처리는 추가 태깅을 유도하는 신호도 됨 |
-| Q5 | 모호 태그 | 의미 확정 완료 → 아래 10장 용어집 및 축 배치에 반영 | 리얼물·노딱은 무드 아님 → 축 제외 |
+| 2-1 Thesaurus→data | `tagspark-phase-two` (헤더) | PHASE 2 | 부록 B / 1장 |
+| 2-2 Multi-axis mood | `tagspark-axes` | 07 · MOOD AXES | 2·3·9·10장 |
+| 2-3 Desktop map / mobile | `tagspark-experience` | 08 · PLATFORM | 11·13장 |
+| 2-4 Cold start | `tagspark-experience` 내 | (동일) | 12장 |
+| 2-5 Personalization | `tagspark-model` | 09 · PERSONALIZATION | 12장 |
+| 2-6 Validation | `tagspark-validation` | 10 · VALIDATION | 5·6장, FicSim |
+| 2-7 Learned similarity | `tagspark-model` 내 | (동일) | 14장, 부록 B |
 
 ---
 
-## 10. 태그 용어집 및 축 배치 (모호 태그 확정)
+## 3.5. 페이지 4막 구조 (PROBLEM → PHASE 1 → PHASE 2 → TAKEAWAY)
 
-사용자 확인으로 의미가 확정된 태그들. 무드 축이 아닌 것을 구분하는 것이 핵심.
+페이지 전체를 4막 서사로 재배치한다. 스크롤 진행이 곧 이야기가 되도록.
 
-| 태그 | 확정 의미 | 성격 | 축 배치 |
-| --- | --- | --- | --- |
-| 노딱 | **성인물** (수위) | 이진 (수위 유무) | **어두움 축 제외** → 필터 (별도 '수위' 표시). 어두운 작품과의 동시출현은 우연 — 성인물 자체가 어두운 게 아님 |
-| 노란장판 | **가난한 설정, 보통 어두움** | 설정 + 무드 상관 | 설정은 필터, 어두운 경향은 어두움 축에 **약한 음수 (−0.4)** |
-| 리얼물 | **아이돌 그룹(RPS) 설정** | 명목 (소재) | **어두움 축 제외** → 필터/색상 |
-| 애새끼 | **인물이 철없음·유치·막나감** | 인물 성격 | 관계 긴장 축에 **약한 기여** (막나감 = 긴장 ↑) |
-
-**핵심 교훈:** 동시출현만으로 축을 정하면 안 된다. "노딱(성인물)"은 어두운 작품에 자주 붙었지만, 성인물이라는 속성 자체는 어두움과 무관하다. 태그의 **의미(semantic)**를 확정한 뒤 축에 넣어야 한다 — 상관(correlation)이 아니라 의미로 판단. (이는 이력서의 "translating linguistic edge cases into consistent data decisions"와 정확히 같은 원칙.)
-
-### 어두움 축 가중치 (업데이트)
-
-| 밝은 쪽 | 가중치 | 어두운 쪽 | 가중치 |
-| --- | --- | --- | --- |
-| 달달 | +1.0 | 피폐 | −1.0 |
-| 힐링 | +1.0 | 새드 | −1.0 |
-| 풋풋 | +0.8 | 찌통 | −0.8 |
-|  |  | 후회 | −0.7 |
-|  |  | 이별 | −0.7 |
-|  |  | 노란장판 | −0.4 (신규) |
-
-### 관계 긴장 축 (신규 정의)
+### 최종 섹션 순서 (12개)
 
 ```
-편안/화목  ───────────────────────  갈등/긴장
-  달달  힐링    │    쌍방삽질  오해  엇갈림  애새끼  혐관
+── ACT 1: PROBLEM ──
+PRODUCT        tagspark-problem      태그가 없어 큐레이션이 불가능했다
+
+── ACT 2: PHASE 1 (shipped) ──
+DATASET        tagspark-dataset      ⭐신규: 229개 정독→귀납적 스키마→전수 어노테이션
+INPUT          tagspark-control      명시적 선호 통제
+NORMALIZE      tagspark-normalization alias 정규화
+THESAURUS      tagspark-thesaurus    수작업 유사도 그래프
+SCORING        tagspark-scoring      계층적 가중 스코어링
+DATA           tagspark-operations   카탈로그·운영
+
+── ACT 3: PHASE 2 (planned) ──
+PHASE 2        tagspark-phase-two    전환 헤더 ("여기부터 계획")
+AXES           tagspark-axes         다축 무드 공간
+EXPERIENCE     tagspark-experience   데스크톱 지도/모바일 + 콜드스타트
+MODEL          tagspark-model        개인화 + learned similarity
+VALIDATION     tagspark-validation   쌍 비교·IAA·FicSim
+
+── ACT 4: TAKEAWAY ──
+TAKEAWAY       tagspark-takeaways    추천기는 그 아래 데이터만큼만 신뢰할 수 있다
 
 ```
 
-- 갈등 쪽: 혐관(강), 애새끼(약), 엇갈림, 오해, 쌍방삽질
-- 화목 쪽: 달달, 힐링
+### 각 막이 증명하는 것
 
-## 11. 텍스트 전략 (태그 + 요약)
-
-작품 데이터에 **태그 + 요약(summary)**을 함께 쓰기로 결정. 전체 본문은 검토했으나 함정(길이·문체 과의존·저작권)이 커서 요약으로 대체한다.
-
-### 11.1 왜 "태그 + 요약"이 최적점인가
-
-전체 본문의 3가지 함정을 요약이 모두 우회한다:
-
-| 함정 (전체 본문) | 요약이 해결하는 방식 |
-| --- | --- |
-| 길이 (임베딩 토큰 한계 초과) | 요약은 짧음 → 통째로 임베딩, 청킹 불필요 |
-| 문체 과의존 (FicSim 경고) | 요약엔 문체가 거의 없음 → 모델이 **내용**에 집중 |
-| 저작권 | 요약은 본문 재현이 아님 → 부담 훨씬 적음 |
-
-**핵심:** FicSim이 실증한 실패 원인은 "긴 본문에서 모델이 문체 같은 표면 특징에 과의존"하는 것이었다. 요약은 애초에 문체를 제거하고 줄거리·주제만 남기므로 이 함정을 구조적으로 피한다.
-
-### 11.2 요약으로 열리는 축 (FicSim 12축 기준)
-
-| 축 | 태그만 | 태그+요약 |
+| 막 | 한 문장 주제 | 증명 역량 |
 | --- | --- | --- |
-| Character States (무드/어두움) | O | O 강화 |
-| Relationship Dynamics (관계 긴장) | O | O 강화 |
-| Tone & Content | O | O 강화 |
-| **Plot (줄거리)** | X | **O 열림** |
-| **Theme (주제)** | X | **O 열림** |
-| Style (문체) | X | 요약엔 문체 없음 → 여전히 어려움 (무드 지도엔 불필요) |
+| PROBLEM | 태그가 없어 큐레이션이 불가능했다 | 문제 인식 |
+| PHASE 1 | 데이터셋을 만들고 규칙 기반 추천을 얹었다 | 데이터 구축 + 구현 |
+| PHASE 2 | 해석 가능성을 유지하며 데이터·학습으로 확장한다 | 비전 + 방법론 |
+| TAKEAWAY | 추천기는 그 아래 데이터만큼만 신뢰할 수 있다 | 성숙한 판단 |
 
-Style만 빼고 의미 축은 거의 다 가능해진다. Style은 FicSim에서 "모델이 과의존하는 표면 특징"이라 무드 지도엔 오히려 배제하는 편이 낫다.
+### 핵심 배치 결정
 
-### 11.3 요약 출처와 신뢰도
+1. **DATASET을 독립 섹션으로 분리** (PROBLEM에서 빼냄). PROBLEM은 "왜"(태그 없음), DATASET은 "무엇을 했나"(정독·귀납적 스키마·전수 어노테이션). Jiwoo의 가장 강력한 Language Engineer 증거이므로 묻히면 안 된다. Phase 1의 **첫 섹션**으로 두어 "먼저 데이터를 만들었다" 전제를 세운다.
+2. **PROBLEM은 문제만.** 태그 전무 → 큐레이션 불가라는 상황과 질문("빈약한 메타데이터에서 통제 가능한 추천 신호를 어떻게?")까지만.
+3. **PHASE 2 전환 헤더로 경계 명시.** 채용 담당자가 "지금 것 vs 계획"을 한눈에.
+4. **TAKEAWAY는 마지막 정리.** 기존 takeaways 유지, nav 라벨만 TAKEAWAY.
 
-| 요약 출처 | 신뢰도 | 주의점 |
-| --- | --- | --- |
-| 작가/추천자가 쓴 공식 시놉시스 | 높음 | 가장 좋음 — 사람이 쓴 정답 |
-| LLM이 본문에서 생성 | 중간 | 환각 위험, 태그로 교차 검증 필요 |
-| 독자 리뷰/소개글 | 낮음~중간 | 주관 섞임 |
+### DATASET 섹션 카피 초안 (`tagspark-dataset`, Phase 1 첫 섹션)
 
-**원칙:** 사람이 쓴 요약이 있으면 backbone, LLM 생성 요약은 보조. LLM 요약을 쓸 때는 반드시 태그로 교차 검증한다 (요약도 태그도 완벽하지 않으므로 서로 검증).
-
-### 11.4 결합 방식
+```tsx
+<section className="tagspark-feature shell case-section" id="tagspark-dataset">
+  <div className="tagspark-feature-copy">
+    <p className="eyebrow">01 · DATASET FROM SCRATCH</p>
+    <h2>No tags existed, so I read every work and built the dataset.</h2>
+    <p>
+      The source platform had no tagging at all. I read all 229 works, derived a
+      tag taxonomy inductively from the recurring patterns — 9 categories, 76
+      tags with alias sets — and hand-annotated every work. This full-coverage,
+      from-scratch language dataset is the foundation everything else sits on.
+    </p>
+    <div className="tagspark-language-flow" aria-label="Dataset construction flow">
+      <span>read 229 works</span>
+      <i>→</i>
+      <span>induce schema</span>
+      <i>→</i>
+      <span>annotate all</span>
+    </div>
+  </div>
+  <TagSparkPlaceholder
+    label="Taxonomy: 9 categories · 76 tags"
+    note="FULL-COVERAGE HAND ANNOTATION (229 WORKS)"
+  />
+</section>
 
 ```
-사람 태그        ← 구조적 backbone (신뢰, 이산)
-    +
-요약            ← 의미적 보강 (Plot·Theme 열림, 문체 없음 = FicSim 함정 회피)
-    +
-쌍 비교         ← 미세 조정 (어두움 "정도" 차이)
-    ↓
-정확한 다축 배치 + 태그 검증
+
+주의: DATASET이 01이 되면 기존 INPUT(01) 이하 eyebrow 번호가 한 칸씩 밀린다 (INPUT 02, NORMALIZE 03 …). 4장의 신규 Phase 2 섹션 번호도 이에 맞춰 재계산할 것.
+
+### nav 배열 최종본 (4막 반영)
+
+```tsx
+const sections = [
+  { id: 'tagspark-problem', label: 'PROBLEM' },
+  { id: 'tagspark-dataset', label: 'DATASET' },
+  { id: 'tagspark-control', label: 'INPUT' },
+  { id: 'tagspark-normalization', label: 'NORMALIZE' },
+  { id: 'tagspark-thesaurus', label: 'THESAURUS' },
+  { id: 'tagspark-scoring', label: 'SCORING' },
+  { id: 'tagspark-operations', label: 'DATA' },
+  { id: 'tagspark-phase-two', label: 'PHASE 2' },
+  { id: 'tagspark-axes', label: 'AXES' },
+  { id: 'tagspark-experience', label: 'EXPERIENCE' },
+  { id: 'tagspark-model', label: 'MODEL' },
+  { id: 'tagspark-validation', label: 'VALIDATION' },
+  { id: 'tagspark-takeaways', label: 'TAKEAWAY' },
+] as const;
 
 ```
 
-- **활용 1 — 배치/이웃:** 요약 임베딩 + 태그 TF-IDF 벡터를 결합해 2D 배치.
-- **활용 2 — 태그 검증:** "이 요약에 정말 '피폐' 요소가 있나?"로 추천자 태그가 legit한지 확인, 누락 태그 제안. (6장 측정 및 로드맵의 정합성 검증과 연결.)
+### (선택) Phase 1 압축안
 
-### 11.5 주의 — 요약도 "통째로 임베딩해서 무드 뽑기"는 안 됨
-
-요약이 본문보다 안전하지만, 여전히 임베딩만으로 "A가 B보다 어둡다"를 뽑으려 하면 FicSim의 모델들처럼 실패할 수 있다. 어두움 "정도"의 정밀화는 임베딩이 아니라 **쌍 비교(5장, 길 B)**가 담당한다. 요약은 축의 재료가 아니라 **보강 신호와 검증 도구**로 쓴다.
-
-## 12. 모바일 표시 전략 (Mobile display)
-
-TagSpark 프로덕션은 **모바일 우선**이다. 작은 화면에 229개(향후 증가) 점을 모두 뿌리면 겹침(overplotting)으로 아무것도 안 보이고 터치도 안 된다. 이는 시각화 분야의 알려진 문제이며 확립된 해법이 있다.
-
-### 12.1 핵심 문제 — 오버플로팅
-
-- 스캐터플롯은 큰 데이터에 확장되지 않는다. 점이 겹쳐 개별 식별·터치 불가.
-- 모바일은 화면·터치 타겟이 작아 데스크톱보다 훨씬 빨리 무너진다.
-- 결론: **순수 2D 산점도로 전부 표시하는 방식은 모바일에 부적합.**
-
-### 12.2 재프레이밍 — 임베딩의 가치는 "거리"이지 "전체 표시"가 아니다
-
-임베딩이 만드는 것은 작품 간 **거리(유사도)**다. 모바일에서는 그 거리를 "모든 점을 한 화면에"가 아니라 아래 방식으로 소비한다.
-
-### 12.3 표준 해법 (다른 서비스 조사)
-
-| 해법 | 원리 | 모바일 적합도 | 구현 부담 |
-| --- | --- | --- | --- |
-| 클러스터링/비닝 + 시맨틱 줌 | 멀리선 "어두운 작품 42편" 버블, 확대 시 개별 분해 (구글맵 핀 클러스터 원리) | 높음 | 중간 |
-| 슬라이더 + 리스트 (지도 대체) | "어두움 ●━━○ 밝음" 슬라이더로 영역 좁혀 작품 리스트 표시 (Moodify 방식) | 높음 | 낮음 |
-| 뷰포트 렌더링 (WebGL) | 화면에 보이는 점만 렌더 → 수천 개도 처리 | 중간 | 높음 |
-| 대표점 + 온디맨드 | 영역별 대표 작품만 표시, 탭하면 근처 리스트 펼침 | 중간 | 낮음 |
-| 순수 2D 산점도 (전부) | 모든 점을 그대로 | 낮음 | 낮음 |
-
-### 12.4 권장 — 모바일/데스크톱 이원화
-
-- **모바일 기본:** 슬라이더 + 리스트, 또는 클러스터 버블 + 시맨틱 줌.- "어두움" · "관계 긴장" 슬라이더 2개 → 조절 시 해당 영역 작품을 리스트로.
-- 지도의 "느낌"은 유지하되 표현은 모바일 친화적 리스트로.
-- **데스크톱 보너스 뷰:** 자유로운 2D 산점도(WebGL) — 넓은 화면에서만.
-- **"관련 작품" 리스트:** 모바일에선 전체 지도보다 "이 작품과 비슷한 작품 리스트"가 훨씬 자연스러운 소비 형태 (임베딩 이웃 top-K). 지도 없이도 임베딩 가치 전달.
-
-### 12.5 원칙
-
-- 모바일에서 전체 지도를 억지로 보여주지 않는다.
-- 임베딩 = 거리 계산. 그 거리를 클러스터 요약 또는 관련 작품 리스트로 소비.
-- 지도(2D 산점도)는 데스크톱 전용 부가 기능으로 둔다.
+Phase 1이 6개라 길면 NORMALIZE+THESAURUS+SCORING을 "ENGINE" 한 섹션으로 묶어 4개로 줄일 수 있다. 깊이(개별 기법 노출) vs 간결의 트레이드오프 — 개별 유지가 기술 깊이를 더 잘 보여주므로 기본은 분리 유지 권장.
 
 ---
 
-## 13. 개인화 로드맵 (Personalization)
+## 4. 편집 절차
 
-콘텐츠 기반(태그) 추천을 행동 기반으로 확장하는 로드맵. 유명 서비스 (Spotify, Apple Music, Netflix, StoryGraph)의 콜드스타트·신호 전략을 참고.
+### 4-A. Phase 2 구분 헤더 추가
 
-### 13.1 신호 유형 — 암묵적 vs 명시적
+`tagspark-operations`(06) 섹션 뒤, 첫 Phase 2 섹션 앞에 삽입:
 
-| 신호 | 예시 | 신뢰도 | 문제 |
-| --- | --- | --- | --- |
-| 명시적 (explicit) | "more like this", 좋아요, 별점, "관심 없음" | 높음 | 유저가 행동해야 함 |
-| 암묵적 (implicit) | 열람, 체류시간, 클릭 | 낮음 | **"읽음 ≠ 좋음"** — 노이즈 많음 |
-
-**원칙:** 열람 기록(암묵적)은 "읽었지만 실망/중도포기"를 구분 못 한다. 명시적 신호를 우선한다.
-
-### 13.2 "more like this" / "관심 없음" (명시적 신호, 최우선)
-
-| 버튼 | 신호 | 효과 |
-| --- | --- | --- |
-| "이런 거 더 보기" (more like this) | 긍정 | 그 작품의 임베딩 이웃 top-K 추천 |
-| "관심 없음" (not for me) | 부정 | 그 방향 작품 배제/downweight |
-
-- 우리 태그 임베딩의 이웃 계산만으로 구현 → **별도 데이터·학습 불필요, 지금 가능.**
-- 콜드스타트 없음 (작품 1개만 있으면 작동). 모바일 친화(리스트).
-- "관련 작품" 기능과 같은 엔진 + 유저 트리거(버튼).
-
-### 13.3 익명 신원 — 서명 토큰 (IP/fingerprint 아님)
-
-이전 열람 기록을 추적하려면 안정적 익명 신원이 필요하다.
-
-| 방법 | 안정성 | 프라이버시 | 판정 |
-| --- | --- | --- | --- |
-| IP 주소 | 낮음 | 나쁨 | 모바일 IP 변동·NAT 공유 → 부정확, GDPR상 개인정보 |
-| Device fingerprint | 중간 | 나쁨 | GDPR/ePrivacy 동의 필요, 브라우저 차단 추세 |
-| **서명된 익명 토큰 (쿠키)** | 높음 | 좋음 | **채택** — 기기에 안정 저장, 명시적 |
-
-**핵심:** yap.에서 이미 구현한 `X-Anonymous-Token`(HMAC 서명, HttpOnly 쿠키) 패턴을 재사용한다. IP/fingerprint보다 정확하고 프라이버시 안전하며 검증됨.
-
-### 13.4 콜드스타트 (신규 방문자)
-
-첫 추천이 나쁘면 이탈한다 (Spotify: 첫 30분이 관건). 유명 서비스의 3해법:
-
-1. **명시적 선호 입력 (preference elicitation):** Spotify/Apple Music의 가입 시 아티스트·장르 선택. TagSpark은 무드 슬라이더 또는 대표작 3개 선택으로 대응.
-2. **콘텐츠 기반 fallback:** 행동 데이터 0이어도 태그 유사도로 추천. **TagSpark의 구조적 강점** — 협업 필터링 서비스와 달리 첫날부터 추천 가능.
-3. **점진적 온보딩:** 긴 설문 금지. 가볍게 시작하고 "more like this"로 학습 (Spotify: "유저는 앱을 배우고 싶어하지 않는다, 바로 하고 싶어한다").
-
-### 13.5 통합 로드맵
-
-```
-신규 방문자 도착
-     ↓
-① 가벼운 선호 입력 (대표작 3개 or 무드 슬라이더)   ← preference elicitation
-     ↓
-② 콘텐츠 기반 첫 추천 (태그 임베딩 유사도)         ← 우리 강점, 데이터 0이어도 작동
-     ↓
-③ "more like this" / "관심 없음" 점진 학습         ← 명시적 신호 (13.2)
-     ↓
-④ 익명 토큰에 축적 → 개인화 강화                   ← 나중, 데이터 쌓이면 (13.3)
+```tsx
+<section className="shell case-section" id="tagspark-phase-two">
+  <p className="eyebrow">PHASE 2 · PLANNED</p>
+  <h2>From a rule-based baseline toward a data-driven mood space.</h2>
+  <p>
+    The following are designed, not yet shipped. They extend the interpretable
+    baseline above into a data-backed, eventually learned system without losing
+    interpretability.
+  </p>
+</section>
 
 ```
 
-우선순위: **명시적 신호(②③)가 암묵적 열람 추적(④)보다 먼저.** 구현이 쉽고 신호가 깨끗하며 프라이버시 부담이 없다.
+### 4-B. AXES 섹션 (2-2 다축 무드 공간)
 
-### 13.6 참고 서비스 (벤치마크)
+`tagspark-phase-two` 뒤 삽입. 기존 feature 섹션 패턴 사용:
 
-| 서비스 | 방식 | TagSpark 교훈 |
-| --- | --- | --- |
-| StoryGraph | 무드 필터 → 리스트, 다수 독자 무드 태깅 | 모바일=슬라이더+리스트, 다수 판단 집계(IAA) |
-| everynoise | 해석 가능 2축(organic↔mechanical 등) 2D 지도 | 축 설계는 배우되 모바일 전체표시는 회피 |
-| Pandora | 전문가가 곡마다 속성 손수 태깅 | 사람-태그 backbone 철학 |
-| Spotify/Apple Music | 온보딩 선호 입력 + 콘텐츠 fallback + 점진 학습 | 콜드스타트 3해법 |
+```tsx
+<section className="tagspark-feature shell case-section" id="tagspark-axes">
+  <div className="tagspark-feature-copy">
+    <p className="eyebrow">07 · MOOD AXES</p>
+    <h2>Continuous mood becomes a navigable space.</h2>
+    <p>
+      Tags are treated by measurement type. Continuous moods become spatial
+      axes: <strong>darkness</strong> (healing/sweet to bleak/sad/bittersweet,
+      validated on real data) and <strong>relational tension</strong> (sweet to
+      antagonistic). The two are only weakly correlated (about −0.31), so they
+      are effectively independent. Binary tags (school setting, completion)
+      become filters; nominal tags (genre, worldview) become color.
+    </p>
+    <div className="tagspark-language-flow" aria-label="Dimension split">
+      <span>continuous → axes</span>
+      <i>·</i>
+      <span>binary → filters</span>
+      <i>·</i>
+      <span>nominal → color</span>
+    </div>
+  </div>
+  <TagSparkPlaceholder
+    label="Mood-space scatter (darkness × tension)"
+    note="DESKTOP MAP · MOBILE = SLIDERS + LIST"
+  />
+</section>
+
+```
+
+근거·수치: 어두움 축 검증 범위 −3.6~+2.0, 축 상관 −0.31 (embedding_page_plan.md 3·9장). VAD / Power–Danger / FicSim 근거는 부록 B.
+
+### 4-C. EXPERIENCE 섹션 (2-3 플랫폼 소비 + 2-4 콜드스타트)
+
+```tsx
+<section className="tagspark-feature shell case-section" id="tagspark-experience">
+  <div className="tagspark-feature-copy">
+    <p className="eyebrow">08 · PLATFORM-AWARE EXPERIENCE</p>
+    <h2>Desktop map, mobile list — one embedding, two surfaces.</h2>
+    <p>
+      The embedding's value is <em>distance</em>, not showing every point at
+      once. Desktop gets a 2D exploration map; mobile (primary) gets mood
+      sliders that filter into a ranked list plus a "similar works" list,
+      avoiding small-screen overplotting. The embedding is a cross-platform
+      recommendation signal, improving quality even where the map isn't shown.
+    </p>
+    <p>
+      For new visitors, cold start uses preference elicitation: pick a few
+      favorites from a popular-works list, aggregate their tags into a taste
+      starting point. Content-based tags let the first recommendation work with
+      zero behavioral data.
+    </p>
+  </div>
+  <TagSparkPlaceholder
+    label="Mobile mood sliders → ranked list"
+    note="COLD START · PICK FAVORITES → TASTE SEED"
+  />
+</section>
+
+```
+
+근거: embedding_page_plan.md 11·12·13·14장.
+
+### 4-D. MODEL 섹션 (2-5 개인화 + 2-7 learned similarity)
+
+```tsx
+<section className="tagspark-feature shell case-section" id="tagspark-model">
+  <div className="tagspark-feature-copy">
+    <p className="eyebrow">09 · PERSONALIZATION + LEARNED SIGNAL</p>
+    <h2>Explicit signals first, learned similarity as augmentation.</h2>
+    <p>
+      Taste is learned from explicit signals — "more like this" and "not for
+      me" — preferred over reading history ("read ≠ liked"). A mood slider lets
+      users steer darkness/tension directly. Taste persists via a signed
+      anonymous token, not IP or fingerprint. Later, tag co-occurrence and
+      embedding cosine are computed offline and written as
+      <code>source='embedding'</code> edges, with curated edges kept as an
+      interpretable backbone.
+    </p>
+  </div>
+  <TagSparkPlaceholder
+    label="more like this / not for me"
+    note="EXPLICIT SIGNAL > IMPLICIT HISTORY"
+  />
+</section>
+
+```
+
+근거: embedding_page_plan.md 12·14장.
+
+### 4-E. VALIDATION 섹션 (2-6)
+
+```tsx
+<section className="shell case-section" id="tagspark-validation">
+  <p className="eyebrow">10 · VALIDATION</p>
+  <h2>Making subjective tags measurable.</h2>
+  <p>
+    Collect pairwise comparisons ("is A darker than B?") from a small trusted
+    group with overlap, verify reliability with inter-annotator agreement
+    (IAA — Cohen's / Krippendorff), then learn tag weights via
+    Bradley-Terry / logistic regression. Validate with an A/B test once there
+    is user traffic. This mirrors CMU's FicSim: derive similarity from tags,
+    validate with triplet comparisons and Cohen's Kappa.
+  </p>
+</section>
+
+```
+
+근거: embedding_page_plan.md 5·6장, 부록 B(FicSim).
+
+### 4-F. ROADMAP 섹션 재구성 (기존 takeaways와 연결)
+
+기존 `tagspark-takeaways`(LIMITATIONS + NEXT STEPS)를 유지하되, Phase 2 흐름의 마지막 정리로 배치. 또는 `tagspark-roadmap` id로 Phase 1→2 한눈 요약 표를 추가.
+
+### 4-G. section-nav 동기화 (`tagspark-section-nav.tsx`)
+
+`sections` 배열을 2장의 최종 목록과 일치시킨다. 예:
+
+```tsx
+const sections = [
+  { id: 'tagspark-problem', label: 'PRODUCT' },
+  { id: 'tagspark-control', label: 'INPUT' },
+  { id: 'tagspark-normalization', label: 'NORMALIZE' },
+  { id: 'tagspark-thesaurus', label: 'THESAURUS' },
+  { id: 'tagspark-scoring', label: 'SCORING' },
+  { id: 'tagspark-operations', label: 'DATA' },
+  { id: 'tagspark-phase-two', label: 'PHASE 2' },
+  { id: 'tagspark-axes', label: 'AXES' },
+  { id: 'tagspark-experience', label: 'EXPERIENCE' },
+  { id: 'tagspark-model', label: 'MODEL' },
+  { id: 'tagspark-validation', label: 'VALIDATION' },
+  { id: 'tagspark-takeaways', label: 'ROADMAP' },
+] as const;
+
+```
+
+**규칙:** nav 배열의 모든 id는 본문에 실제 섹션이 있어야 한다 (없으면 클릭 시 무동작). 본문 추가와 nav 수정을 같은 커밋에서 함께 한다.
+
+### 4-H. 서술 원문 (`docs/tagspark_portfolio/case_study_language_engineer.md`)
+
+기존 `## WHAT I'D IMPROVE NEXT`(01~05 엔지니어링 hardening)은 유지. 그 아래 **제품 방향 로드맵**을 별도 층으로 추가 (Phase 2 항목 서술). 이 md는 페이지에 직접 렌더되지 않으므로 근거/서술 보관용. `tag-spark_README.md`의 Phase 2 영문 문구를 재사용하면 일관성이 유지된다.
 
 ---
 
-## 14. 확정 — 지도는 데스크톱 전용, 임베딩은 프로덕션 추천 신호
+### 4-I. 구현 상세 (섹션 본문·데모에 담을 메커니즘)
 
-두 가지를 확정한다:
+각 Phase 2 섹션이 "무엇을·왜"만 말하지 않고 **"어떻게"**까지 보여주도록, 설계 문서(`embedding_page_plan.md` §14)의 구현 내용을 섹션별로 매핑한다. 카피나 데모 캡션에 아래 메커니즘을 녹인다.
 
-1. **매핑 지도 페이지 = 데스크톱 전용.** 모바일 우선 원칙(12장)에 따라, 자유로운 2D 산점도 탐색 지도는 넓은 화면의 데스크톱에서만 제공한다.
-2. **임베딩 자체 = 전 플랫폼 프로덕션 추천 신호.** 지도를 못 쓰는 모바일에서도 추천 품질은 임베딩으로 개선된다.
+AXES 섹션에 담을 구현
 
-### 14.1 핵심 — "지도(UI)"와 "임베딩(신호)"의 분리
+- **작품 벡터 이원화:** 태그 TF-IDF 벡터(76차원, 추천용) + 축 좌표(2D, 지도용)를 동시에 유지. `work_vector[tag] = weight × IDF(tag)`, `IDF = log(N / 태그보유작품수)`.
+- **축 좌표:** `darkness = Σ weight·s_dark`, `tension = Σ weight·s_tension`.
+- 캡션 예: "76-dim tag vector for ranking · 2D coords for the map."
 
-```
-임베딩 (어두움·관계긴장 좌표 + 태그 유사도)
-   ├─→ 데스크톱: 시각적 지도 페이지 (탐색·발견용 부가 기능)
-   └─→ 전 플랫폼(모바일 포함): 추천 엔진 내부 신호 (지도 UI 불필요)
+EXPERIENCE 섹션에 담을 구현 (콜드스타트 흐름)
 
-```
-
-임베딩은 UI가 아니라 **추천 품질을 높이는 백엔드 신호**다. 데스크톱 유저는 지도로 직접 탐색하고, 모바일 유저는 지도를 보지 않지만 **더 나은 추천 결과**로 혜택을 받는다.
-
-### 14.2 임베딩이 개선하는 프로덕션 기능 (모바일 포함)
-
-| 기능 | 임베딩 활용 | 지도 UI 필요? |
-| --- | --- | --- |
-| 관련 작품 / more like this | 좌표 이웃 top-K → 리스트 | 아니오 |
-| 콜드스타트 추천 | 인기작 선택 → 태그 집계(방식 B) | 아니오 |
-| reco.ts 개선 | 하드코딩 클러스터 → 데이터 기반 유사도 | 아니오 |
-| 무드 슬라이더 | 어두움·관계긴장 좌표 조절 → 근처 작품 | 아니오 (슬라이더+리스트) |
-| 데스크톱 탐색 지도 | 2D 산점도 시각화 | 예 (데스크톱만) |
-
-### 14.3 원칙
-
-- 지도(2D 산점도)는 데스크톱의 **부가 기능 하나**일 뿐이다.
-- 임베딩의 진짜 임팩트는 **전 플랫폼의 추천 품질** — 지도 없이도 전달된다.
-- 모바일에서는 임베딩을 리스트/슬라이더/이웃 추천으로 소비한다 (12장).
-
----
-
-## 15. 구현 상세 — 임베딩을 추천·콜드스타트에 어떻게 쓰나
-
-지금까지의 "무엇을·왜"에 이어, 실제 "어떻게(구현 레벨)"를 정리한다.
-
-### 15.1 작품 벡터 만들기 (모든 것의 기반)
+6단계를 캡션/다이어그램으로:
 
 ```
-work_vector[work] = { tag_id: work_tag.weight × IDF(tag_id) }
-IDF(tag_id)      = log(전체작품수 / 그 태그를 가진 작품수)
-축 좌표(work)     = { darkness: Σ w·s_dark, tension: Σ w·s_tension }
+인기작 그리드(다양성 고려) → 3~5개 좋아요 선택 → 취향 시드 계산
+   (추천용: 태그 집계=taste_vector / 시각화용: 좌표 평균=taste_point)
+→ 콘텐츠 기반 첫 추천(데이터 0에서도) → 무드 슬라이더 조정 → more like this 점진 학습
 
 ```
 
-- 두 표현을 **동시에** 유지한다: (a) 태그 TF-IDF 벡터(76차원, 추천 계산용), (b) 축 좌표(2D, 지도·슬라이더용). 14장의 "임베딩=신호 / 지도=UI" 분리와 정렬.
-- L2 정규화 후 코사인 기하로 유사도를 잰다.
+- 취향 시드 **이원화 근거:** 태그 집계는 다봉 취향("어두움+밝음 둘 다") 보존 → 추천 정확 / 좌표 평균은 지도에 "당신은 여기" 한 점. (시연: 두 방식 추천이 전혀 안 겹침, 좌표 평균은 중간으로 뭉갬.)
+- "지도=데스크톱 / 신호=전 플랫폼" 분리(§13)를 캡션에 명시.
 
-### 15.2 추천 엔진 통합 (reco.ts 확장, 5-단계)
+MODEL 섹션에 담을 구현 (reco.ts 통합 + 개인화)
 
-기존 `reco.ts`의 계층적 스코어링(정확→alias→같은 카테고리→클러스터)에 임베딩 유사도를 **레이어 하나로 추가**한다. 기존 동작을 깨지 않는 additive 확장.
+- **additive 레이어:** 기존 계층 스코어링에 embedding 레이어(w5)를 더한다.
 
 ```
-score(query, work) =
-    w1·exact_match
-  + w2·alias_match
-  + w3·same_category
-  + w4·cluster_similarity        ← 기존 (하드코딩 클러스터)
-  + w5·embedding_similarity      ← 신규 (tag_similarity 테이블 / 축 거리)
-  ; 전체를 sqrt(tag_count)로 정규화
+score = w1·exact + w2·alias + w3·same_cat + w4·cluster + w5·embedding
+      ; 전체 ÷ sqrt(tag_count)
 
 ```
 
-- w5는 처음엔 0으로 두고(동작 보존), tag_similarity 시드가 검증되면 점진 상향.
-- embedding_similarity는 두 방식 중 택1/혼합:1. **태그 그래프 경로:** 쿼리 태그와 작품 태그 간 tag_similarity 엣지 가중치 합.
+- w5는 0에서 시작(동작 보존) → tag_similarity 시드 검증 후 점진 상향. parity 체크.
+- **more like this:** 작품 벡터 코사인 top-K → 리스트. "관심 없음"은 그 방향 downweight (쿼리 벡터에서 빼거나 제외 집합).
+- **명시적 > 암묵적:** more like this / not for me 우선, 열람 기록("읽음≠좋음") 후순위.
+- **익명 토큰:** IP/fingerprint 아닌 서명 토큰(yap. 재사용)에 취향 축적.
 
-1. **축 거리 경로:** 쿼리 취향 좌표와 작품 좌표의 (음의) 거리.
+VALIDATION 섹션에 담을 구현
 
-- 하위(makeSimLookup, scoreWork)는 그대로. 7장 롤아웃의 parity 체크로 안전 확인.
+- 쌍 비교("A가 B보다 어두운가") → IAA(Cohen's/Krippendorff)로 신뢰도 → Bradley-Terry/로지스틱 회귀로 태그 가중치 학습 → 유저 확보 후 A/B.
+- FicSim 방법론과 동일(태그에서 유사도, triplet + Cohen's Kappa)임을 명시.
 
-### 15.3 "more like this" (작품 → 이웃, 지금 가능)
-
-```
-1. 기준 작품 X의 태그 벡터(또는 축 좌표)를 가져온다
-2. 전 작품과 코사인 유사도(또는 축 거리) 계산
-3. X 제외, 상위 K개 반환 → "비슷한 작품" 리스트
-
-```
-
-- 유저 데이터·학습 불필요. 콜드스타트 없음. 모바일=리스트로 소비(12장).
-- "관심 없음"은 해당 작품 방향을 downweight (쿼리 벡터에서 빼거나 제외 집합).
-
-### 15.4 콜드스타트 UX 흐름 (단계별)
-
-```
-[신규 방문자]
-   ↓
-Step 1. 인기작 그리드 표시 (views 상위, 무드/장르 다양성 고려해 선정)
-   ↓
-Step 2. 사용자가 3~5개 "좋아요" 선택 (Pinterest picker / Apple 버블식)
-   ↓
-Step 3. 취향 시드 계산
-        · 추천용: 고른 작품들의 태그를 집계 → taste_vector (방식 B, 다봉 보존)
-        · 시각화용: 고른 작품들의 축 좌표 평균 → taste_point (방식 A)
-   ↓
-Step 4. taste_vector로 첫 추천 (콘텐츠 기반, 데이터 0에서도 작동)
-   ↓
-Step 5. 무드 슬라이더로 조정 가능 (taste_point를 축에서 이동 → 재추천)
-   ↓
-Step 6. "more like this"/"관심 없음"으로 점진 학습, 익명 토큰에 축적
-
-```
-
-- Step 3 이원화 근거: 방식 B(태그 집계)는 다봉 취향("어두움+밝음 둘 다")을 보존해 추천 정확, 방식 A(좌표 평균)는 지도에 "당신은 여기" 한 점으로 표시. 시연에서 두 방식의 추천 결과가 전혀 겹치지 않음을 확인(방식 A는 중간으로 뭉갬).
-- Step 1 다양성: 조회수 top만 뽑으면 비슷한 작품만 나옴 → 무드/장르별로 골고루.
-- fallback: 아무것도 안 고르면 인기작/날씨 기반 기본 추천 (13장).
-
-### 15.5 무드 슬라이더 → 추천 (명시적 override)
-
-```
-슬라이더 상태 = (darkness_target, tension_target)   ← 사용자 조작
-   ↓
-후보 작품을 taste_vector 유사도 + 슬라이더 좌표 근접도로 재랭킹
-   ↓
-슬라이더를 움직이면 즉시 리스트 갱신 (dynamic rerank)
-
-```
-
-- Spotify Taste Profile식 "시스템이 추론 못 하는 걸 사용자가 말한다".
-- 날씨 기반 기본값을 슬라이더로 덮어쓸 수 있게 한다 (비 와도 밝은 거 원할 때).
-
-### 15.6 지금 가능 vs 나중 (구현 순서)
+구현 순서 (섹션 서술의 "지금 vs 나중" 근거)
 
 | 기능 | 필요 조건 | 시점 |
 | --- | --- | --- |
-| more like this / 이웃 | 태그 벡터만 | ✅ 지금 |
-| 콜드스타트(인기작 선택→집계) | 태그 벡터 + 인기작 | ✅ 지금 |
-| reco.ts에 embedding 레이어 | tag_similarity 시드 | Phase 2 초 |
+| more like this / 이웃 | 태그 벡터만 | 지금 |
+| 콜드스타트(선택→집계) | 태그 벡터 + 인기작 | 지금 |
+| reco.ts embedding 레이어 | tag_similarity 시드 | Phase 2 초 |
 | 무드 슬라이더 | 축 좌표 | Phase 2 |
-| 익명 토큰 개인화 | 서명 토큰 인프라(yap. 재사용) | Phase 2 |
-| 학습된 가중치 | 쌍 비교 수집 + Bradley-Terry | Phase 2 후 |
+| 익명 토큰 개인화 | 서명 토큰 인프라 | Phase 2 |
+| 학습된 가중치 | 쌍 비교 + Bradley-Terry | Phase 2 후 |
+
+이 표의 "지금 가능" 항목(more like this, 콜드스타트)은 MVP로 먼저 만들 수 있어, 포트폴리오에서 "설계만"이 아니라 "일부는 바로 구현 가능"임을 보여준다.
 
 ---
 
----
+## 5. 데모 미디어 (선택)
 
-## 부록 B — 참고 연구 (학술 근거)
+| 데모 | 참고 컴포넌트 | 넣을 섹션 |
+| --- | --- | --- |
+| 무드 슬라이더 (darkness × tension) | `tagspark-preference-media.tsx` 패턴 | AXES / EXPERIENCE |
+| 관련작·이웃 top-K 리스트 | `tagspark-ranking-media.tsx` 패턴 | MODEL |
+| 어두움 축 산점도 | 신규 (2D scatter) | AXES |
 
-### FicSim (Johnson et al., Carnegie Mellon University, 2025)
-
-- 논문: *FicSim: A Dataset for Multi-Faceted Semantic Similarity in Long-Form Fiction*
-- URL: [https://arxiv.org/html/2510.20926v2](https://arxiv.org/html/2510.20926v2)
-- 요지: 긴 소설을 **12개 문학 축**으로 유사도를 재는 평가 데이터셋. 오염·주석 비용 문제를 피하려고 AO3 팬픽의 **작가 태그를 gold standard**로 활용.
-- 방법론 (우리와 거의 동일): 태그를 임베딩해 카테고리별 유사도를 코사인 평균으로 계산, **triplet 비교 + Cohen's Kappa(0.65)**로 정답 검증.
-- 핵심 결과: 최신 임베딩조차 톤·주제 같은 **미세 유사도는 못 잡고 문체 등 표면 특징에 과의존** → 사람 태그를 해석 가능한 backbone으로 유지할 근거.
-- 우리 프로젝트와의 대응: FicSim의 Character States·Relationship Dynamics· Tone & Content 축이 각각 우리의 어두움 축·관계 긴장 축·분위기 태그와 대응.
-
-### 감정 차원 프레임워크
-
-- **Valence–Arousal(–Dominance, VAD):** 감정 컴퓨팅 표준 2~3축. 우리 어두움 축이 Valence에 대응.
-- **Ousiometrics — Power–Danger (Dodds et al., Science Advances 2026):** 3만 권 분석 결과 소설 감정은 VAD보다 Power–Danger에 더 잘 맞음. 우리 어두움 축은 사실 Danger(위험도)에 더 가까움.
+데모 없이 텍스트+`TagSparkPlaceholder`만으로도 섹션은 성립 (MVP는 텍스트 우선). `TagSparkPlaceholder`는 case-content.tsx에 이미 정의된 로컬 컴포넌트 (label, note props).
 
 ---
 
-## 부록 A — 정직성 / 범위 메모
+## 6. 근거 자료 위치 (세션 산출물)
 
-- 어두움 축 가중치(±1.0 등)는 **초기 추정치**다. 쌍 비교로 검증·보정 전까지 "정확하다"고 주장하지 않는다.
-- PCA 11.9%는 태그 공간이 고차원이라는 증거이지 실패가 아니다. 해석 가능한 소수 축 전략이 그 대응이다.
-- 계절·분량·완결 등은 무드와 무관하므로 축에서 배제하고 필터로만 둔다.
+- `artifacts/embedding_page_plan.md` — 14장+부록. 각 섹션 근거:- 2장 차원 아키텍처 → AXES
+- 3·9·10장 축 설계/확정 → AXES
+- 2.3 문학축 커버리지(요약 불필요, Style=author) → MODEL/DATASET
+- 11·13장 모바일/데스크톱 → EXPERIENCE
+- 12장 개인화 로드맵 → MODEL/EXPERIENCE
+- 5·6장 + 부록 B → VALIDATION
+- `artifacts/tag-spark_README.md` — Phase 1/2 영문 문구 (섹션 카피 재사용).
+- `artifacts/tagspark_portfolio_case_study.md` — 영문 pitch (카피 초안).
+
+---
+
+## 7. 체크리스트 (커밋 전)
+
+- [ ] 신규 섹션 id가 nav 배열과 정확히 일치하는가
+- [ ] eyebrow 번호가 06 다음부터 연속(07·08…)인가
+- [ ] Phase 2 섹션이 "shipped 아님/계획"임을 문구로 명시했는가 (정직성)
+- [ ] 수치(축 상관 −0.31, 어두움 범위)와 근거(FicSim/VAD)가 embedding_page_plan.md와 일치하는가
+- [ ] 기존 정직성 노트(수작업 클러스터·고정 가중치 = rule-based baseline) 유지했는가
+- [ ] nav 수정과 본문 추가를 같은 커밋에 넣었는가
+- [ ] takeaways/roadmap 마지막 위치 유지했는가
+
+---
+
+## 8. 한 줄 결론
+
+**실제 편집 = `tagspark-case-content.tsx`에 Phase 2 신규 섹션(PHASE 2 헤더 + AXES
+
+- EXPERIENCE + MODEL + VALIDATION) 추가 + `tagspark-section-nav.tsx` id 동기화.** Phase 1(현재 프로덕션)은 이미 있으니 카피만 다듬고, Phase 2는 nav가 예약해 둔 빈 섹션(axes/model/phase-two/validation/roadmap)을 이번 세션 근거로 채운다. 서술 원문은 `docs/tagspark_portfolio/case_study_language_engineer.md`에 보강한다.
 
