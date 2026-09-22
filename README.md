@@ -87,7 +87,7 @@ tag-spark/
 Tag Spark follows an "interpretable baseline → data-driven → learned"
 progression. **Phase 1** is what ships today; **Phase 2** is the planned
 direction. Detailed design lives in the
-[portfolio docs](https://github.com/jiji123526/portfolio).
+[portfolio page](https://jiwoojeong.com/work/tag-spark-recommendations#tagspark-phase-two).
 
 ### Phase 1 — Current Production (shipped)
 
