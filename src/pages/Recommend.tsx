@@ -5,7 +5,7 @@ import MenuIcon from "../assets/icons/recommend/menu.svg";
 import MagIcon from "../assets/icons/recommend/tag.svg";
 import styles from './Recommend.module.css';
 
-import { Tag, Work, WorkTag } from "@/lib/types";
+import { Tag, TagSimilarity, Work, WorkTag } from "@/lib/types";
 import { computeRecommendations } from "@/lib/reco";
 
 import ContextMenu from "../components/ContextMenu";
@@ -33,6 +33,7 @@ const mobilerecom:FunctionComponent = () => {
   const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [mappings, setMappings] = useState<WorkTag[]>([]);
+  const [tagSimilarity, setTagSimilarity] = useState<TagSimilarity[]>([]);
 
   const loadData = useCallback(() => {
     fetch("/api/reco-data")
@@ -42,6 +43,7 @@ const mobilerecom:FunctionComponent = () => {
           setAllWorks(data.works);
           setAllTags(data.tags);
           setMappings(data.workTags.map((workTag: WorkTag) => ({ work_id: workTag.work_id, tag_id: workTag.tag_id, weight: workTag.weight })));
+          setTagSimilarity(data.tagSimilarity);
         }
       })
       .catch(() => {});
@@ -150,12 +152,13 @@ const mobilerecom:FunctionComponent = () => {
       works: filteredWorks,
       tags: allTags,
       workTags: mappings,
+      tagSimilarity,
       excludeTagIds: excluded,
     });
     const exactIds = new Set(exactMatches.map((w) => w.id));
     const onlySimilar = recos.filter((w) => !exactIds.has(w.id));
     return onlySimilar.sort((a, b) => b.similarity - a.similarity).slice(0, PAGE_SIZE);
-  }, [selectedEffective, excluded, filteredWorks, exactMatches, allTags, mappings]);
+  }, [selectedEffective, excluded, filteredWorks, exactMatches, allTags, mappings, tagSimilarity]);
 
   // row renderer matching the current visual layout
   const renderRow = (w: any, withSeparator: boolean) => (

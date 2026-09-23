@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { Tag, Work, WorkTag } from "@/lib/types";
+import { Tag, TagSimilarity, Work, WorkTag } from "@/lib/types";
 
 const TAGS_STALE_TIME_MS = 5 * 60 * 1000;
 const RECO_DATA_STALE_TIME_MS = 5 * 60 * 1000;
@@ -8,6 +8,7 @@ export type RecoData = {
   works: Work[];
   tags: Tag[];
   workTags: WorkTag[];
+  tagSimilarity: TagSimilarity[];
 };
 
 async function fetchTags(): Promise<Tag[]> {

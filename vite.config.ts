@@ -3,6 +3,19 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { neon } from "@neondatabase/serverless";
+import { handleTagComparisons } from "./server/tag-comparisons.js";
+
+function readJsonBody(req): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try { resolve(body ? JSON.parse(body) : {}); }
+      catch (error) { reject(error); }
+    });
+    req.on("error", reject);
+  });
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -24,13 +37,19 @@ export default defineConfig(({ mode }) => {
 
           server.middlewares.use('/api/reco-data', async (req, res) => {
             try {
-              const [works, tags, workTags] = await Promise.all([
+              const [works, tags, workTags, tagSimilarity] = await Promise.all([
                 sql`SELECT id, title, author, source_url, aliases, author_aliases, views, likes, comments, posted_at FROM works ORDER BY id`,
                 sql`SELECT id, name, category, aliases FROM tags ORDER BY id`,
                 sql`SELECT work_id, tag_id, weight FROM work_tags`,
+                sql`
+                  SELECT tag_a_id, tag_b_id, weight, source
+                  FROM tag_similarity
+                  WHERE source = 'curated'
+                  ORDER BY tag_a_id, tag_b_id
+                `,
               ]);
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ works, tags, workTags }));
+              res.end(JSON.stringify({ works, tags, workTags, tagSimilarity }));
             } catch (e) { res.statusCode = 500; res.end('{}'); }
           });
 
@@ -41,6 +60,21 @@ export default defineConfig(({ mode }) => {
               res.setHeader('Cache-Control', 'public, max-age=60');
               res.end(JSON.stringify(tags));
             } catch (e) { res.statusCode = 500; res.end('[]'); }
+          });
+
+          server.middlewares.use('/api/tag-comparisons', async (req, res) => {
+            try {
+              const body = req.method === 'POST' ? await readJsonBody(req) : {};
+              const result = await handleTagComparisons(sql, { method: req.method, body });
+              res.statusCode = result.status;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(result.body));
+            } catch (error) {
+              console.error('tag-comparisons failed', error);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: '비교 데이터를 처리하지 못했습니다.' }));
+            }
           });
 
           server.middlewares.use('/api/works', async (req, res) => {

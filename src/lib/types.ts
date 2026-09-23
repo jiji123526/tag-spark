@@ -23,3 +23,10 @@ export type WorkTag = {
   tag_id: number;
   weight: number;
 };
+
+export type TagSimilarity = {
+  tag_a_id: number;
+  tag_b_id: number;
+  weight: number;
+  source: "curated" | "derived" | "embedding";
+};

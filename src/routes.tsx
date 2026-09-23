@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Recommend from "./pages/Recommend";
 import List from "./pages/List";
 import WeatherTest from "./pages/WeatherTest";
+import TagComparison from "./pages/TagComparison";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
@@ -24,6 +25,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/mobile-recom": "키워드 매칭 결과",
   "/mobile-list": "현재 등록된 추천작",
   "/weather-test": "🧪 Weather Controls",
+  "/tag-comparison": "태그 비교",
 };
 
 const AppRoutes = () => {
@@ -45,6 +47,7 @@ const AppRoutes = () => {
       <Route path="/mobile-recom" element={<Recommend />} />
       <Route path="/mobile-list" element={<List />} />
       <Route path="/weather-test" element={<WeatherTest />} />
+      <Route path="/tag-comparison" element={<TagComparison />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

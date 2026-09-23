@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { mapWeatherToTags, pickWeightedTags } from "@/lib/weather-tags";
 import { WeatherData } from "@/lib/weather";
-import { Tag, Work, WorkTag } from "@/lib/types";
+import { Work } from "@/lib/types";
+import { RecoData } from "@/lib/queries";
 import { computeRecommendations } from "@/lib/reco";
 import styles from "../components/WeatherPopup.module.css";
 
@@ -16,7 +17,7 @@ export default function WeatherTest() {
   const [allResults, setAllResults] = useState<Work[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [recoData, setRecoData] = useState<{ works: Work[]; tags: Tag[]; workTags: WorkTag[] } | null>(null);
+  const [recoData, setRecoData] = useState<RecoData | null>(null);
   const [fullRec, setFullRec] = useState<{ emoji: string; message: string; tagNames: string[]; excludeTagNames: string[] } | null>(null);
 
   const handleTest = async () => {
@@ -26,7 +27,7 @@ export default function WeatherTest() {
 
     try {
       const res = await fetch("/api/reco-data");
-      const data = await res.json() as { works: Work[]; tags: Tag[]; workTags: WorkTag[] };
+      const data = await res.json() as RecoData;
       setRecoData(data);
       setFullRec(rec);
 

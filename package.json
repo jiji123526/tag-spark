@@ -8,6 +8,8 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "backfill:posted-at": "node --env-file=.env scripts/backfill-posted-at.mjs",
+    "seed:tag-similarity": "node --env-file=.env scripts/seed-tag-similarity.mjs",
+    "check:tag-similarity-parity": "node --experimental-strip-types --env-file=.env scripts/check-tag-similarity-parity.ts",
     "lint": "eslint .",
     "test": "node --test server/*.test.js",
     "preview": "vite preview"

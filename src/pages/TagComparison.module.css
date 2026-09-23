@@ -1,0 +1,212 @@
+.page {
+  min-height: 100vh;
+  background: #f4f4f1;
+  color: #171717;
+  padding: 48px 20px 80px;
+}
+
+.shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #6d6d67;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(30px, 6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.description {
+  max-width: 590px;
+  margin: 18px 0 32px;
+  color: #676761;
+  line-height: 1.65;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.tab {
+  border: 1px solid #d5d5cf;
+  border-radius: 14px;
+  background: #fff;
+  padding: 14px 16px;
+  color: #555550;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.tabActive {
+  border-color: #1b1b1b;
+  background: #1b1b1b;
+  color: #fff;
+}
+
+.progressBlock {
+  margin-bottom: 18px;
+}
+
+.progressMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #5d5d58;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.progressTrack {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #deded8;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: #171717;
+  transition: width 220ms ease;
+}
+
+.card {
+  border: 1px solid #dadad3;
+  border-radius: 24px;
+  background: #fff;
+  padding: clamp(22px, 5vw, 42px);
+  box-shadow: 0 18px 60px rgba(28, 28, 24, .08);
+}
+
+.prompt {
+  min-height: 58px;
+  margin: 0 0 28px;
+  font-size: clamp(20px, 4vw, 30px);
+  line-height: 1.35;
+  text-align: center;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.tagButton {
+  min-height: 150px;
+  border: 1px solid #cfcfc8;
+  border-radius: 20px;
+  background: #fafaf7;
+  padding: 20px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.tagButton:hover {
+  transform: translateY(-2px);
+  border-color: #171717;
+  background: #fff;
+}
+
+.tagButton small {
+  display: block;
+  margin-bottom: 10px;
+  color: #777771;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.tagButton strong {
+  font-size: clamp(23px, 5vw, 36px);
+  word-break: keep-all;
+}
+
+.versus {
+  display: grid;
+  place-items: center;
+  color: #92928b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.secondaryActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.secondaryButton,
+.backButton {
+  border: 1px solid #d4d4cd;
+  border-radius: 13px;
+  background: transparent;
+  padding: 12px;
+  color: #5c5c57;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.backButton {
+  display: block;
+  margin: 18px auto 0;
+  border: 0;
+}
+
+.status,
+.error,
+.complete {
+  padding: 48px 20px;
+  text-align: center;
+}
+
+.error {
+  color: #a32929;
+}
+
+.complete h2 {
+  margin: 0 0 10px;
+  font-size: 30px;
+}
+
+.complete p {
+  color: #686862;
+}
+
+@media (max-width: 560px) {
+  .page { padding: 28px 14px 56px; }
+  .pair { grid-template-columns: 1fr; }
+  .versus { min-height: 22px; }
+  .tagButton { min-height: 112px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page { background: #10100f; color: #f3f3ef; }
+  .description, .progressMeta, .complete p { color: #aaa9a2; }
+  .progressTrack { background: #30302d; }
+  .progressFill { background: #efefe9; }
+  .tab, .card { border-color: #33332f; background: #1a1a18; }
+  .tab { color: #b5b5ae; }
+  .tabActive { border-color: #efefe9; background: #efefe9; color: #151513; }
+  .tagButton { border-color: #3c3c37; background: #22221f; color: #f4f4ef; }
+  .tagButton:hover { border-color: #efefe9; background: #292925; }
+  .secondaryButton, .backButton { border-color: #3b3b36; color: #bdbdb6; }
+}

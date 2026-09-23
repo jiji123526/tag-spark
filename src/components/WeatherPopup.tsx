@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { getLocation, fetchWeather } from "@/lib/weather";
 import { mapWeatherToTags, WeatherRecommendation, pickWeightedTags } from "@/lib/weather-tags";
-import { Tag, Work, WorkTag } from "@/lib/types";
+import { Work } from "@/lib/types";
+import { RecoData } from "@/lib/queries";
 import { computeRecommendations } from "@/lib/reco";
 import styles from "./WeatherPopup.module.css";
 
@@ -14,7 +15,7 @@ export default function WeatherPopup({ onClose }: Props) {
   const [recWorks, setRecWorks] = useState<Work[]>([]);
   const [allResults, setAllResults] = useState<Work[]>([]);
   const [page, setPage] = useState(0);
-  const [recoData, setRecoData] = useState<{ works: Work[]; tags: Tag[]; workTags: WorkTag[] } | null>(null);
+  const [recoData, setRecoData] = useState<RecoData | null>(null);
   const [activeTags, setActiveTags] = useState<string[]>([]);
 
   const handleAccept = async () => {
@@ -35,7 +36,7 @@ export default function WeatherPopup({ onClose }: Props) {
 
       // Fetch reco data
       const res = await fetch("/api/reco-data");
-      const data = await res.json() as { works: Work[]; tags: Tag[]; workTags: WorkTag[] };
+      const data = await res.json() as RecoData;
       setRecoData(data);
 
       // Pick 3 random tags from the mapped set

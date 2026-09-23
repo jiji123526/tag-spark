@@ -1,6 +1,6 @@
 // src/lib/reco.ts
-import { Tag, Work, WorkTag } from "@/lib/types";
-import { buildAliasSet, aliasOverlap } from "@/lib/utils";
+import type { Tag, TagSimilarity, Work, WorkTag } from "./types.ts";
+import { buildAliasSet, aliasOverlap } from "./utils.ts";
 
 type Category = Tag["category"];
 type WorkWithTags = Work & { tagIds: number[] };
@@ -26,58 +26,20 @@ const SAME_CAT = 0.35;   // 같은 카테고리(다른 태그)
 const CORE_BONUS = 0.25; // workTags.weight=2.0 보너스
 const NORMALIZE = true;  // 태그 수 정규화
 
-// -------------------------------------------------------------
-// 유사 키워드 튜플(이름으로 정의 → ID로 해석해 그래프 생성)
-const SIMILARITY_INTRA = 0.6; // 같은 튜플 내 기본 유사도
-const TAG_CLUSTERS_BY_NAME: string[][] = [
-  ["청레", "캠퍼스", "선후배"],
-  ["여행", "힐링"],
-  ["인외물", "아포칼립스", "좀아포", "수인", "오메가버스", "센티넬버스"],
-  ["동갑", "소꿉친구", "칼짝윈", "윈짝칼"],
-  ["부부", "육아", "이혼", "정략결혼"],
-  ["오피스", "직장동료"],
-  ["키잡", "역키잡", "근친", "쌍둥이"],
-  ["후회", "쓰공/수", "찌통", "섹파"],
-  ["쌍방삽질", "청레", "친구", "윈짝칼", "칼짝윈"],
-  ["배틀레즈", "쓰공/수", "애새끼", "쌍방삽질", "섹파"],
-  ["(짭)근친", "근친", "찌통", "칼짝윈", "윈짝칼"],
-  ["노란장판", "피폐", "찌통"],
-  ["로판", "판타지", "SF"],
-  ["누아르", "조직물"],
-  ["종교", "구원"],
-];
-
-// 이름→ID 사전
-function buildNameToIdMap(allTags: Tag[]): Map<string, number> {
-  const m = new Map<string, number>();
-  for (const t of allTags) {
-    m.set(t.name, t.id);
-    for (const a of t.aliases ?? []) m.set(a, t.id);
-  }
-  return m;
-}
-
-// 튜플(이름) → 유사도 그래프(아이디)
 type SimRow = Record<TagId, number>;
-function buildSimilarityGraphFromClusters(allTags: Tag[]): Record<TagId, SimRow> {
-  const nameToId = buildNameToIdMap(allTags);
+
+export function buildSimilarityGraphFromRows(
+  rows: Pick<TagSimilarity, "tag_a_id" | "tag_b_id" | "weight">[]
+): Record<TagId, SimRow> {
   const graph: Record<TagId, SimRow> = {};
 
-  const add = (a: TagId, b: TagId, v: number) => {
-    if (a === b) return;
-    (graph[a] ??= {})[b] = Math.max(graph[a]?.[b] ?? 0, v);
-    (graph[b] ??= {})[a] = Math.max(graph[b]?.[a] ?? 0, v);
+  const add = (a: TagId, b: TagId, value: number) => {
+    if (a === b || !Number.isFinite(value) || value <= 0) return;
+    (graph[a] ??= {})[b] = Math.max(graph[a]?.[b] ?? 0, value);
+    (graph[b] ??= {})[a] = Math.max(graph[b]?.[a] ?? 0, value);
   };
 
-  for (const cluster of TAG_CLUSTERS_BY_NAME) {
-    const ids = cluster
-      .map((name) => nameToId.get(name))
-      .filter((x): x is number => Number.isFinite(x));
-    for (let i = 0; i < ids.length; i++) {
-      for (let j = i + 1; j < ids.length; j++) add(ids[i], ids[j], SIMILARITY_INTRA);
-    }
-  }
-
+  for (const row of rows) add(row.tag_a_id, row.tag_b_id, row.weight);
   return graph;
 }
 
@@ -138,14 +100,18 @@ function getExactMatches(
 
 // -------------------------------------------------------------
 // 별칭/부분/카테고리 + “태그↔태그 유사도(튜플 기반)”까지 포함한 유사도 점수
-function buildSimilarityScorer(allTags: Tag[], workTags: WorkTag[]) {
+function buildSimilarityScorer(
+  allTags: Tag[],
+  workTags: WorkTag[],
+  tagSimilarity: TagSimilarity[]
+) {
   const tagById = new Map(allTags.map((t) => [t.id, t]));
   const aliasSetById = new Map<number, Set<string>>();
   for (const t of allTags) {
     aliasSetById.set(t.id, buildAliasSet(t.name, t.aliases));
   }
 
-  const simGraph = buildSimilarityGraphFromClusters(allTags);
+  const simGraph = buildSimilarityGraphFromRows(tagSimilarity);
   const sim = makeSimLookup(simGraph);
 
   // work_id -> [{ tag_id, weight }]
@@ -232,36 +198,6 @@ function shuffleInPlace<T>(arr: T[]): T[] {
 }
 
 // -------------------------------------------------------------
-// helper: expand excluded tag ids by aliases and cluster neighbors
-function expandExcludedTagIds(allTags: Tag[], base: number[]): Set<number> {
-  if (!base || base.length === 0) return new Set<number>();
-  const aliasSetById = new Map<number, Set<string>>();
-  for (const t of allTags) aliasSetById.set(t.id, buildAliasSet(t.name, t.aliases));
-
-  const expanded = new Set<number>(base);
-
-  // Alias / string-equivalence expansion
-  for (const b of base) {
-    const bSet = aliasSetById.get(b) ?? new Set<string>();
-    for (const [id, aSet] of aliasSetById) {
-      if (aliasOverlap(aSet, bSet)) expanded.add(id);
-    }
-  }
-
-  // Cluster neighbors expansion
-  const graph = buildSimilarityGraphFromClusters(allTags);
-  for (const b of base) {
-    const row = graph[b] || {} as Record<number, number>;
-    for (const k in row) {
-      const nid = Number(k);
-      if (row[nid] > 0) expanded.add(nid);
-    }
-  }
-
-  return expanded;
-}
-
-// -------------------------------------------------------------
 // helper: exclude 태그가 붙은 작품 필터링
 function filterOutExcludedWorks(
   works: Work[],
@@ -283,12 +219,20 @@ function filterOutExcludedWorks(
 // 분리형: 완벽 매칭은 전부, 유사 추천은 최대 N개
 export function computeExactAndSimilar(
   selectedTagIds: number[],
-  opts: { works: Work[]; tags: Tag[]; workTags: WorkTag[]; similarMax?: number; excludeTagIds?: number[] }
+  opts: {
+    works: Work[];
+    tags: Tag[];
+    workTags: WorkTag[];
+    tagSimilarity: TagSimilarity[];
+    similarMax?: number;
+    excludeTagIds?: number[];
+  }
 ) {
   const works = opts.works;
   const tags = opts.tags;
   const wt = opts.workTags;
   const similarMax = opts.similarMax ?? 10;
+  const tagSimilarity = opts.tagSimilarity;
 
   const excludeTagIds = opts?.excludeTagIds ?? [];
   const worksFiltered = filterOutExcludedWorks(works, wt, [...excludeTagIds, 900]);
@@ -304,7 +248,7 @@ export function computeExactAndSimilar(
   const exact = getExactMatches(selectedTagIds, worksFiltered, wt);
 
   const exactIds = new Set(exact.map((w) => w.id));
-  const scoreWork = buildSimilarityScorer(tags, wt);
+  const scoreWork = buildSimilarityScorer(tags, wt, tagSimilarity);
 
   // “선택 태그와 동일하게 겹친 개수”를 우선순위 키로 사용
   type Item = { w: WorkWithTags; s: number; overlap: number };
@@ -350,7 +294,14 @@ export function computeExactAndSimilar(
 // 원샷: exact 전부 + similar 최대 10개를 이어 붙여 반환
 export function computeRecommendations(
   selectedTagIds: number[],
-  opts: { works: Work[]; tags: Tag[]; workTags: WorkTag[]; similarMax?: number; excludeTagIds?: number[] }
+  opts: {
+    works: Work[];
+    tags: Tag[];
+    workTags: WorkTag[];
+    tagSimilarity: TagSimilarity[];
+    similarMax?: number;
+    excludeTagIds?: number[];
+  }
 ) {
   const { exact, similar } = computeExactAndSimilar(selectedTagIds, opts);
   return [...exact, ...similar];
