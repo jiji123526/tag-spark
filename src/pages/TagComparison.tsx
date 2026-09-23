@@ -120,7 +120,8 @@ export default function TagComparison() {
         <h1 className={styles.title}>태그 비교</h1>
         <p className={styles.description}>
           분량과 완결여부를 제외한 모든 태그를 비교합니다. 한 번에 하나의 축만 판단하고,
-          태그가 일반적으로 뜻하는 방향을 기준으로 선택하세요. 축과 무관하거나 애매하면 판단 불가를 눌러도 됩니다.
+          어두움 또는 개싸움에 더 가까운 태그를 선택하세요. 두 태그 모두 축과 관련 있고 강도가 같으면 비슷함,
+          축과 무관하거나 애매하면 판단 불가를 눌러도 됩니다.
         </p>
 
         <div className={styles.tabs} role="tablist" aria-label="비교 축">

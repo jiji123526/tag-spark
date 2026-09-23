@@ -175,3 +175,156 @@ N·d·log N). 목표 차원별:
 
 **태도:** 축은 아직 최종 미결이지만, 각 후보를 데이터로 검증하고 직관을 두 번
 교정(어두움×친밀도 불균형, 어두움 PC4)한 과정 자체가 설계의 핵심 기록이다.
+
+---
+
+## 9. 태그 전수 비교 축·수집 방식 확정 (2026-09-22)
+
+초기 계획은 연속 무드 후보 11개(어두움), 9개(긴장)만 비교하는 것이었으나, 제작자 판단으로
+태그를 사전에 축에서 배제하지 않고 **분량·완결여부를 제외한 전체 태그를 직접 비교**하기로
+변경했다. 축과 무관한 태그는 실제 응답에서 드러나게 한다.
+
+### 축의 사용자 언어 변경
+
+- 기존 `어두움` → **어두움 ↔ 밝음**
+- 기존 `관계 긴장` → **사이좋음 ↔ 개싸움**
+
+내부 key(`darkness`, `tension`)는 유지한다. 비교 UI에서는 각 축의 높은 방향을 묻는다.
+
+- 어두움↔밝음: “둘 중 어느 태그가 더 어두운 작품을 뜻하나요?”
+- 사이좋음↔개싸움: “둘 중 어느 태그가 더 개싸움에 가까운 관계를 뜻하나요?”
+
+### 비교 범위
+
+- 전체 태그 76개
+- 제외: 분량 4개, 완결여부 2개
+- 비교 대상: **70개**
+- 축별 전수 조합: `70 × 69 / 2 = 2,415쌍`
+- 두 축 총합: **4,830쌍**
+
+능동 샘플링으로 줄이지 않고 제작자가 전수 비교한다. 쌍의 출제 순서와 좌우 위치는
+결정론적으로 분산해 위치·순서 편향을 줄인다.
+
+### 응답 4종과 의미
+
+1. A가 축의 높은 방향에 더 가까움
+2. B가 축의 높은 방향에 더 가까움
+3. **비슷함:** 두 태그 모두 축과 관련 있고 강도가 비슷함
+4. **축과 무관 / 판단 불가:** 한쪽 또는 양쪽을 이 축에서 비교하기 어려움
+
+`비슷함`은 tie 데이터로 학습에 사용한다. `판단 불가`는 축 가중치 학습에서 제외하되,
+태그별 skip 비율을 “이 태그가 해당 연속 축에 적합한가”를 판단하는 별도 신호로 남긴다.
+
+### 구현 로그 A — 추천 thesaurus를 코드에서 DB로 이전
+
+태그 비교를 시작하기 전에 기존 추천 baseline을 고정했다.
+
+1. `src/lib/reco.ts`의 15개 이름 기반 클러스터와 전역 유사도 `0.6`을 분석했다.
+2. Neon에 `tag_similarity(tag_a_id, tag_b_id, weight, source)`를 추가했다.
+   - 태그 ID 기반이라 rename-safe.
+   - `tag_a_id < tag_b_id` canonical order로 무방향 쌍을 한 번만 저장.
+   - `source`는 `curated | derived | embedding`을 구분.
+   - PK는 `(tag_a_id, tag_b_id, source)`라 이후 출처별 결과를 병렬 보존 가능.
+3. 기존 클러스터를 펼치는 idempotent seed(`scripts/seed-tag-similarity.mjs`)를 만들었다.
+4. 실제 DB와 대조하면서 하드코딩 목록 중 현재 tags 테이블에 없는 이름 5개를 발견했다.
+   - `인외물`, `근친`, `쌍둥이`, `친구`, `배틀레즈`
+   - 기존 런타임도 이 이름들을 조용히 건너뛰었으므로 seed도 같은 동작을 보존했다.
+5. 유효한 curated edge **53개**를 Neon에 저장했다.
+6. 처음 사용한 PostgreSQL `REAL`이 `0.6`을 `0.6000000238…`로 반환하는 것을 발견했다.
+   극단적인 동점 정렬까지 보존하기 위해 `DOUBLE PRECISION`으로 교체하고 정확한 `0.6`을
+   다시 시드했다.
+7. 실제 Neon catalog(검증 당시 작품 230개)로 parity script를 실행했다.
+   - 전체 단일 태그 + 모든 2태그 선택 조합: **2,850 cases**
+   - 기존 그래프와 DB 그래프의 추천 작품 ID·순서: **전부 동일 (`PARITY_OK`)**
+8. parity 확인 후 프로덕션 런타임에서 `TAG_CLUSTERS_BY_NAME`, `SIMILARITY_INTRA`,
+   `buildSimilarityGraphFromClusters`와 fallback을 제거했다.
+9. `/api/reco-data`, 로컬 Vite API, 공용 타입, 추천·날씨 추천 소비 경로가 모두
+   `tagSimilarity` DB rows를 사용하도록 연결했다.
+
+관련 파일:
+
+- `db/migrations/002_add_tag_similarity.sql`
+- `scripts/legacy-tag-clusters.mjs`
+- `scripts/seed-tag-similarity.mjs`
+- `scripts/check-tag-similarity-parity.ts`
+- `src/lib/reco.ts`, `api/reco-data.js`, `src/lib/queries.ts`, `src/lib/types.ts`
+
+### 구현 로그 B — 태그 전수 비교 데이터 모델
+
+`db/migrations/003_add_tag_axis_comparisons.sql`을 실제 Neon DB에 적용했다.
+
+- `embedding_axis`: 축의 내부 key, 사용자 label, 질문, 높은 방향 label
+- `embedding_axis_tag`: 축별 비교 대상 태그
+- `tag_axis_comparison`: 원본 비교 응답
+
+비교 행의 무결성 규칙:
+
+- 두 태그는 항상 `tag_a_id < tag_b_id`로 canonical 저장.
+- `decision='win'`이면 winner는 반드시 A/B 중 하나.
+- `tie`와 `skip`이면 winner는 `NULL`.
+- `(axis, A, B, annotator)` unique로 중복 삽입 대신 응답을 upsert.
+- 현재 annotator key는 제작자 단독 비교를 뜻하는 `owner`.
+
+live migration 결과:
+
+| 축 | 등록 태그 | 전수 쌍 |
+| --- | ---: | ---: |
+| 어두움 ↔ 밝음 | 70 | 2,415 |
+| 사이좋음 ↔ 개싸움 | 70 | 2,415 |
+| 합계 |  | **4,830** |
+
+### 구현 로그 C — annotation API
+
+공유 로직 `server/tag-comparisons.js`를 만들고 두 실행 환경에서 재사용했다.
+
+- Production: `api/tag-comparisons.js` (Vercel serverless)
+- Local: `vite.config.ts`의 `/api/tag-comparisons` middleware
+- `GET`: 축, 축별 태그, 기존 owner 응답을 반환해 진행 상태 복원
+- `POST`: 축·태그 membership과 winner를 검증하고 비교 결과를 즉시 upsert
+- DB/API 오류는 사용자에게 저장 실패로 표시하며 성공 응답으로 가장하지 않음
+
+### 구현 로그 D — 태그 비교 annotation 페이지
+
+`src/pages/TagComparison.tsx`와 전용 CSS module을 만들고 `/tag-comparison`에 연결했다.
+
+사용 흐름:
+
+```
+어두움 ↔ 밝음 / 사이좋음 ↔ 개싸움 선택
+        ↓
+태그 A vs 태그 B
+        ↓
+A / B / 비슷함 / 축과 무관·판단 불가
+        ↓
+Neon 즉시 저장 → 다음 미응답 쌍
+```
+
+구현된 UX:
+
+- 축별 완료 수, 전체 쌍 수, 백분율 progress 표시
+- 태그명과 카테고리를 함께 표시
+- 태그 카드를 누르면 해당 태그가 축의 높은 방향에서 승리
+- `비슷함`과 `판단 불가`를 별도 버튼으로 분리
+- 새로고침 후 DB 응답을 읽어 첫 미응답 쌍부터 재개
+- 같은 쌍에 다시 답하면 새 행을 만들지 않고 기존 응답 수정
+- 세션 내 직전 응답으로 돌아가 수정 가능
+- 태그 ID 순서가 항상 좌우 위치가 되지 않도록 좌우를 분산
+- 카테고리/ID 순서로만 문제가 몰리지 않도록 전체 쌍 출제 순서도 결정론적으로 분산
+- 모바일에서는 태그 카드를 세로로 배치하고 데스크톱에서는 좌우 배치
+- light/dark color scheme 지원
+
+프로덕션 노출 정책:
+
+- 페이지와 API는 프로덕션에 배포한다.
+- 일반 사용자 메뉴, 랜딩, 온보딩에는 링크를 추가하지 않는다.
+- 제작자가 직접 `/tag-comparison` URL로 접근한다.
+- 이는 **UI 비노출** 정책이며 인증/보안 장벽은 아니다.
+
+### 검증 기록
+
+- Neon migration 002·003 적용 완료
+- curated similarity edge 53개, canonical order 위반 0
+- 추천 parity 2,850 cases 통과
+- production build 통과
+- 기존 Node tests 6개 통과
+- `git diff --check` 통과

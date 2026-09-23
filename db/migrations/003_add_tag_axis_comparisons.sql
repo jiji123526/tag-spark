@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS tag_axis_comparison (
 
 INSERT INTO embedding_axis (key, label, prompt, high_label)
 VALUES
-  ('darkness', '어두움', '둘 중 어느 태그가 더 어두운 작품을 뜻하나요?', '더 어두움'),
-  ('tension', '관계 긴장', '둘 중 어느 태그가 관계 갈등이 더 큰 작품을 뜻하나요?', '더 긴장됨')
+  ('darkness', '어두움 ↔ 밝음', '둘 중 어느 태그가 더 어두운 작품을 뜻하나요?', '더 어두움'),
+  ('tension', '사이좋음 ↔ 개싸움', '둘 중 어느 태그가 더 개싸움에 가까운 관계를 뜻하나요?', '더 개싸움')
 ON CONFLICT (key) DO UPDATE SET
   label = EXCLUDED.label,
   prompt = EXCLUDED.prompt,
