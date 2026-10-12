@@ -28,6 +28,9 @@ html.dark {
 #root:has([data-page="web-landing"]) {
   max-width: none;
 }
+#root:has([data-page="snsd-viewer"]) {
+  max-width: none;
+}
 :root {
   	
   	/* Color */

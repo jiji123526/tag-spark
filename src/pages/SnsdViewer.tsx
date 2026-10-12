@@ -292,7 +292,7 @@ export default function SnsdViewer() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-page="snsd-viewer">
       <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
         <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
         <div className={styles.workMeta}><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
