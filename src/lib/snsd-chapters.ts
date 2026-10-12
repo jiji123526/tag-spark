@@ -5,7 +5,7 @@ export type SnsdChapter = {
 };
 
 type ChapterCandidate = SnsdChapter & {
-  format: "generic" | "title" | "explicit" | "hash" | "special";
+  format: "generic" | "title" | "explicit" | "hash" | "bracket" | "special";
   sequenceNumber?: number;
   seriesKey?: string;
 };
@@ -21,16 +21,18 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
     if (lines.length > 2) return;
 
     for (const line of lines) {
-      if (!line || line.length > 80 || /^[-=_*·•\s]{3,}$/.test(line)) continue;
+      if (!line || line.length > 80 || /^[·•\s]{3,}$/.test(line)) continue;
       if (/^step\s*\d+/i.test(line)) continue;
+      if (/\d\s*[.,]\s*\d/.test(line)) continue;
 
       const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
       const hashMatch = /^(.{0,40}?)#\s*(\d{1,3}(?:[-–]\d{1,3})?)(?:\s*[.)])?(?:\s+.{1,80})?$/.exec(line);
+      const bracketMatch = /^\[\s*(\d{1,3}(?:[-–]\d{1,3})?)\s*\](?:\s+.{0,80})?$/.exec(line);
       const explicitMatch = /(?:^|[\s])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
         || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
         || /(?:^|[\s])(?:ep|ch)\.?\s*\d{1,3}\b/i.test(line);
       const genericMatch = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.exec(line);
-      const titleMatch = /^[^0-9].{0,58}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.exec(line);
+      const titleMatch = /^[^0-9].{0,78}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:완|완결|끝|完|번외|외전))?)?$/.exec(line);
       const explicitNumber = explicitMatch ? /(?:\d{1,3})(?:[-–]\d{1,3})?/.exec(line)?.[0] : undefined;
       const getSequenceNumber = (value?: string) => {
         if (!value) return undefined;
@@ -38,11 +40,13 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
         return parts[0] * 100 + (parts[1] ?? 0);
       };
 
-      if (special || hashMatch || explicitMatch || genericMatch || titleMatch) {
+      if (special || hashMatch || bracketMatch || explicitMatch || genericMatch || titleMatch) {
         const format = special
           ? "special"
           : hashMatch
             ? "hash"
+            : bracketMatch
+              ? "bracket"
             : explicitMatch
               ? "explicit"
               : titleMatch
@@ -51,10 +55,11 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
         const matchedNumber = titleMatch?.[1]
           ? `${titleMatch[1]}${titleMatch[2] ? `-${titleMatch[2]}` : ""}`
           : hashMatch?.[2]
+            ?? bracketMatch?.[1]
             ?? explicitNumber
             ?? genericMatch?.[0].match(/^\d{1,3}(?:[-–]\d{1,3})?/)?.[0];
         const titlePrefix = titleMatch?.[0]
-          .replace(/\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/, "")
+          .replace(/\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:완|완결|끝|完|번외|외전))?)?$/, "")
           .replace(/\s+/g, " ")
           .trim()
           .toLocaleLowerCase("ko");
@@ -70,6 +75,8 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
           sequenceNumber: getSequenceNumber(matchedNumber),
           seriesKey: format === "hash"
             ? `hash:${hashPrefix || "default"}`
+            : format === "bracket"
+              ? "bracket"
             : format === "title"
               ? `title:${titlePrefix}`
               : format === "explicit"
@@ -87,13 +94,22 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
       && other.format === candidate.format
       && other.seriesKey === candidate.seriesKey
       && other.sequenceNumber !== undefined
-      && Math.abs(other.sequenceNumber - candidate.sequenceNumber) === 1
+      && (
+        Math.abs(other.sequenceNumber - candidate.sequenceNumber) === 100
+        || (
+          Math.floor(other.sequenceNumber / 100) === Math.floor(candidate.sequenceNumber / 100)
+          && Math.abs(other.sequenceNumber - candidate.sequenceNumber) === 1
+        )
+      )
       && ((other.sequenceNumber > candidate.sequenceNumber && other.paragraph > candidate.paragraph)
         || (other.sequenceNumber < candidate.sequenceNumber && other.paragraph < candidate.paragraph)));
   };
   const hasStrongSeries = candidates.some(candidate => candidate.format !== "generic" && candidate.format !== "special" && hasChronologicalNeighbor(candidate));
+  const hasNumberedSeries = candidates.some(candidate => candidate.format !== "special"
+    && candidate.sequenceNumber !== undefined
+    && hasChronologicalNeighbor(candidate));
   const filtered = candidates.filter(candidate => {
-    if (candidate.format === "special") return true;
+    if (candidate.format === "special") return hasNumberedSeries;
     if (hasStrongSeries && candidate.format === "generic") return false;
     return hasChronologicalNeighbor(candidate);
   });
@@ -104,7 +120,11 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
       seenParagraphs.add(candidate.paragraph);
       return true;
     })
-    .map(candidate => ({ id: candidate.id, label: candidate.label, paragraph: candidate.paragraph }));
+    .map((candidate, index) => ({
+      id: candidate.id,
+      label: candidate.label,
+      paragraph: candidate.paragraph,
+    }));
 }
 
 export function countSnsdChapters(text: string) {
