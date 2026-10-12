@@ -263,7 +263,7 @@ export default function Snsd() {
       <main className={styles.main}>
         <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
           <button className={styles.composeToggle} type="button" onClick={() => setComposeOpen(open => !open)} aria-expanded={composeOpen}>
-            <span>+ 작품 추천</span><span className={styles.chevron}>{composeOpen ? "−" : "+"}</span>
+            <span>작품 추천</span><span className={styles.chevron}>{composeOpen ? "−" : "+"}</span>
           </button>
           {composeOpen && (
             <form className={styles.form} onSubmit={handleSubmit}>
@@ -355,7 +355,7 @@ export default function Snsd() {
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
-                <div className={styles.reason}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></div>
+                <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></button>
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
                     {(comments[work.id] ?? []).map(comment => (
