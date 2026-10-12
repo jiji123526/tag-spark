@@ -150,7 +150,6 @@ export default function SnsdViewer() {
   }, [content, id]);
 
   useEffect(() => {
-  useEffect(() => {
     if (!chaptersOpen && !readerMenuOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
