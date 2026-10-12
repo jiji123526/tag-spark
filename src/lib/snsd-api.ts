@@ -25,6 +25,7 @@ const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
+const SNSD_VIEWER_WORK_CACHE_TTL_MS = 60_000;
 const viewerContentRequests = new Map<number, Promise<void>>();
 
 export function snsdApiUrl(path: string) {
@@ -58,7 +59,10 @@ export function markSnsdWorkRead(workId: string | number) {
 
 export function cacheSnsdViewerWork(work: SnsdWork) {
   try {
-    window.localStorage.setItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${work.id}`, JSON.stringify(work));
+    window.localStorage.setItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${work.id}`, JSON.stringify({
+      work,
+      cachedAt: Date.now(),
+    }));
   } catch {
     // The viewer still works through the API when storage is unavailable.
   }
@@ -68,8 +72,10 @@ export function getCachedSnsdViewerWork(workId: string | number) {
   try {
     const stored = window.localStorage.getItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${workId}`);
     if (!stored) return null;
-    const parsed = JSON.parse(stored) as SnsdWork;
-    return String(parsed?.id) === String(workId) ? parsed : null;
+    const parsed = JSON.parse(stored) as { work?: SnsdWork; cachedAt?: number };
+    if (!parsed.work || typeof parsed.cachedAt !== "number") return null;
+    if (Date.now() - parsed.cachedAt > SNSD_VIEWER_WORK_CACHE_TTL_MS) return null;
+    return String(parsed.work.id) === String(workId) ? parsed.work : null;
   } catch {
     return null;
   }

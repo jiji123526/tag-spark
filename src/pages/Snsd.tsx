@@ -131,14 +131,6 @@ export default function Snsd() {
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
   useEffect(() => {
-    if (loading) return;
-    const workIds = works.filter(work => work.comment_count > 0 && comments[work.id] === undefined).slice(0, 10).map(work => work.id);
-    const prefetch = () => workIds.forEach(workId => { void fetchComments(workId).catch(() => undefined); });
-    const timer = window.setTimeout(prefetch, 500);
-    return () => window.clearTimeout(timer);
-  }, [comments, fetchComments, loading, works]);
-
-  useEffect(() => {
     const refreshReadHistory = () => setReadHistory(getSnsdReadHistory());
     const handleStorage = (event: StorageEvent) => {
       if (event.key === SNSD_READ_HISTORY_KEY) refreshReadHistory();
@@ -183,15 +175,6 @@ export default function Snsd() {
     }
     return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
   }, [bookmarked, readHistory, searchOpen, searchQuery, sort, works]);
-
-  useEffect(() => {
-    if (loading) return;
-    const candidates = visibleWorks.filter(work => work.file_size <= 512 * 1024).slice(0, 3);
-    const timer = window.setTimeout(() => {
-      candidates.forEach(work => { void prefetchSnsdViewer(work); });
-    }, 900);
-    return () => window.clearTimeout(timer);
-  }, [loading, visibleWorks]);
 
   const closeSearch = () => {
     setSearchOpen(false);
@@ -325,9 +308,31 @@ export default function Snsd() {
   };
 
   const openWork = (work: SnsdWork) => {
+    const url = `/snsd/view/${work.id}?from=list`;
     cacheSnsdViewerWork(work);
-    void prefetchSnsdViewer(work);
-    window.open(`/snsd/view/${work.id}?from=list`, "_blank", "noopener,noreferrer");
+    const viewerWindow = window.open("", "_blank");
+
+    if (!viewerWindow) {
+      void prefetchSnsdViewer(work);
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    viewerWindow.opener = null;
+    viewerWindow.document.title = "불러오는 중 · SNSDFF";
+    viewerWindow.document.body.innerHTML = '<p style="margin:40px;font:16px system-ui,sans-serif">작품을 불러오는 중입니다…</p>';
+
+    let navigated = false;
+    const navigate = () => {
+      if (navigated || viewerWindow.closed) return;
+      navigated = true;
+      viewerWindow.location.replace(url);
+    };
+    const fallbackTimer = window.setTimeout(navigate, 5000);
+    void prefetchSnsdViewer(work).finally(() => {
+      window.clearTimeout(fallbackTimer);
+      navigate();
+    });
   };
 
   const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
@@ -351,7 +356,9 @@ export default function Snsd() {
     });
     setSavingEdit(false);
     if (!response.ok) { setError(await readApiError(response)); return; }
-    setWorks(current => current.map(work => work.id === editing.id ? { ...work, ...editDraft } : work));
+    const updatedWork = { ...editing, ...editDraft };
+    cacheSnsdViewerWork(updatedWork);
+    setWorks(current => current.map(work => work.id === editing.id ? updatedWork : work));
     setEditing(null);
     setError("");
     setToast("수정되었습니다.");
@@ -490,7 +497,7 @@ export default function Snsd() {
                   )}
                 </div>
                 <div className={styles.postContent}>
-                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={() => { cacheSnsdViewerWork(work); void prefetchSnsdViewer(work); }}>{work.title}</a>
+                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openWork(work); }}>{work.title}</a>
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
