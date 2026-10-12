@@ -76,16 +76,25 @@ async function listWorks(request: Request, env: Env, url: URL) {
     ? "w.created_at DESC"
     : "score DESC, w.created_at DESC";
   const result = await env.tagspark_snsd.prepare(`
+    WITH like_counts AS (
+      SELECT work_id, COUNT(*) AS score
+      FROM likes
+      GROUP BY work_id
+    ),
+    comment_counts AS (
+      SELECT work_id, COUNT(*) AS comment_count
+      FROM comments
+      GROUP BY work_id
+    )
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
       w.file_size, w.created_at,
-      COUNT(DISTINCT l.voter) AS score,
-      COUNT(DISTINCT c.id) AS comment_count,
+      COALESCE(lc.score, 0) AS score,
+      COALESCE(cc.comment_count, 0) AS comment_count,
       (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment,
       CASE WHEN w.created_by = ? THEN 1 ELSE 0 END AS is_owner
     FROM works w
-    LEFT JOIN likes l ON l.work_id = w.id
-    LEFT JOIN comments c ON c.work_id = w.id
-    GROUP BY w.id
+    LEFT JOIN like_counts lc ON lc.work_id = w.id
+    LEFT JOIN comment_counts cc ON cc.work_id = w.id
     ORDER BY ${order}
   `).bind(viewer).all();
   return json(request, env, result.results);
@@ -140,17 +149,28 @@ async function createWork(request: Request, env: Env) {
 
 async function getWork(request: Request, env: Env, workId: number) {
   const work = await env.tagspark_snsd.prepare(`
+    WITH like_counts AS (
+      SELECT work_id, COUNT(*) AS score
+      FROM likes
+      WHERE work_id = ?
+      GROUP BY work_id
+    ),
+    comment_counts AS (
+      SELECT work_id, COUNT(*) AS comment_count
+      FROM comments
+      WHERE work_id = ?
+      GROUP BY work_id
+    )
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
       w.file_size, w.created_at,
-      COUNT(DISTINCT l.voter) AS score,
-      COUNT(DISTINCT c.id) AS comment_count,
+      COALESCE(lc.score, 0) AS score,
+      COALESCE(cc.comment_count, 0) AS comment_count,
       (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment
     FROM works w
-    LEFT JOIN likes l ON l.work_id = w.id
-    LEFT JOIN comments c ON c.work_id = w.id
+    LEFT JOIN like_counts lc ON lc.work_id = w.id
+    LEFT JOIN comment_counts cc ON cc.work_id = w.id
     WHERE w.id = ?
-    GROUP BY w.id
-  `).bind(workId).first();
+  `).bind(workId, workId, workId).first();
   return work ? json(request, env, work) : json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
 }
 
