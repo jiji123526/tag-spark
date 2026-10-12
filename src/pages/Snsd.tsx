@@ -50,7 +50,7 @@ export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [works, setWorks] = useState<SnsdWork[]>([]);
   const [sort, setSort] = useState<"top" | "new" | "bookmarked">("top");
-  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(true);
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
