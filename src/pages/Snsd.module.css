@@ -323,6 +323,16 @@
   cursor: pointer;
 }
 .pairingTag:hover { color: var(--snsd-text); }
+.lengthTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--snsd-field);
+  color: var(--snsd-muted);
+  font-size: 13px;
+}
 .recommendation {
   margin: 0;
   color: #62626a;

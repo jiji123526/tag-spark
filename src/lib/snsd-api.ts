@@ -6,6 +6,7 @@ export type SnsdWork = {
   reason: string;
   original_filename: string;
   file_size: number;
+  chapter_count?: number | null;
   created_at: string;
   score: number;
   comment_count: number;

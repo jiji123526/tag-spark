@@ -15,6 +15,7 @@ import {
   SnsdComment,
   SnsdWork,
 } from "@/lib/snsd-api";
+import { getSnsdLengthTag } from "@/lib/snsd-chapters";
 import styles from "./Snsd.module.css";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -746,6 +747,9 @@ export default function Snsd() {
                   )}
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
+                    {getSnsdLengthTag(work.chapter_count) && (
+                      <span className={styles.lengthTag}>#{getSnsdLengthTag(work.chapter_count)}</span>
+                    )}
                   </div>
                   {progress && progressPercent > 0 && (
                     <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>

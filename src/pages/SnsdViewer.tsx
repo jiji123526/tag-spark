@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { cacheSnsdViewerWork, fetchSnsdViewerContent, getCachedSnsdViewerWork, getSnsdReadProgress, markSnsdWorkRead, readApiError, saveSnsdReadProgress, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
+import { detectSnsdChapters, SnsdChapter } from "@/lib/snsd-chapters";
 import styles from "./SnsdViewer.module.css";
 
 type ReaderBookmark = {
@@ -13,12 +14,6 @@ type ReaderBookmark = {
   createdAt: number;
 };
 
-type ReaderChapter = {
-  id: string;
-  label: string;
-  paragraph: number;
-};
-
 const BookmarkIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 3A2.5 2.5 0 0 0 4 5.5v15.56a.94.94 0 0 0 1.48.77L12 17.17l6.52 4.66a.94.94 0 0 0 1.48-.77V5.5A2.5 2.5 0 0 0 17.5 3h-11ZM6 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v13.62l-5.45-3.9a.94.94 0 0 0-1.1 0L6 19.12V5.5Z" fill="currentColor" /></svg>;
 const ChevronDownIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.7 8.7 5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 1.4-1.4Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
@@ -29,89 +24,6 @@ type SearchRange = {
   end: number;
   globalIndex: number;
 };
-
-function detectReaderChapters(paragraphs: string[]) {
-  type ChapterCandidate = ReaderChapter & {
-    format: "generic" | "title" | "explicit" | "special";
-    sequenceNumber?: number;
-    seriesKey?: string;
-  };
-  const candidates: ChapterCandidate[] = [];
-
-  paragraphs.forEach((paragraph, paragraphIndex) => {
-    const lines = paragraph
-      .split(/\r?\n/)
-      .map(line => line.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, " ").trim())
-      .filter(Boolean);
-    if (lines.length > 2) return;
-
-    for (const line of lines) {
-      if (!line || line.length > 80 || /^[-=_*·•\s]{3,}$/.test(line)) continue;
-      if (/^step\s*\d+/i.test(line)) continue;
-
-      const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
-      const explicit = /(?:^|[\s#])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
-        || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
-        || /#\s*\d{1,3}\b/.test(line);
-      const genericMatch = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.exec(line);
-      const titleMatch = /^[^0-9].{0,58}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.exec(line);
-      const explicitNumber = explicit ? /(?:\d{1,3})(?:[-–]\d{1,3})?/.exec(line)?.[0] : undefined;
-      const getSequenceNumber = (value?: string) => {
-        if (!value) return undefined;
-        const parts = value.split(/[-–]/).map(Number);
-        return parts[0] * 100 + (parts[1] ?? 0);
-      };
-
-      if (special || explicit || genericMatch || titleMatch) {
-        const format = special ? "special" : explicit ? "explicit" : titleMatch ? "title" : "generic";
-        const matchedNumber = titleMatch?.[1]
-          ? `${titleMatch[1]}${titleMatch[2] ? `-${titleMatch[2]}` : ""}`
-          : explicitNumber ?? genericMatch?.[0].match(/^\d{1,3}(?:[-–]\d{1,3})?/)?.[0];
-        const titlePrefix = titleMatch?.[0]
-          .replace(/\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/, "")
-          .replace(/\s+/g, " ")
-          .trim()
-          .toLocaleLowerCase("ko");
-        candidates.push({
-          id: `chapter-${paragraphIndex}`,
-          label: line,
-          paragraph: paragraphIndex,
-          format,
-          sequenceNumber: getSequenceNumber(matchedNumber),
-          seriesKey: format === "title"
-            ? titlePrefix
-            : format === "explicit"
-              ? "explicit"
-              : format,
-        });
-        break;
-      }
-    }
-  });
-
-  const hasChronologicalNeighbor = (candidate: ChapterCandidate) => {
-    if (candidate.sequenceNumber === undefined) return false;
-    return candidates.some(other => other !== candidate
-      && other.format === candidate.format
-      && other.seriesKey === candidate.seriesKey
-      && other.sequenceNumber !== undefined
-      && Math.abs(other.sequenceNumber - candidate.sequenceNumber) === 1);
-  };
-  const hasStrongSeries = candidates.some(candidate => (candidate.format === "title" || candidate.format === "explicit") && hasChronologicalNeighbor(candidate));
-  const filtered = candidates.filter(candidate => {
-    if (candidate.format === "special") return true;
-    if (hasStrongSeries && candidate.format === "generic") return false;
-    return hasChronologicalNeighbor(candidate);
-  });
-  const seenParagraphs = new Set<number>();
-  return filtered
-    .filter(candidate => {
-      if (seenParagraphs.has(candidate.paragraph)) return false;
-      seenParagraphs.add(candidate.paragraph);
-      return true;
-    })
-    .map(candidate => ({ id: candidate.id, label: candidate.label, paragraph: candidate.paragraph }));
-}
 
 export default function SnsdViewer() {
   const { id } = useParams();
@@ -128,7 +40,7 @@ export default function SnsdViewer() {
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
-  const [chapters, setChapters] = useState<ReaderChapter[] | null>(null);
+  const [chapters, setChapters] = useState<SnsdChapter[] | null>(null);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -416,7 +328,7 @@ export default function SnsdViewer() {
   };
 
   const openChapterList = () => {
-    if (chapters === null) setChapters(detectReaderChapters(paragraphs));
+    if (chapters === null) setChapters(detectSnsdChapters(paragraphs));
     setChaptersOpen(true);
     setSearchOpen(false);
     setFontSizeOpen(false);

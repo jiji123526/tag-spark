@@ -1,4 +1,5 @@
 import iconv from "iconv-lite";
+import { countSnsdChapters } from "../../../src/lib/snsd-chapters";
 
 interface Env {
   tagspark_snsd: D1Database;
@@ -87,7 +88,7 @@ async function listWorks(request: Request, env: Env, url: URL) {
       GROUP BY work_id
     )
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
-      w.file_size, w.created_at,
+      w.file_size, w.chapter_count, w.created_at,
       COALESCE(lc.score, 0) AS score,
       COALESCE(cc.comment_count, 0) AS comment_count,
       (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment,
@@ -128,6 +129,7 @@ async function createWork(request: Request, env: Env) {
   }
 
   const utf8Bytes = new TextEncoder().encode(decoded.text);
+  const chapterCount = countSnsdChapters(decoded.text);
 
   const objectKey = `works/${crypto.randomUUID()}.txt`;
   await env.FILES.put(objectKey, utf8Bytes, {
@@ -137,9 +139,9 @@ async function createWork(request: Request, env: Env) {
 
   try {
     const result = await env.tagspark_snsd.prepare(`
-      INSERT INTO works (title, author, pairing, reason, object_key, original_filename, file_size, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(title, author, pairing, reason, objectKey, file.name.slice(0, 255), utf8Bytes.byteLength, createdBy).run();
+      INSERT INTO works (title, author, pairing, reason, object_key, original_filename, file_size, chapter_count, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(title, author, pairing, reason, objectKey, file.name.slice(0, 255), utf8Bytes.byteLength, chapterCount || null, createdBy).run();
     return json(request, env, { id: result.meta.last_row_id }, 201);
   } catch (error) {
     await env.FILES.delete(objectKey);
@@ -162,7 +164,7 @@ async function getWork(request: Request, env: Env, workId: number) {
       GROUP BY work_id
     )
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
-      w.file_size, w.created_at,
+      w.file_size, w.chapter_count, w.created_at,
       COALESCE(lc.score, 0) AS score,
       COALESCE(cc.comment_count, 0) AS comment_count,
       (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment
