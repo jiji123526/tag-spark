@@ -28,7 +28,6 @@ export default function SnsdViewer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
-  const [readerMenuOpen, setReaderMenuOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [chapters, setChapters] = useState<SnsdChapter[] | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -150,15 +149,14 @@ export default function SnsdViewer() {
   }, [content, id]);
 
   useEffect(() => {
-    if (!chaptersOpen && !readerMenuOpen) return;
+    if (!chaptersOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       setChaptersOpen(false);
-      setReaderMenuOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [chaptersOpen, readerMenuOpen]);
+  }, [chaptersOpen]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -245,7 +243,6 @@ export default function SnsdViewer() {
 
   const openChapterList = () => {
     if (chapters === null) setChapters(detectSnsdChapters(paragraphs));
-    setReaderMenuOpen(false);
     setChaptersOpen(true);
     setSearchOpen(false);
     setFontSizeOpen(false);
@@ -275,7 +272,7 @@ export default function SnsdViewer() {
         </div>
         <div className={styles.headerActions}>
           <div className={styles.controlWrapper}>
-            <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); setReaderMenuOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
+            <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
             {searchOpen && (
               <div className={`${styles.popover} ${styles.searchPopover}`} role="search">
                 <div className={styles.searchField}>
@@ -305,7 +302,7 @@ export default function SnsdViewer() {
             )}
           </div>
           <div className={styles.controlWrapper}>
-            <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); setReaderMenuOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
+            <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
             {fontSizeOpen && (
               <div className={`${styles.popover} ${styles.fontPopover}`} role="dialog" aria-label="글자 크기 조절">
                 <span>글자 크기</span>
@@ -318,15 +315,7 @@ export default function SnsdViewer() {
             )}
           </div>
           <div className={styles.controlWrapper}>
-            <button className={styles.iconButton} type="button" onClick={() => setReaderMenuOpen(current => !current)} aria-label="뷰어 메뉴" aria-expanded={readerMenuOpen}><MenuIcon /></button>
-            {readerMenuOpen && (
-              <div className={`${styles.popover} ${styles.readerMenuPopover}`} role="menu" aria-label="뷰어 메뉴">
-                <button type="button" role="menuitem" onClick={openChapterList}>
-                  <span>목차</span>
-                  <small>{chapters === null ? "" : chapters.length}</small>
-                </button>
-              </div>
-            )}
+            <button className={styles.iconButton} type="button" onClick={openChapterList} aria-label="목차 열기" aria-expanded={chaptersOpen}><MenuIcon /></button>
           </div>
         </div>
       </header>
