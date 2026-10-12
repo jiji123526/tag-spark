@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tagspark-snsd-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "d1_databases": [
+    {
+      "binding": "tagspark_snsd",
+      "database_name": "tagspark-snsd",
+      "database_id": "4e3a7682-8b12-43c9-87b5-0fb14352528d"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FILES",
+      "bucket_name": "tagspark-snsd-files"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGIN": "http://localhost:8080,https://kwkrecom.vercel.app"
+  }
+}

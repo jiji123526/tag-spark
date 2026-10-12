@@ -86,6 +86,14 @@ tag-spark/
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | Neon Postgres connection string |
+| `VITE_SNSD_API_URL` | Cloudflare Worker base URL used only by `/snsd` |
+
+## SNSD text library
+
+`/snsd` is isolated from the existing recommendation database. Its metadata,
+likes, and comments live in Cloudflare D1, while uploaded TXT files live in R2.
+See [`cloudflare/snsd/README.md`](cloudflare/snsd/README.md) for setup and deploy
+commands.
 
 ## Roadmap
 

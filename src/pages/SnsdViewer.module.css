@@ -1,0 +1,13 @@
+.page { min-height: 100vh; background: #fff; color: #141415; font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
+.header { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: minmax(72px, 1fr) minmax(0, 3fr) minmax(72px, 1fr); align-items: center; min-height: 62px; padding: 8px 16px; border-bottom: 1px solid rgba(118,118,127,.15); background: rgba(255,255,255,.94); backdrop-filter: blur(14px); }
+.header > button, .fontControls button { border: 0; background: transparent; color: #141415; font: inherit; cursor: pointer; }
+.header > button { justify-self: start; padding: 8px 0; }
+.header > div:nth-child(2) { display: flex; min-width: 0; flex-direction: column; text-align: center; }
+.header strong { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.header span { overflow: hidden; color: #76767f; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.fontControls { display: flex; justify-self: end; gap: 2px; }
+.fontControls button { padding: 8px 5px; font-size: 13px; }
+.reader { width: 100%; max-width: 720px; margin: 0 auto; padding: 48px 28px 120px; }
+.reader article { line-height: 1.95; letter-spacing: -.01em; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
+.error { color: #f33d4d; text-align: center; }
+@media (max-width: 600px) { .header { padding: 8px 12px; } .reader { padding: 34px 20px 100px; } }

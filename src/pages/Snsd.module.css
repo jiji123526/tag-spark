@@ -1,0 +1,218 @@
+.page {
+  --snsd-primary: #3478ff;
+  --snsd-surface: #fff;
+  --snsd-border: rgba(118, 118, 127, 0.15);
+  --snsd-text: #141415;
+  --snsd-muted: #76767f;
+  min-height: 100vh;
+  background: var(--snsd-surface);
+  color: var(--snsd-text);
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--snsd-surface);
+  border-bottom: 1px solid var(--snsd-border);
+}
+
+.header h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+.main { width: 100%; max-width: 640px; margin: 0 auto; padding: 0 16px; }
+.compose { border-bottom: 1px solid var(--snsd-border); }
+.composeOpen { padding-bottom: 20px; }
+
+.composeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--snsd-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chevron { color: var(--snsd-muted); font-size: 20px; font-weight: 400; }
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form input, .form textarea, .commentForm textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  outline: none;
+  background: #f2f2f3;
+  color: var(--snsd-text);
+  padding: 11px 13px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  resize: vertical;
+}
+
+.form input:focus, .form textarea:focus, .commentForm textarea:focus { box-shadow: inset 0 0 0 1px var(--snsd-primary); }
+.fileInput { display: none; }
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 116px;
+  padding: 18px;
+  border: 1px dashed rgba(118, 118, 127, 0.45);
+  border-radius: 10px;
+  background: #f9f9fa;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone strong { font-size: 14px; overflow-wrap: anywhere; }
+.dropzone span { margin-top: 5px; color: var(--snsd-muted); font-size: 12px; }
+.dropzoneActive { border-color: var(--snsd-primary); background: rgba(52, 120, 255, 0.06); }
+.dropzoneSelected { border-style: solid; }
+.submitButton, .commentForm button {
+  align-self: flex-end;
+  border: 0;
+  border-radius: 8px;
+  background: var(--snsd-text);
+  color: #fff;
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitButton:disabled { opacity: 0.5; cursor: wait; }
+.error { margin: 0; color: #f33d4d; font-size: 13px; }
+.sortBar {
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 44px;
+  background: var(--snsd-surface);
+  border-bottom: 1px solid var(--snsd-border);
+}
+
+.sortBar button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--snsd-muted);
+  font: inherit;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.sortBar button.active { color: var(--snsd-text); font-weight: 600; }
+.sortBar button.active::after { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--snsd-text); content: ""; }
+.list { display: flex; flex-direction: column; }
+.empty { padding: 72px 16px; color: var(--snsd-muted); text-align: center; }
+.card { border-bottom: 1px solid var(--snsd-border); background: var(--snsd-surface); }
+.cardBody { display: flex; flex-direction: column; gap: 8px; padding: 24px 0 20px; }
+.postHeader { display: flex; justify-content: space-between; }
+.postHeader > div { display: flex; flex-direction: column; }
+.postHeader strong { font-size: 13px; font-weight: 600; }
+.postHeader span { color: var(--snsd-muted); font-size: 13px; }
+.postContent { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.workTitle {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--snsd-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.workTitle:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pairingTags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.pairingTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f2f2f3;
+  color: #62626a;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.actions { display: flex; gap: 4px; margin-top: -4px; }
+.actions button {
+  min-height: 32px;
+  padding: 0 8px 0 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #62626a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.actions button:hover { color: var(--snsd-text); }
+.actions button.voted { color: #f33d4d; }
+.reason {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #f9f9fa;
+  color: var(--snsd-text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre-wrap;
+  cursor: pointer;
+}
+
+.comments { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--snsd-border); }
+.comment { padding: 10px 0; }
+.comment strong { font-size: 13px; }
+.comment span { margin-left: 8px; color: var(--snsd-muted); font-size: 12px; }
+.comment p { margin: 4px 0 0; font-size: 14px; white-space: pre-wrap; }
+.commentForm { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: 10px; }
+
+@media (max-width: 743px) {
+  .main { padding: 0 16px; }
+  .dropzone strong::before { content: ""; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .form { animation: reveal 0.18s ease-out; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+}

@@ -10,6 +10,8 @@ import Recommend from "./pages/Recommend";
 import List from "./pages/List";
 import WeatherTest from "./pages/WeatherTest";
 import TagComparison from "./pages/TagComparison";
+import Snsd from "./pages/Snsd";
+import SnsdViewer from "./pages/SnsdViewer";
 
 const isMobile =
   /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent) ||
@@ -26,6 +28,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/mobile-list": "현재 등록된 추천작",
   "/weather-test": "🧪 Weather Controls",
   "/tag-comparison": "태그 비교",
+  "/snsd": "ZZIKSTYPE",
 };
 
 const AppRoutes = () => {
@@ -33,7 +36,9 @@ const AppRoutes = () => {
 
   useEffect(() => {
     const normalizedPath = pathname.replace(/\/+$/, "").toLowerCase() || "/";
-    document.title = PAGE_TITLES[normalizedPath] ?? "404";
+    document.title = normalizedPath.startsWith("/snsd/view/")
+      ? "작품 읽기 · ZZIKSTYPE"
+      : PAGE_TITLES[normalizedPath] ?? "404";
   }, [pathname]);
 
   return (
@@ -48,6 +53,8 @@ const AppRoutes = () => {
       <Route path="/mobile-list" element={<List />} />
       <Route path="/weather-test" element={<WeatherTest />} />
       <Route path="/tag-comparison" element={<TagComparison />} />
+      <Route path="/snsd" element={<Snsd />} />
+      <Route path="/snsd/view/:id" element={<SnsdViewer />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
