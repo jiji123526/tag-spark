@@ -3,7 +3,7 @@
 .header { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 88px minmax(0, 1fr) 88px; align-items: center; min-height: 62px; padding: 8px 16px; border-bottom: 1px solid var(--viewer-border); background: var(--viewer-header); backdrop-filter: blur(14px); transform: translateY(0); opacity: 1; transition: transform .24s ease, opacity .18s ease; }
 .headerHidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 .fontControls button { border: 0; background: transparent; color: var(--viewer-text); font: inherit; cursor: pointer; }
-.backLink { justify-self: start; padding: 8px 0; color: var(--viewer-text); text-decoration: none; white-space: nowrap; }
+.backLink { justify-self: start; padding: 8px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; cursor: pointer; white-space: nowrap; }
 .workMeta { display: flex; min-width: 0; flex-direction: column; text-align: center; }
 .header strong { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
 .header span { overflow: hidden; color: var(--viewer-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }

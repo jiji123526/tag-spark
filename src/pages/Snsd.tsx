@@ -274,7 +274,7 @@ export default function Snsd() {
   };
 
   const openWork = (workId: number) => {
-    window.open(`/snsd/view/${workId}`, "_blank", "noopener,noreferrer");
+    window.open(`/snsd/view/${workId}?from=list`, "_blank", "noopener,noreferrer");
   };
 
   const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
@@ -382,7 +382,7 @@ export default function Snsd() {
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">개추순</button>
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
-          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">보관함</button>
+          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">기록</button>
         </nav>}
 
         <section className={styles.list}>
@@ -435,7 +435,7 @@ export default function Snsd() {
                   )}
                 </div>
                 <div className={styles.postContent}>
-                  <a className={styles.workTitle} href={`/snsd/view/${work.id}`} target="_blank" rel="noopener noreferrer">{work.title}</a>
+                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer">{work.title}</a>
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>

@@ -194,10 +194,22 @@ export default function SnsdViewer() {
     saveBookmarks(bookmarks.filter(bookmark => bookmark.id !== bookmarkId));
   };
 
+  const returnToList = () => {
+    const openedFromList = new URLSearchParams(window.location.search).get("from") === "list";
+    if (openedFromList) {
+      window.close();
+      window.setTimeout(() => {
+        if (!window.closed) window.location.replace("/snsd");
+      }, 150);
+      return;
+    }
+    window.location.assign("/snsd");
+  };
+
   return (
     <div className={styles.page}>
       <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
-        <a className={styles.backLink} href="/snsd">← 목록</a>
+        <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
         <div className={styles.workMeta}><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
         <div className={styles.fontControls}><button type="button" onClick={() => changeFontSize(fontSize - 1)} aria-label="글자 작게">가</button><button type="button" onClick={() => changeFontSize(fontSize + 1)} aria-label="글자 크게">가+</button><button className={styles.bookmarkButton} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button></div>
       </header>
