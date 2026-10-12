@@ -144,7 +144,7 @@ export default function Snsd() {
   const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
   const [offlineGuideOpen, setOfflineGuideOpen] = useState(false);
   const [sort, setSort] = useState<"top" | "new" | "library">("new");
-  const [libraryView, setLibraryView] = useState<"bookmarked" | "archive" | "offline">("bookmarked");
+  const [libraryView, setLibraryView] = useState<"bookmarked" | "archive" | "offline">("archive");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -678,8 +678,8 @@ export default function Snsd() {
         </nav>}
         {!searchOpen && sort === "library" && (
           <div className={styles.libraryBar} aria-label="보관함 종류">
-            <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
             <button className={libraryView === "archive" ? styles.libraryActive : ""} onClick={() => setLibraryView("archive")} type="button">최근 읽은</button>
+            <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
             <button className={libraryView === "offline" ? styles.libraryActive : ""} onClick={() => setLibraryView("offline")} type="button">오프라인 저장</button>
           </div>
         )}
