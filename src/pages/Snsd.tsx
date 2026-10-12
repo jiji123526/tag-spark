@@ -663,7 +663,7 @@ export default function Snsd() {
                 <span>{file ? `${(file.size / 1024).toFixed(1)}KB` : "또는 눌러서 파일 선택 · 최대 5MB"}</span>
               </div>
               <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="씨피 (여러 개면 쉼표로 구분)" maxLength={80} />
-              <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="추천 이유 (선택)" rows={3} maxLength={1000} />
+              <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="설명 (선택)" rows={3} maxLength={1000} />
               {error && <p className={styles.error} role="alert">{error}</p>}
               <button className={styles.submitButton} disabled={submitting} type="submit">{submitting ? "업로드 중…" : "제출"}</button>
             </form>
@@ -812,7 +812,7 @@ export default function Snsd() {
           <div className={`${styles.modalBox} ${styles.helpModal}`} role="dialog" aria-modal="true" aria-labelledby="snsd-help-title">
             <div className={styles.modalHeader}><h2 id="snsd-help-title">SNSDFF 사용법</h2><button type="button" onClick={() => setHelpOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.helpContent}>
-              <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 추천 이유는 선택입니다.</span></p>
+              <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 설명은 선택입니다.</span></p>
               <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
               <p><strong>저장과 기록</strong><span>카드 북마크와 최근 읽은 작품은 보관함에서 확인할 수 있습니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
@@ -842,7 +842,7 @@ export default function Snsd() {
               <label>제목<input value={editDraft.title} onChange={event => setEditDraft(current => ({ ...current, title: event.target.value }))} maxLength={120} /></label>
               <label>작가<input value={editDraft.author} onChange={event => setEditDraft(current => ({ ...current, author: event.target.value }))} maxLength={80} /></label>
               <label>씨피<input value={editDraft.pairing} onChange={event => setEditDraft(current => ({ ...current, pairing: event.target.value }))} maxLength={80} /></label>
-              <label>추천 이유 (선택)<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
+              <label>설명 (선택)<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
             </div>
             <div className={styles.modalFooter}><button type="button" className={styles.cancelButton} onClick={() => setEditing(null)}>취소</button><button type="button" className={styles.confirmButton} disabled={savingEdit} onClick={() => void saveEdit()}>{savingEdit ? "저장 중…" : "수정하기"}</button></div>
           </div>
