@@ -10,8 +10,14 @@
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   font-size: 16px;
   line-height: 1.5;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
+
+.page button, .page input, .page textarea { font-family: inherit; }
 
 .header {
   position: sticky;
@@ -131,11 +137,29 @@
 .empty { padding: 72px 16px; color: var(--snsd-muted); text-align: center; }
 .card { border-bottom: 1px solid var(--snsd-border); background: var(--snsd-surface); }
 .cardBody { display: flex; flex-direction: column; gap: 8px; padding: 24px 0 20px; }
-.postHeader { display: flex; justify-content: space-between; }
-.postHeader > div { display: flex; flex-direction: column; }
-.postHeader strong { font-size: 13px; font-weight: 600; }
-.postHeader span { color: var(--snsd-muted); font-size: 13px; }
-.postContent { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.postHeader { display: flex; justify-content: space-between; align-items: center; padding-bottom: 0; }
+.postHeaderLeft { display: flex; align-items: center; gap: 8px; }
+.postAvatar { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+.postAvatar img { width: 100%; height: 100%; object-fit: cover; }
+.postHeaderInfo { display: flex; flex-direction: column; }
+.postHeaderInfo strong { color: var(--snsd-text); font-size: 13px; font-weight: 600; line-height: 1.5; }
+.postHeaderInfo span { color: var(--snsd-muted); font-size: 13px; line-height: 1.33; }
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin-right: -2px;
+  padding: 4px 4px 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #62626a;
+  cursor: pointer;
+}
+.moreButton svg { width: 20px; height: 20px; }
+.moreButton:hover { background: rgba(118, 118, 127, 0.08); }
+.postContent { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 0; }
 .workTitle {
   display: inline;
   padding: 0;
@@ -168,8 +192,14 @@
   line-height: 18px;
   white-space: nowrap;
 }
-.actions { display: flex; gap: 4px; margin-top: -4px; }
-.actions button {
+.actions { display: flex; justify-content: space-between; align-items: center; padding-top: 0; margin-top: -5px; }
+.actionsLeft { display: flex; align-items: center; gap: 4px; }
+.actionsRight { display: flex; align-items: center; gap: 0; }
+.voteButton, .commentButton, .iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   min-height: 32px;
   padding: 0 8px 0 0;
   border: 0;
@@ -180,12 +210,20 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+  line-height: 1.33334;
+  white-space: nowrap;
+  transition: background-color 0.15s, color 0.15s;
 }
-
-.actions button:hover { color: var(--snsd-text); }
-.actions button.voted { color: #f33d4d; }
+.voteButton svg, .commentButton svg, .iconButton svg { width: 20px; height: 20px; flex-shrink: 0; }
+.iconButton { gap: 6px; padding: 4px 8px; font-size: 14px; font-weight: 600; }
+.actionsRight .iconButton:last-child { padding-right: 3px; }
+.voteButton:hover, .commentButton:hover, .iconButton:hover { background: rgba(118, 118, 127, 0.08); color: var(--snsd-text); }
+.voteButton.voted { color: #f33d4d; }
+.bookmarked { color: var(--snsd-text); }
 .reason {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   width: 100%;
   padding: 12px;
   border: 0;
@@ -199,16 +237,33 @@
   white-space: pre-wrap;
   cursor: pointer;
 }
+.reason img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.reason span { display: flex; align-items: center; min-height: 24px; overflow: visible; }
 
 .comments { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--snsd-border); }
-.comment { padding: 10px 0; }
-.comment strong { font-size: 13px; }
-.comment span { margin-left: 8px; color: var(--snsd-muted); font-size: 12px; }
-.comment p { margin: 4px 0 0; font-size: 14px; white-space: pre-wrap; }
-.commentForm { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: 10px; }
+.comment { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--snsd-border); }
+.comment:last-child { border-bottom: 0; }
+.commentAvatar { width: 32px; height: 32px; border-radius: 50%; background: #f2f2f3; flex-shrink: 0; }
+.commentBody { flex: 1; min-width: 0; }
+.commentHeader { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.commentHeader strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; line-height: 1.33; }
+.commentHeader span { color: var(--snsd-muted); font-size: 12px; }
+.commentBody p { margin: 0; color: var(--snsd-text); font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+.commentForm { margin-top: 12px; padding: 12px; border: 1px solid var(--snsd-border); border-radius: 8px; }
+.commentInputHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.commentInputHeader img { width: 28px; height: 28px; border-radius: 50%; }
+.commentInputHeader span { color: var(--snsd-text); font-size: 14px; font-weight: 600; }
+.commentForm textarea { min-height: 24px; padding: 0; border: 0; background: transparent; font-size: 15px; line-height: 1.5; resize: none; }
+.commentForm textarea:focus { box-shadow: none; }
+.commentFormRow { display: flex; justify-content: flex-end; margin-top: 8px; }
+.commentFormRow button { padding: 6px 12px; border: 0; border-radius: 8px; background: var(--snsd-text); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.toast { position: fixed; right: 24px; bottom: 24px; z-index: 999; padding: 11px 19px; border-radius: 8px; background: #111; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.toastVisible { opacity: 1; }
 
 @media (max-width: 743px) {
   .main { padding: 0 16px; }
+  .cardBody { padding: 20px 0 16px; gap: 8px; }
+  .postHeaderInfo span { font-size: 12px; }
   .dropzone strong::before { content: ""; }
 }
 

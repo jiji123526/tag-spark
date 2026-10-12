@@ -9,6 +9,13 @@ import {
 import styles from "./Snsd.module.css";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const AVATAR_URL = "https://d33pksfia2a94m.cloudfront.net/assets/img/avatar/avatar_blank.png";
+
+const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={filled ? "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Z" : "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Zm.52-12.625a.205.205 0 0 1-.04-.043l-.695-.78-.003-.005A3.85 3.85 0 0 0 3.875 9.23v.13c0 1.113.465 2.18 1.281 2.937L12 18.651l6.844-6.355a4.012 4.012 0 0 0 1.281-2.937v-.13a3.851 3.851 0 0 0-6.723-2.566l-.004.004-.003.004-.696.781c-.011.016-.027.028-.039.043a.935.935 0 0 1-1.32 0v-.004Z"} fill="currentColor" /></svg>;
+const CommentIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.832 17.535a1.877 1.877 0 0 1 1.742-.25c1.035.375 2.194.59 3.428.59 4.87 0 8.123-3.145 8.123-6.25s-3.253-6.25-8.123-6.25c-4.87 0-8.122 3.145-8.122 6.25 0 1.25.484 2.453 1.394 3.484.336.38.5.88.46 1.387a6.92 6.92 0 0 1-.44 1.93 9.811 9.811 0 0 0 1.538-.887v-.004Zm-3.999 1.586c.07-.105.137-.21.2-.316.39-.649.76-1.5.835-2.457-1.172-1.332-1.863-2.961-1.863-4.723 0-4.488 4.475-8.125 9.997-8.125C17.526 3.5 22 7.137 22 11.625c0 4.488-4.475 8.125-9.998 8.125-1.448 0-2.823-.25-4.065-.7-.465.34-1.222.805-2.12 1.196a9.564 9.564 0 0 1-1.957.629c-.031.008-.062.012-.094.02-.171.03-.34.058-.515.074-.008 0-.02.004-.027.004-.2.02-.399.03-.598.03a.625.625 0 0 1-.445-1.066 5.606 5.606 0 0 0 .629-.797l.011-.019h.012Z" fill="currentColor" /></svg>;
+const BookmarkIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={filled ? "M4.5 4.875C4.5 3.84 5.34 3 6.375 3h11.25c1.035 0 1.875.84 1.875 1.875v16.188a.938.938 0 0 1-1.48.762L12 17.526l-6.02 4.297a.938.938 0 0 1-1.48-.762V4.875Z" : "M4.5 4.875C4.5 3.84 5.34 3 6.375 3v16.242l5.082-3.629a.93.93 0 0 1 1.09 0l5.078 3.63V4.874H6.375V3h11.25c1.035 0 1.875.84 1.875 1.875v16.188a.938.938 0 0 1-1.48.762L12 17.526l-6.02 4.297a.938.938 0 0 1-1.48-.762z"} fill="currentColor" /></svg>;
+const ShareIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12.664 2.275a.934.934 0 0 0-1.324 0l-5.004 5A.937.937 0 0 0 7.66 8.6l3.399-3.398v9.614c0 .519.418.937.937.937.52 0 .938-.418.938-.938V5.202L16.332 8.6a.937.937 0 0 0 1.324-1.324l-4.992-5ZM5.125 15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124a3.438 3.438 0 0 0 3.438 3.438h10.625a3.438 3.438 0 0 0 3.437-3.438V15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124c0 .864-.7 1.563-1.563 1.563H6.688c-.863 0-1.562-.7-1.562-1.563V15.44Z" fill="currentColor" /></svg>;
+const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.125 12a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm-6.25 0a1.875 1.875 0 1 1-3.751 0 1.875 1.875 0 0 1 3.751 0ZM5.75 13.875a1.875 1.875 0 1 1 0-3.75 1.875 1.875 0 0 1 0 3.75Z" fill="currentColor" /></svg>;
 
 function relativeDate(value: string) {
   const date = new Date(value);
@@ -56,6 +63,11 @@ export default function Snsd() {
   const [openComments, setOpenComments] = useState<number | null>(null);
   const [comments, setComments] = useState<Record<number, SnsdComment[]>>({});
   const [commentText, setCommentText] = useState<Record<number, string>>({});
+  const [toast, setToast] = useState("");
+  const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
+    const stored = window.localStorage.getItem("snsd-bookmarked-ids");
+    try { return new Set(stored ? JSON.parse(stored) : []); } catch { return new Set(); }
+  });
   const [voted, setVoted] = useState<Set<number>>(() => {
     const stored = window.localStorage.getItem("snsd-voted-ids");
     try { return new Set(stored ? JSON.parse(stored) : []); } catch { return new Set(); }
@@ -165,6 +177,22 @@ export default function Snsd() {
     setWorks(current => current.map(work => work.id === workId ? { ...work, comment_count: work.comment_count + 1 } : work));
   };
 
+  const toggleBookmark = (workId: number) => {
+    setBookmarked(current => {
+      const next = new Set(current);
+      next.has(workId) ? next.delete(workId) : next.add(workId);
+      window.localStorage.setItem("snsd-bookmarked-ids", JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const shareWork = async (workId: number) => {
+    const url = `${window.location.origin}/snsd/view/${workId}`;
+    await navigator.clipboard.writeText(url);
+    setToast("링크가 복사되었습니다!");
+    window.setTimeout(() => setToast(""), 2200);
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}><h1>ZZIKSTYPE</h1></header>
@@ -213,7 +241,11 @@ export default function Snsd() {
             <article className={styles.card} key={work.id}>
               <div className={styles.cardBody}>
                 <div className={styles.postHeader}>
-                  <div><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
+                  <div className={styles.postHeaderLeft}>
+                    <div className={styles.postAvatar}><img src={AVATAR_URL} alt="" width="32" height="32" /></div>
+                    <div className={styles.postHeaderInfo}><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
+                  </div>
+                  <button className={styles.moreButton} type="button" aria-label="더보기"><MoreIcon /></button>
                 </div>
                 <div className={styles.postContent}>
                   <a className={styles.workTitle} href={`/snsd/view/${work.id}`} target="_blank" rel="noopener noreferrer">{work.title}</a>
@@ -222,18 +254,25 @@ export default function Snsd() {
                   </div>
                 </div>
                 <div className={styles.actions}>
-                  <button className={voted.has(work.id) ? styles.voted : ""} onClick={() => void toggleVote(work.id)} type="button" aria-label="좋아요">{voted.has(work.id) ? "♥" : "♡"} {work.score}</button>
-                  <button onClick={() => void toggleComments(work.id)} type="button">댓글 {work.comment_count}</button>
+                  <div className={styles.actionsLeft}>
+                    <button className={`${styles.voteButton} ${voted.has(work.id) ? styles.voted : ""}`} onClick={() => void toggleVote(work.id)} type="button" aria-label="좋아요"><HeartIcon filled={voted.has(work.id)} /><span>{work.score}</span></button>
+                    <button className={styles.commentButton} onClick={() => void toggleComments(work.id)} type="button" aria-label="댓글"><CommentIcon /><span>{work.comment_count}</span></button>
+                  </div>
+                  <div className={styles.actionsRight}>
+                    <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
+                    <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
+                  </div>
                 </div>
-                <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}>{work.reason}</button>
+                <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></button>
                 {openComments === work.id && (
                   <div className={styles.comments}>
                     {(comments[work.id] ?? []).map(comment => (
-                      <div className={styles.comment} key={comment.id}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span><p>{comment.content}</p></div>
+                      <div className={styles.comment} key={comment.id}><img src={AVATAR_URL} alt="" className={styles.commentAvatar} /><div className={styles.commentBody}><div className={styles.commentHeader}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div><p>{comment.content}</p></div></div>
                     ))}
                     <div className={styles.commentForm}>
-                      <textarea value={commentText[work.id] ?? ""} onChange={event => setCommentText(current => ({ ...current, [work.id]: event.target.value }))} placeholder="공감할래말래" rows={2} />
-                      <button type="button" onClick={() => void submitComment(work.id)}>등록</button>
+                      <div className={styles.commentInputHeader}><img src={AVATAR_URL} alt="" /><span>익명</span></div>
+                      <textarea value={commentText[work.id] ?? ""} onChange={event => setCommentText(current => ({ ...current, [work.id]: event.target.value }))} placeholder="공감할래말래" rows={1} />
+                      <div className={styles.commentFormRow}><button type="button" onClick={() => void submitComment(work.id)}>등록</button></div>
                     </div>
                   </div>
                 )}
@@ -242,6 +281,7 @@ export default function Snsd() {
           ))}
         </section>
       </main>
+      <div className={`${styles.toast} ${toast ? styles.toastVisible : ""}`}>{toast}</div>
     </div>
   );
 }
