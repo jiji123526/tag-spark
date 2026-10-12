@@ -18,7 +18,7 @@
 .paragraph + .paragraph { margin-top: 1.95em; }
 .error { color: #f33d4d; text-align: center; }
 .bookmarkOverlay { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.42); }
-.bookmarkSheet { width: 100%; max-width: 720px; max-height: min(72vh, 620px); overflow: hidden; border: 1px solid var(--viewer-border); border-bottom: 0; border-radius: 18px 18px 0 0; background: var(--viewer-surface); box-shadow: 0 -12px 36px rgba(0,0,0,.18); }
+.bookmarkSheet { width: 100%; max-width: 430px; max-height: min(72vh, 620px); overflow: hidden; border: 1px solid var(--viewer-border); border-bottom: 0; border-radius: 18px 18px 0 0; background: var(--viewer-surface); box-shadow: 0 -12px 36px rgba(0,0,0,.18); }
 .bookmarkSheetHeader { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 12px; }
 .bookmarkSheetHeader h2 { margin: 0; font-size: 17px; }
 .bookmarkSheetHeader button { padding: 2px 4px; border: 0; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
