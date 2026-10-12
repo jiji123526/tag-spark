@@ -20,6 +20,7 @@ import styles from "./Snsd.module.css";
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const AVATAR_URL = "https://d33pksfia2a94m.cloudfront.net/assets/img/avatar/avatar_blank.png";
 const COMPOSE_COLLAPSED_KEY = "snsd-compose-collapsed";
+const OFFLINE_GUIDE_SEEN_KEY = "snsd-offline-guide-seen";
 
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={filled ? "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Z" : "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Zm.52-12.625a.205.205 0 0 1-.04-.043l-.695-.78-.003-.005A3.85 3.85 0 0 0 3.875 9.23v.13c0 1.113.465 2.18 1.281 2.937L12 18.651l6.844-6.355a4.012 4.012 0 0 0 1.281-2.937v-.13a3.851 3.851 0 0 0-6.723-2.566l-.004.004-.003.004-.696.781c-.011.016-.027.028-.039.043a.935.935 0 0 1-1.32 0v-.004Z"} fill="currentColor" /></svg>;
 const CommentIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.832 17.535a1.877 1.877 0 0 1 1.742-.25c1.035.375 2.194.59 3.428.59 4.87 0 8.123-3.145 8.123-6.25s-3.253-6.25-8.123-6.25c-4.87 0-8.122 3.145-8.122 6.25 0 1.25.484 2.453 1.394 3.484.336.38.5.88.46 1.387a6.92 6.92 0 0 1-.44 1.93 9.811 9.811 0 0 0 1.538-.887v-.004Zm-3.999 1.586c.07-.105.137-.21.2-.316.39-.649.76-1.5.835-2.457-1.172-1.332-1.863-2.961-1.863-4.723 0-4.488 4.475-8.125 9.997-8.125C17.526 3.5 22 7.137 22 11.625c0 4.488-4.475 8.125-9.998 8.125-1.448 0-2.823-.25-4.065-.7-.465.34-1.222.805-2.12 1.196a9.564 9.564 0 0 1-1.957.629c-.031.008-.062.012-.094.02-.171.03-.34.058-.515.074-.008 0-.02.004-.027.004-.2.02-.399.03-.598.03a.625.625 0 0 1-.445-1.066 5.606 5.606 0 0 0 .629-.797l.011-.019h.012Z" fill="currentColor" /></svg>;
@@ -94,7 +95,8 @@ export default function Snsd() {
   const [visibleWorkLimit, setVisibleWorkLimit] = useState(40);
   const [offlineSaved, setOfflineSaved] = useState<Set<number>>(new Set());
   const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
-  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("new");
+  const [offlineGuideOpen, setOfflineGuideOpen] = useState(false);
+  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive" | "offline">("new");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -223,6 +225,7 @@ export default function Snsd() {
         .some(value => value.toLocaleLowerCase("ko").includes(query)));
     }
     if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
+    if (sort === "offline") return works.filter(work => offlineSaved.has(work.id));
     if (sort === "archive") {
       return works
         .filter(work => readProgress[String(work.id)] || readHistory[String(work.id)])
@@ -234,11 +237,22 @@ export default function Snsd() {
       return sorted.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
     }
     return sorted.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
-  }, [bookmarked, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
+  }, [bookmarked, offlineSaved, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
     setSearchOpen(false);
     setSearchQuery("");
+  };
+
+  const openOfflineGuide = () => {
+    setOfflineGuideOpen(false);
+    window.localStorage.setItem(OFFLINE_GUIDE_SEEN_KEY, "true");
+    setHelpOpen(true);
+  };
+
+  const dismissOfflineGuide = () => {
+    setOfflineGuideOpen(false);
+    window.localStorage.setItem(OFFLINE_GUIDE_SEEN_KEY, "true");
   };
 
   const toggleCompose = () => {
@@ -376,10 +390,12 @@ export default function Snsd() {
         });
         setToast("오프라인 저장본을 삭제했습니다.");
       } else {
+        cacheSnsdViewerWork(work);
         const response = await fetchSnsdViewerContent(work.id);
         if (!response.ok) throw new Error(await readApiError(response));
         setOfflineSaved(current => new Set(current).add(work.id));
         setToast("오프라인에서 읽을 수 있도록 저장했습니다.");
+        if (window.localStorage.getItem(OFFLINE_GUIDE_SEEN_KEY) !== "true") setOfflineGuideOpen(true);
       }
     } catch {
       setError("오프라인 저장에 실패했습니다. 네트워크를 확인해주세요.");
@@ -499,6 +515,16 @@ export default function Snsd() {
             <button type="button" onClick={closeSearch} aria-label="검색 닫기">×</button>
           </div>
         )}
+        {offlineGuideOpen && (
+          <aside className={styles.offlineGuide} role="status">
+            <strong>이 작품은 이 브라우저에 저장됐어요.</strong>
+            <span>홈 화면에 추가하면 브라우저를 열지 않고 바로 읽을 수 있어요.</span>
+            <div className={styles.offlineGuideActions}>
+              <button type="button" onClick={openOfflineGuide}>사용 방법 보기</button>
+              <button type="button" onClick={dismissOfflineGuide}>나중에</button>
+            </div>
+          </aside>
+        )}
         {!searchOpen && <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
           <button className={styles.composeToggle} type="button" onClick={toggleCompose} aria-expanded={composeOpen}>
             <span>작품 추천</span><span className={styles.chevron}>{composeOpen ? "−" : "+"}</span>
@@ -536,6 +562,7 @@ export default function Snsd() {
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
           <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">최근 읽은</button>
+          <button className={sort === "offline" ? styles.active : ""} onClick={() => setSort("offline")} type="button">오프라인</button>
         </nav>}
 
         <section className={styles.list}>
@@ -547,6 +574,8 @@ export default function Snsd() {
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
                   : sort === "archive"
                     ? <>최근 읽은 작품이 없습니다.<br />작품을 열면 여기에 저장됩니다.</>
+                    : sort === "offline"
+                      ? <>오프라인 저장한 작품이 없습니다.<br />카드의 점 메뉴에서 작품을 저장해보세요.</>
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
           )}
@@ -652,7 +681,8 @@ export default function Snsd() {
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
               <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
               <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
-              <p><strong>다운로드</strong><span>카드 우측 다운로드 아이콘 또는 작성자 점 메뉴에서 TXT 파일을 받을 수 있습니다.</span></p>
+              <p><strong>다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 다운로드한 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
+              <p><strong>홈 화면에 추가</strong><span>앱을 다운로드하는 대신 브라우저에서 SNSDFF를 홈 화면에 추가하면, 인터넷이 없을 때도 SNSDFF를 바로 열기 쉬워집니다. iPhone은 Safari 공유 메뉴, Android는 브라우저 메뉴를 사용하세요.</span></p>
             </div>
           </div>
         </div>

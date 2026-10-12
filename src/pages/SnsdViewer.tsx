@@ -31,6 +31,7 @@ export default function SnsdViewer() {
   const [content, setContent] = useState("");
   const [fontSize, setFontSize] = useState(() => Number(window.localStorage.getItem("snsd-reader-font-size")) || 17);
   const [error, setError] = useState("");
+  const [offlineRead, setOfflineRead] = useState(() => !navigator.onLine);
   const [headerHidden, setHeaderHidden] = useState(() => window.scrollY > 40);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,6 +92,7 @@ export default function SnsdViewer() {
       setWork(loadedWork);
       cacheSnsdViewerWork(loadedWork);
       setContent(loadedContent);
+      setOfflineRead(!navigator.onLine);
       markSnsdWorkRead(id);
     };
 
@@ -99,6 +101,17 @@ export default function SnsdViewer() {
     });
     return () => controller.abort();
   }, [id]);
+
+  useEffect(() => {
+    const handleOffline = () => setOfflineRead(true);
+    const handleOnline = () => setOfflineRead(false);
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   useEffect(() => {
     if (!content || !id) return;
@@ -351,6 +364,7 @@ export default function SnsdViewer() {
           <button className={`${styles.iconButton} ${styles.bookmarkButton}`} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button>
         </div>
       </header>
+      {offlineRead && <div className={styles.offlineBanner} role="status">오프라인 저장본으로 읽는 중</div>}
       <main className={styles.reader}>
         {error && <p className={styles.error} role="alert">{error}</p>}
         {!error && <article style={{ fontSize }}>{content

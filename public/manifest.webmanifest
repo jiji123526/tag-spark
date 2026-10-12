@@ -1,0 +1,17 @@
+{
+  "name": "SNSDFF",
+  "short_name": "SNSDFF",
+  "start_url": "/snsd",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "description": "작품을 추천하고 읽는 SNSDFF",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -33,7 +33,7 @@ export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
 const SNSD_CONTENT_CACHE_NAME = "snsd-content-v2";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
-const SNSD_VIEWER_WORK_CACHE_TTL_MS = 60_000;
+const SNSD_VIEWER_WORK_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const viewerContentRequests = new Map<number, Promise<void>>();
 
 export function snsdApiUrl(path: string) {

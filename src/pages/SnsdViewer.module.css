@@ -2,6 +2,8 @@
 :global(.dark) .page { --viewer-surface: #0c1016; --viewer-header: rgba(12,16,22,.94); --viewer-text: #f4f7fb; --viewer-muted: #9ba5b3; --viewer-border: rgba(235,239,245,.12); color-scheme: dark; }
 .header { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; align-items: center; box-sizing: border-box; width: 100%; max-width: 916px; margin: 0 auto; min-height: 62px; padding: 8px 16px; border-bottom: 1px solid var(--viewer-border); background: var(--viewer-header); backdrop-filter: blur(14px); transform: translateY(0); opacity: 1; transition: transform .24s ease, opacity .18s ease; }
 .headerHidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+.offlineBanner { width: 100%; max-width: 916px; box-sizing: border-box; margin: 0 auto; padding: 8px 16px; background: #fff6d8; color: #765d12; font-size: 12px; text-align: center; }
+:global(.dark) .offlineBanner { background: #3d341b; color: #f5d978; }
 .backLink { justify-self: start; padding: 8px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; cursor: pointer; white-space: nowrap; }
 .workMeta { display: flex; min-width: 0; flex-direction: column; text-align: center; }
 .header strong { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }

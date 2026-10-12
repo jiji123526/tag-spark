@@ -112,6 +112,11 @@
   line-height: 1;
   cursor: pointer;
 }
+.offlineGuide { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; padding: 12px 14px; border: 1px solid var(--snsd-border); border-radius: 10px; background: var(--snsd-subtle); }
+.offlineGuide strong { font-size: 13px; }
+.offlineGuide span { color: var(--snsd-muted); font-size: 12px; }
+.offlineGuideActions { display: flex; gap: 12px; margin-top: 4px; }
+.offlineGuideActions button { padding: 0; border: 0; background: transparent; color: var(--snsd-primary); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .compose { border-bottom: 1px solid var(--snsd-border); }
 .composeOpen { padding-bottom: 20px; }
 
@@ -192,9 +197,12 @@
   align-items: center;
   gap: 20px;
   height: 44px;
+  overflow-x: auto;
+  scrollbar-width: none;
   background: var(--snsd-surface);
   border-bottom: 1px solid var(--snsd-border);
 }
+.sortBar::-webkit-scrollbar { display: none; }
 
 .sortBar button {
   position: relative;

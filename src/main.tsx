@@ -3,4 +3,10 @@ import App from './App.tsx'
 import './index.css'
 import { Toaster } from "sonner";
 
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    void navigator.serviceWorker.register("/sw.js");
+  });
+}
+
 createRoot(document.getElementById("root")!).render(<App />);
