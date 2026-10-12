@@ -622,12 +622,12 @@ export default function Snsd() {
                 </div>
                 <div className={styles.postContent}>
                   <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openWork(work); }}>{work.title}</a>
-                  <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
-                    {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
-                  </div>
                   {work.reason && (
                     <p className={styles.recommendation}>{work.reason}</p>
                   )}
+                  <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
+                    {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
+                  </div>
                   {progress && progressPercent > 0 && (
                     <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>
                       <div className={styles.readProgressHeader}>
@@ -685,7 +685,17 @@ export default function Snsd() {
               <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
               <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
               <p><strong>다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 다운로드한 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
-              <p><strong>홈 화면에 추가</strong><span>앱을 따로 다운로드하는 기능이 아니라, 현재 브라우저에서 SNSDFF를 바로 여는 아이콘을 만드는 기능입니다. 먼저 SNSDFF를 브라우저로 열고, iPhone에서는 Safari 하단의 공유 버튼(상자에서 위로 향한 화살표) → ‘홈 화면에 추가’ → 오른쪽 위 ‘추가’를 누르세요. Android에서는 Chrome 오른쪽 위 ⋮ → ‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요. 이후 홈 화면의 SNSDFF 아이콘으로 열면 되고, 오프라인으로 읽으려면 작품을 먼저 ‘오프라인 저장’해야 합니다.</span></p>
+              <div className={styles.helpHowTo}>
+                <strong>홈 화면에 추가</strong>
+                <span className={styles.helpHowToIntro}>앱을 따로 다운로드하지 않고, SNSDFF를 바로 여는 아이콘을 홈 화면에 만드는 기능입니다.</span>
+                <ol className={styles.helpSteps}>
+                  <li><strong>iPhone · Safari</strong><span>Safari에서 SNSDFF를 열고 하단의 공유 버튼(상자에서 위로 향한 화살표)을 누르세요.</span></li>
+                  <li><span>‘홈 화면에 추가’ → 오른쪽 위 ‘추가’를 누르세요.</span></li>
+                  <li><strong>Android · Chrome</strong><span>Chrome에서 SNSDFF를 열고 오른쪽 위 ⋮ 메뉴를 누르세요.</span></li>
+                  <li><span>‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
+                </ol>
+                <span className={styles.helpHowToNote}>홈 화면의 SNSDFF 아이콘으로 열 수 있습니다. 오프라인으로 읽으려면 작품을 먼저 카드의 점 메뉴에서 ‘오프라인 저장’하세요.</span>
+              </div>
             </div>
           </div>
         </div>
