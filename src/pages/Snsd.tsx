@@ -65,6 +65,7 @@ export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commentRequestsRef = useRef<Map<number, Promise<SnsdComment[]>>>(new Map());
+  const commentPrefetchTimersRef = useRef<Map<number, number>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>([]);
   const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("new");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -133,6 +134,20 @@ export default function Snsd() {
       void fetchComments(work.id).catch(() => undefined);
     }
   };
+
+  const scheduleCommentPrefetch = (work: SnsdWork) => {
+    if (work.comment_count <= 0 || comments[work.id] || commentPrefetchTimersRef.current.has(work.id)) return;
+    const timer = window.setTimeout(() => {
+      commentPrefetchTimersRef.current.delete(work.id);
+      prefetchComments(work);
+    }, 120);
+    commentPrefetchTimersRef.current.set(work.id, timer);
+  };
+
+  useEffect(() => () => {
+    commentPrefetchTimersRef.current.forEach(timer => window.clearTimeout(timer));
+    commentPrefetchTimersRef.current.clear();
+  }, []);
 
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
@@ -515,7 +530,7 @@ export default function Snsd() {
                 <div className={styles.actions}>
                   <div className={styles.actionsLeft}>
                     <button className={`${styles.voteButton} ${voted.has(work.id) ? styles.voted : ""}`} onClick={() => void toggleVote(work.id)} type="button" aria-label="좋아요"><HeartIcon filled={voted.has(work.id)} /><span>{work.score}</span></button>
-                    <button className={styles.commentButton} onPointerEnter={() => prefetchComments(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)} type="button" aria-label="댓글"><CommentIcon /><span>{work.comment_count}</span></button>
+                    <button className={styles.commentButton} onPointerEnter={() => scheduleCommentPrefetch(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)} type="button" aria-label="댓글"><CommentIcon /><span>{work.comment_count}</span></button>
                   </div>
                   <div className={styles.actionsRight}>
                     <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
@@ -523,7 +538,7 @@ export default function Snsd() {
                   </div>
                 </div>
                 {(work.reason || work.preview_comment) && (
-                  <button className={styles.reason} type="button" onPointerEnter={() => prefetchComments(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
+                  <button className={styles.reason} type="button" onPointerEnter={() => scheduleCommentPrefetch(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
                 )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
