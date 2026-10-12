@@ -166,6 +166,9 @@ async function fetchAndCacheSnsdViewerContent(
   options: { cacheForOffline?: boolean } = {},
 ) {
   const url = snsdApiUrl(`/api/works/${workId}/content`);
+  const cached = await getCachedSnsdViewerContent(workId);
+  if (cached) return cached;
+
   try {
     const prefetchedRequest = viewerContentRequests.get(Number(workId))?.request;
     let response: Response;
@@ -191,8 +194,8 @@ async function fetchAndCacheSnsdViewerContent(
     return reusedPrefetch ? response.clone() : response;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    const cached = await getCachedSnsdViewerContent(workId);
-    if (cached) return cached;
+    const fallbackCached = await getCachedSnsdViewerContent(workId);
+    if (fallbackCached) return fallbackCached;
     throw error;
   }
 }
