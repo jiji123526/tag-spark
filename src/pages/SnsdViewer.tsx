@@ -167,7 +167,8 @@ export default function SnsdViewer() {
     const updateHeader = () => {
       frame = 0;
       const current = window.scrollY;
-      if (current <= 16) setHeaderHidden(false);
+      if (searchOpen) setHeaderHidden(false);
+      else if (current <= 16) setHeaderHidden(false);
       else if (current > lastScrollY.current + 3) setHeaderHidden(true);
       else if (current < lastScrollY.current - 3) setHeaderHidden(false);
       lastScrollY.current = current;
@@ -181,7 +182,7 @@ export default function SnsdViewer() {
       window.removeEventListener("scroll", handleScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [searchOpen]);
 
   const changeFontSize = (next: number) => {
     const clamped = Math.min(24, Math.max(14, next));
