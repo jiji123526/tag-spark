@@ -209,7 +209,14 @@ async function toggleVote(request: Request, env: Env, workId: number) {
 }
 
 async function listComments(request: Request, env: Env, workId: number) {
-  const result = await env.tagspark_snsd.prepare("SELECT id, work_id, author, content, created_at FROM comments WHERE work_id = ? ORDER BY created_at ASC").bind(workId).all();
+  const viewer = new URL(request.url).searchParams.get("viewer")?.trim().slice(0, 100) ?? "";
+  const result = await env.tagspark_snsd.prepare(`
+    SELECT id, work_id, author, content, created_at,
+      CASE WHEN created_by = ? THEN 1 ELSE 0 END AS is_owner
+    FROM comments
+    WHERE work_id = ?
+    ORDER BY created_at ASC
+  `).bind(viewer, workId).all();
   return new Response(JSON.stringify(result.results), {
     headers: {
       ...corsHeaders(request, env),
@@ -220,15 +227,40 @@ async function listComments(request: Request, env: Env, workId: number) {
 }
 
 async function createComment(request: Request, env: Env, workId: number) {
-  const body = await request.json<{ author?: string; content?: string }>();
+  const body = await request.json<{ author?: string; content?: string; createdBy?: string }>();
   const author = body.author?.trim().slice(0, 40) || "익명";
   const content = body.content?.trim().slice(0, 1000);
+  const createdBy = body.createdBy?.trim().slice(0, 100) || "";
   if (!content) return json(request, env, { error: "댓글을 입력해주세요." }, 400);
+  if (!createdBy) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
   const work = await env.tagspark_snsd.prepare("SELECT id FROM works WHERE id = ?").bind(workId).first();
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
-  const result = await env.tagspark_snsd.prepare("INSERT INTO comments (work_id, author, content) VALUES (?, ?, ?)").bind(workId, author, content).run();
-  const comment = await env.tagspark_snsd.prepare("SELECT id, work_id, author, content, created_at FROM comments WHERE id = ?").bind(result.meta.last_row_id).first();
+  const result = await env.tagspark_snsd.prepare("INSERT INTO comments (work_id, author, content, created_by) VALUES (?, ?, ?, ?)").bind(workId, author, content, createdBy).run();
+  const comment = await env.tagspark_snsd.prepare("SELECT id, work_id, author, content, created_at, 1 AS is_owner FROM comments WHERE id = ?").bind(result.meta.last_row_id).first();
   return json(request, env, comment, 201);
+}
+
+async function updateComment(request: Request, env: Env, workId: number, commentId: number) {
+  const body = await request.json<{ content?: string; createdBy?: string }>();
+  const content = body.content?.trim().slice(0, 1000) ?? "";
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!content) return json(request, env, { error: "댓글을 입력해주세요." }, 400);
+  if (!createdBy) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
+  const existing = await env.tagspark_snsd.prepare("SELECT id FROM comments WHERE id = ? AND work_id = ? AND created_by = ?").bind(commentId, workId, createdBy).first();
+  if (!existing) return json(request, env, { error: "댓글 작성자만 수정할 수 있습니다." }, 403);
+  await env.tagspark_snsd.prepare("UPDATE comments SET content = ? WHERE id = ? AND work_id = ?").bind(content, commentId, workId).run();
+  const comment = await env.tagspark_snsd.prepare("SELECT id, work_id, author, content, created_at, 1 AS is_owner FROM comments WHERE id = ?").bind(commentId).first();
+  return json(request, env, comment);
+}
+
+async function deleteComment(request: Request, env: Env, workId: number, commentId: number) {
+  const body = await request.json<{ createdBy?: string }>();
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!createdBy) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
+  const existing = await env.tagspark_snsd.prepare("SELECT id FROM comments WHERE id = ? AND work_id = ? AND created_by = ?").bind(commentId, workId, createdBy).first();
+  if (!existing) return json(request, env, { error: "댓글 작성자만 삭제할 수 있습니다." }, 403);
+  await env.tagspark_snsd.prepare("DELETE FROM comments WHERE id = ? AND work_id = ?").bind(commentId, workId).run();
+  return json(request, env, { success: true });
 }
 
 async function updateWork(request: Request, env: Env, workId: number) {
@@ -281,6 +313,9 @@ export default {
       if (parts[3] === "vote" && request.method === "POST") return toggleVote(request, env, workId);
       if (parts[3] === "comments" && request.method === "GET") return listComments(request, env, workId);
       if (parts[3] === "comments" && request.method === "POST") return createComment(request, env, workId);
+      const commentId = parseId(parts[4] ?? "");
+      if (parts[3] === "comments" && commentId && request.method === "PUT") return updateComment(request, env, workId, commentId);
+      if (parts[3] === "comments" && commentId && request.method === "DELETE") return deleteComment(request, env, workId, commentId);
       return json(request, env, { error: "Not found" }, 404);
     } catch (error) {
       console.error(error);

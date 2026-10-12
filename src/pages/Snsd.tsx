@@ -74,13 +74,60 @@ function downloadFilename(work: SnsdWork) {
   return `[${pairing}] ${title} w.${author}.txt`;
 }
 
-const SnsdCommentItem = memo(function SnsdCommentItem({ comment }: { comment: SnsdComment }) {
+type SnsdCommentItemProps = {
+  comment: SnsdComment;
+  menuOpen: boolean;
+  editing: boolean;
+  draft: string;
+  busy: boolean;
+  onToggleMenu: () => void;
+  onStartEdit: () => void;
+  onDraftChange: (value: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onDelete: () => void;
+};
+
+const SnsdCommentItem = memo(function SnsdCommentItem({
+  comment,
+  menuOpen,
+  editing,
+  draft,
+  busy,
+  onToggleMenu,
+  onStartEdit,
+  onDraftChange,
+  onSaveEdit,
+  onCancelEdit,
+  onDelete,
+}: SnsdCommentItemProps) {
   return (
     <div className={styles.comment}>
       <img src={AVATAR_URL} alt="" className={styles.commentAvatar} />
       <div className={styles.commentBody}>
-        <div className={styles.commentHeader}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div>
-        <p>{comment.content}</p>
+        <div className={styles.commentHeader}>
+          <div className={styles.commentHeaderInfo}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div>
+          {Boolean(comment.is_owner) && (
+            <div className={styles.commentMenuWrapper}>
+              <button className={styles.commentMenuButton} type="button" aria-label="댓글 더보기" aria-expanded={menuOpen} onClick={onToggleMenu}><MoreIcon /></button>
+              {menuOpen && (
+                <div className={styles.commentDropdown}>
+                  <button type="button" onClick={onStartEdit}>수정</button>
+                  <button className={styles.deleteMenuItem} type="button" onClick={onDelete}>삭제</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        {editing ? (
+          <div className={styles.commentEdit}>
+            <textarea value={draft} onChange={event => onDraftChange(event.target.value)} maxLength={1000} rows={2} autoFocus />
+            <div className={styles.commentEditActions}>
+              <button type="button" onClick={onCancelEdit} disabled={busy}>취소</button>
+              <button type="button" onClick={onSaveEdit} disabled={busy || !draft.trim()}>{busy ? "저장 중…" : "저장"}</button>
+            </div>
+          </div>
+        ) : <p>{comment.content}</p>}
       </div>
     </div>
   );
@@ -113,6 +160,10 @@ export default function Snsd() {
   const [openComments, setOpenComments] = useState<number | null>(null);
   const [comments, setComments] = useState<Record<number, SnsdComment[]>>({});
   const [commentText, setCommentText] = useState<Record<number, string>>({});
+  const [openCommentMenu, setOpenCommentMenu] = useState<number | null>(null);
+  const [editingComment, setEditingComment] = useState<number | null>(null);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentBusy, setCommentBusy] = useState<number | null>(null);
   const [toast, setToast] = useState("");
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [editing, setEditing] = useState<SnsdWork | null>(null);
@@ -151,7 +202,8 @@ export default function Snsd() {
     const pending = commentRequestsRef.current.get(workId);
     if (pending) return pending;
     const request = (async () => {
-      const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments`));
+      const viewer = encodeURIComponent(getSnsdUserId());
+      const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments?viewer=${viewer}`));
       if (!response.ok) throw new Error(await readApiError(response));
       const loaded = await response.json() as SnsdComment[];
       setComments(current => ({ ...current, [workId]: loaded }));
@@ -358,7 +410,7 @@ export default function Snsd() {
     const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ author: "익명", content }),
+      body: JSON.stringify({ author: "익명", content, createdBy: getSnsdUserId() }),
     });
     if (!response.ok) { setError(await readApiError(response)); return; }
     const created = await response.json();
@@ -367,6 +419,67 @@ export default function Snsd() {
     setWorks(current => current.map(work => work.id === workId
       ? { ...work, comment_count: work.comment_count + 1, preview_comment: work.preview_comment || created.content }
       : work));
+  };
+
+  const startCommentEdit = (comment: SnsdComment) => {
+    setOpenCommentMenu(null);
+    setEditingComment(comment.id);
+    setCommentDraft(comment.content);
+  };
+
+  const saveCommentEdit = async (workId: number, commentId: number) => {
+    const content = commentDraft.trim();
+    if (!content) return;
+    setCommentBusy(commentId);
+    try {
+      const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments/${commentId}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, createdBy: getSnsdUserId() }),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const updated = await response.json() as SnsdComment;
+      setComments(current => ({ ...current, [workId]: (current[workId] ?? []).map(comment => comment.id === commentId ? updated : comment) }));
+      setWorks(current => current.map(work => work.id === workId && work.preview_comment === (comments[workId] ?? []).find(comment => comment.id === commentId)?.content
+        ? { ...work, preview_comment: updated.content }
+        : work));
+      setEditingComment(null);
+      setCommentDraft("");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "댓글을 수정하지 못했습니다.");
+    } finally {
+      setCommentBusy(null);
+    }
+  };
+
+  const deleteComment = async (workId: number, commentId: number) => {
+    if (!window.confirm("이 댓글을 삭제할까요?")) return;
+    setOpenCommentMenu(null);
+    setCommentBusy(commentId);
+    try {
+      const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments/${commentId}`), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ createdBy: getSnsdUserId() }),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const remaining = (comments[workId] ?? []).filter(comment => comment.id !== commentId);
+      setComments(current => ({ ...current, [workId]: remaining }));
+      const deleted = (comments[workId] ?? []).find(comment => comment.id === commentId);
+      setWorks(current => current.map(work => {
+        if (work.id !== workId) return work;
+        const nextPreview = work.preview_comment === deleted?.content ? remaining[0]?.content ?? null : work.preview_comment;
+        return { ...work, comment_count: Math.max(0, work.comment_count - 1), preview_comment: nextPreview };
+      }));
+      if (editingComment === commentId) {
+        setEditingComment(null);
+        setCommentDraft("");
+      }
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "댓글을 삭제하지 못했습니다.");
+    } finally {
+      setCommentBusy(null);
+    }
   };
 
   const toggleBookmark = (workId: number) => {
@@ -653,7 +766,22 @@ export default function Snsd() {
                 )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
-                    {(comments[work.id] ?? []).map(comment => <SnsdCommentItem comment={comment} key={comment.id} />)}
+                    {(comments[work.id] ?? []).map(comment => (
+                      <SnsdCommentItem
+                        comment={comment}
+                        key={comment.id}
+                        menuOpen={openCommentMenu === comment.id}
+                        editing={editingComment === comment.id}
+                        draft={editingComment === comment.id ? commentDraft : comment.content}
+                        busy={commentBusy === comment.id}
+                        onToggleMenu={() => setOpenCommentMenu(current => current === comment.id ? null : comment.id)}
+                        onStartEdit={() => startCommentEdit(comment)}
+                        onDraftChange={setCommentDraft}
+                        onSaveEdit={() => void saveCommentEdit(work.id, comment.id)}
+                        onCancelEdit={() => { setEditingComment(null); setCommentDraft(""); }}
+                        onDelete={() => void deleteComment(work.id, comment.id)}
+                      />
+                    ))}
                     <div className={styles.commentForm}>
                       <div className={styles.commentInputHeader}><img src={AVATAR_URL} alt="" /><span>익명</span></div>
                       <textarea value={commentText[work.id] ?? ""} onChange={event => setCommentText(current => ({ ...current, [work.id]: event.target.value }))} placeholder="공감할래말래" rows={1} />

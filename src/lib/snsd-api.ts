@@ -19,6 +19,7 @@ export type SnsdComment = {
   author: string;
   content: string;
   created_at: string;
+  is_owner?: number | boolean;
 };
 
 export type SnsdReadProgress = {

@@ -363,10 +363,26 @@
 .comment:last-child { border-bottom: 0; }
 .commentAvatar { width: 32px; height: 32px; border-radius: 50%; background: var(--snsd-field); flex-shrink: 0; }
 .commentBody { flex: 1; min-width: 0; }
-.commentHeader { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.commentHeader { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
+.commentHeaderInfo { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .commentHeader strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; line-height: 1.33; }
 .commentHeader span { color: var(--snsd-muted); font-size: 12px; }
 .commentBody p { margin: 0; color: var(--snsd-text); font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+.commentMenuWrapper { position: relative; flex-shrink: 0; }
+.commentMenuButton { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 4px; border: 0; border-radius: 8px; background: transparent; color: var(--snsd-muted); cursor: pointer; }
+.commentMenuButton svg { width: 18px; height: 18px; }
+.commentMenuButton:hover { background: var(--snsd-field); color: var(--snsd-text); }
+.commentDropdown { position: absolute; top: 100%; right: 0; z-index: 3; min-width: 92px; overflow: hidden; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-elevated); box-shadow: 0 2px 8px var(--snsd-shadow); }
+.commentDropdown button { display: block; width: 100%; padding: 8px 12px; border: 0; background: transparent; color: var(--snsd-text); font: inherit; font-size: 13px; text-align: left; white-space: nowrap; cursor: pointer; }
+.commentDropdown button:hover { background: var(--snsd-field); }
+.commentDropdown .deleteMenuItem { color: #f33d4d; }
+.commentEdit { margin-top: 8px; }
+.commentEdit textarea { width: 100%; min-height: 56px; padding: 8px; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-field); color: var(--snsd-text); font: inherit; font-size: 13px; line-height: 1.5; resize: vertical; }
+.commentEdit textarea:focus { outline: 0; border-color: var(--snsd-primary); }
+.commentEditActions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.commentEditActions button { padding: 5px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.commentEditActions button:last-child { background: var(--snsd-text); color: var(--snsd-action-text); font-weight: 600; }
+.commentEditActions button:disabled { cursor: wait; opacity: .5; }
 .commentForm { margin-top: 12px; padding: 12px; border: 1px solid var(--snsd-border); border-radius: 8px; }
 .commentInputHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .commentInputHeader img { width: 28px; height: 28px; border-radius: 50%; }
