@@ -4,6 +4,12 @@
   --snsd-border: rgba(118, 118, 127, 0.15);
   --snsd-text: #141415;
   --snsd-muted: #76767f;
+  --snsd-field: #f2f2f3;
+  --snsd-subtle: #f9f9fa;
+  --snsd-elevated: #fff;
+  --snsd-action-text: #fff;
+  --snsd-overlay: rgba(0, 0, 0, 0.25);
+  --snsd-shadow: rgba(0, 0, 0, 0.12);
   min-height: 100vh;
   background: var(--snsd-surface);
   color: var(--snsd-text);
@@ -15,6 +21,21 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+:global(.dark) .page {
+  --snsd-primary: #5b9aff;
+  --snsd-surface: #0c1016;
+  --snsd-border: rgba(235, 239, 245, 0.12);
+  --snsd-text: #f4f7fb;
+  --snsd-muted: #9ba5b3;
+  --snsd-field: #171d25;
+  --snsd-subtle: #131922;
+  --snsd-elevated: #1b222c;
+  --snsd-action-text: #0c1016;
+  --snsd-overlay: rgba(0, 0, 0, 0.58);
+  --snsd-shadow: rgba(0, 0, 0, 0.42);
+  color-scheme: dark;
 }
 
 .page button, .page input, .page textarea { font-family: inherit; }
@@ -60,7 +81,7 @@
   border: 0;
   border-radius: 8px;
   outline: none;
-  background: #f2f2f3;
+  background: var(--snsd-field);
   color: var(--snsd-text);
   padding: 11px 13px;
   font: inherit;
@@ -80,7 +101,7 @@
   padding: 18px;
   border: 1px dashed rgba(118, 118, 127, 0.45);
   border-radius: 10px;
-  background: #f9f9fa;
+  background: var(--snsd-subtle);
   text-align: center;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
@@ -95,7 +116,7 @@
   border: 0;
   border-radius: 8px;
   background: var(--snsd-text);
-  color: #fff;
+  color: var(--snsd-action-text);
   padding: 10px 20px;
   font: inherit;
   font-size: 14px;
@@ -161,9 +182,9 @@
 .moreButton svg { width: 20px; height: 20px; }
 .moreButton:hover { background: rgba(118, 118, 127, 0.08); }
 .moreWrapper { position: relative; z-index: 51; }
-.postDropdown { position: absolute; top: 100%; right: 0; z-index: 52; min-width: 100px; overflow: hidden; border: 1px solid var(--snsd-border); border-radius: 8px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.postDropdown { position: absolute; top: 100%; right: 0; z-index: 52; min-width: 100px; overflow: hidden; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-elevated); box-shadow: 0 2px 8px var(--snsd-shadow); }
 .postDropdown button { display: block; width: 100%; padding: 7px 16px; border: 0; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
-.postDropdown button:hover { background: #f2f2f3; }
+.postDropdown button:hover { background: var(--snsd-field); }
 .postDropdown button:last-child { color: #f33d4d; }
 .menuBackdrop { position: fixed; inset: 0; z-index: 50; padding: 0; border: 0; background: transparent; }
 .postContent { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 0; }
@@ -192,7 +213,7 @@
   min-height: 20px;
   padding: 1px 7px;
   border-radius: 999px;
-  background: #f2f2f3;
+  background: var(--snsd-field);
   color: #62626a;
   font-size: 11px;
   font-weight: 500;
@@ -235,7 +256,7 @@
   padding: 12px;
   border: 0;
   border-radius: 8px;
-  background: #f9f9fa;
+  background: var(--snsd-subtle);
   color: var(--snsd-text);
   font: inherit;
   font-size: 13px;
@@ -250,7 +271,7 @@
 .comments { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--snsd-border); }
 .comment { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--snsd-border); }
 .comment:last-child { border-bottom: 0; }
-.commentAvatar { width: 32px; height: 32px; border-radius: 50%; background: #f2f2f3; flex-shrink: 0; }
+.commentAvatar { width: 32px; height: 32px; border-radius: 50%; background: var(--snsd-field); flex-shrink: 0; }
 .commentBody { flex: 1; min-width: 0; }
 .commentHeader { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
 .commentHeader strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; line-height: 1.33; }
@@ -263,22 +284,22 @@
 .commentForm textarea { min-height: 24px; padding: 0; border: 0; background: transparent; font-size: 15px; line-height: 1.5; resize: none; }
 .commentForm textarea:focus { box-shadow: none; }
 .commentFormRow { display: flex; justify-content: flex-end; margin-top: 8px; }
-.commentFormRow button { padding: 6px 12px; border: 0; border-radius: 8px; background: var(--snsd-text); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-.toast { position: fixed; right: 24px; bottom: 24px; z-index: 999; padding: 11px 19px; border-radius: 8px; background: #111; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.commentFormRow button { padding: 6px 12px; border: 0; border-radius: 8px; background: var(--snsd-text); color: var(--snsd-action-text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.toast { position: fixed; right: 24px; bottom: 24px; z-index: 999; padding: 11px 19px; border-radius: 8px; background: var(--snsd-text); color: var(--snsd-action-text); font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 .toastVisible { opacity: 1; }
-.modalOverlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.25); }
-.modalBox { width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; border-radius: 12px; background: #fff; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12); }
+.modalOverlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: var(--snsd-overlay); }
+.modalBox { width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; border: 1px solid var(--snsd-border); border-radius: 12px; background: var(--snsd-elevated); box-shadow: 0 12px 24px var(--snsd-shadow); }
 .modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--snsd-border); }
 .modalHeader h2 { margin: 0; font-size: 18px; font-weight: 600; }
 .modalHeader button { padding: 4px; border: 0; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 20px; cursor: pointer; }
 .modalBody { display: flex; flex-direction: column; gap: 14px; padding: 20px; }
 .modalBody label { display: block; color: var(--snsd-muted); font-size: 13px; font-weight: 600; }
-.modalBody input, .modalBody textarea { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--snsd-border); border-radius: 8px; background: #fff; color: var(--snsd-text); font: inherit; font-size: 14px; resize: vertical; }
+.modalBody input, .modalBody textarea { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-field); color: var(--snsd-text); font: inherit; font-size: 14px; resize: vertical; }
 .modalBody input:focus, .modalBody textarea:focus { outline: 0; border-color: var(--snsd-primary); }
 .modalFooter { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--snsd-border); }
 .cancelButton, .confirmButton { padding: 8px 16px; border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; }
 .cancelButton { border: 1px solid var(--snsd-border); background: transparent; color: var(--snsd-text); }
-.confirmButton { border: 0; background: var(--snsd-text); color: #fff; font-weight: 600; }
+.confirmButton { border: 0; background: var(--snsd-text); color: var(--snsd-action-text); font-weight: 600; }
 .confirmButton:disabled { opacity: 0.5; cursor: wait; }
 
 @media (max-width: 743px) {
