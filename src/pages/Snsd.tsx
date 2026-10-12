@@ -66,7 +66,7 @@ export default function Snsd() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commentRequestsRef = useRef<Map<number, Promise<SnsdComment[]>>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>([]);
-  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("top");
+  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("new");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -439,8 +439,8 @@ export default function Snsd() {
 
         {!searchOpen && !composeOpen && error && <p className={styles.error} role="alert">{error}</p>}
         {!searchOpen && <nav className={styles.sortBar} aria-label="작품 정렬">
-          <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">개추순</button>
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
+          <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
           <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">기록</button>
         </nav>}
