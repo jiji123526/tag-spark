@@ -379,7 +379,7 @@
 .commentHeader { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
 .commentHeader strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; line-height: 1.33; }
 .commentHeader span { color: var(--snsd-muted); font-size: 12px; }
-.commentBody p { margin: 0; color: var(--snsd-text); font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+.commentBody p { margin: 0; color: var(--snsd-text); font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
 .commentForm { margin-top: 12px; padding: 12px; border: 1px solid var(--snsd-border); border-radius: 8px; }
 .commentInputHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .commentInputHeader img { width: 28px; height: 28px; border-radius: 50%; }
