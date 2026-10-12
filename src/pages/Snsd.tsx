@@ -10,6 +10,7 @@ import styles from "./Snsd.module.css";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const AVATAR_URL = "https://d33pksfia2a94m.cloudfront.net/assets/img/avatar/avatar_blank.png";
+const COMPOSE_COLLAPSED_KEY = "snsd-compose-collapsed";
 
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={filled ? "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Z" : "m10.82 20.116-.097-.09-6.844-6.355A5.882 5.882 0 0 1 2 9.359v-.13C2 6.48 3.953 4.12 6.656 3.606A5.71 5.71 0 0 1 12 5.417a5.562 5.562 0 0 1 .977-.871 5.73 5.73 0 0 1 4.367-.945A5.73 5.73 0 0 1 22 9.23v.129c0 1.636-.68 3.199-1.879 4.312l-6.844 6.355-.097.09c-.32.297-.742.465-1.18.465a1.72 1.72 0 0 1-1.18-.465Zm.52-12.625a.205.205 0 0 1-.04-.043l-.695-.78-.003-.005A3.85 3.85 0 0 0 3.875 9.23v.13c0 1.113.465 2.18 1.281 2.937L12 18.651l6.844-6.355a4.012 4.012 0 0 0 1.281-2.937v-.13a3.851 3.851 0 0 0-6.723-2.566l-.004.004-.003.004-.696.781c-.011.016-.027.028-.039.043a.935.935 0 0 1-1.32 0v-.004Z"} fill="currentColor" /></svg>;
 const CommentIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.832 17.535a1.877 1.877 0 0 1 1.742-.25c1.035.375 2.194.59 3.428.59 4.87 0 8.123-3.145 8.123-6.25s-3.253-6.25-8.123-6.25c-4.87 0-8.122 3.145-8.122 6.25 0 1.25.484 2.453 1.394 3.484.336.38.5.88.46 1.387a6.92 6.92 0 0 1-.44 1.93 9.811 9.811 0 0 0 1.538-.887v-.004Zm-3.999 1.586c.07-.105.137-.21.2-.316.39-.649.76-1.5.835-2.457-1.172-1.332-1.863-2.961-1.863-4.723 0-4.488 4.475-8.125 9.997-8.125C17.526 3.5 22 7.137 22 11.625c0 4.488-4.475 8.125-9.998 8.125-1.448 0-2.823-.25-4.065-.7-.465.34-1.222.805-2.12 1.196a9.564 9.564 0 0 1-1.957.629c-.031.008-.062.012-.094.02-.171.03-.34.058-.515.074-.008 0-.02.004-.027.004-.2.02-.399.03-.598.03a.625.625 0 0 1-.445-1.066 5.606 5.606 0 0 0 .629-.797l.011-.019h.012Z" fill="currentColor" /></svg>;
@@ -54,7 +55,7 @@ export default function Snsd() {
   const [sort, setSort] = useState<"top" | "new" | "bookmarked">("top");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [composeOpen, setComposeOpen] = useState(true);
+  const [composeOpen, setComposeOpen] = useState(() => window.localStorage.getItem(COMPOSE_COLLAPSED_KEY) !== "true");
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -122,6 +123,13 @@ export default function Snsd() {
     setSearchQuery("");
   };
 
+  const toggleCompose = () => {
+    setComposeOpen(open => {
+      if (open) window.localStorage.setItem(COMPOSE_COLLAPSED_KEY, "true");
+      return !open;
+    });
+  };
+
   const searchPairing = (tag: string) => {
     setSearchQuery(tag);
     setSearchOpen(true);
@@ -165,6 +173,7 @@ export default function Snsd() {
       if (!response.ok) throw new Error(await readApiError(response));
       setTitle(""); setAuthor(""); setPairing(""); setReason(""); setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      window.localStorage.setItem(COMPOSE_COLLAPSED_KEY, "true");
       setComposeOpen(false);
       await loadWorks();
     } catch (requestError) {
@@ -306,7 +315,7 @@ export default function Snsd() {
           </div>
         )}
         {!searchOpen && <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
-          <button className={styles.composeToggle} type="button" onClick={() => setComposeOpen(open => !open)} aria-expanded={composeOpen}>
+          <button className={styles.composeToggle} type="button" onClick={toggleCompose} aria-expanded={composeOpen}>
             <span>작품 추천</span><span className={styles.chevron}>{composeOpen ? "−" : "+"}</span>
           </button>
           {composeOpen && (
