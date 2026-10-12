@@ -5,6 +5,7 @@ interface Env {
   tagspark_snsd: D1Database;
   FILES: R2Bucket;
   ALLOWED_ORIGIN: string;
+  SNSD_MAINTENANCE_TOKEN?: string;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -147,6 +148,49 @@ async function createWork(request: Request, env: Env) {
     await env.FILES.delete(objectKey);
     throw error;
   }
+}
+
+async function recalculateChapterCounts(request: Request, env: Env, url: URL) {
+  const expectedToken = env.SNSD_MAINTENANCE_TOKEN?.trim();
+  const authorization = request.headers.get("Authorization") ?? "";
+  const token = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
+  if (!expectedToken) return json(request, env, { error: "유지보수 토큰이 설정되지 않았습니다." }, 503);
+  if (!token || token !== expectedToken) return json(request, env, { error: "인증이 필요합니다." }, 401);
+
+  const requestedId = url.searchParams.get("workId");
+  const workId = requestedId ? parseId(requestedId) : null;
+  if (requestedId && !workId) return json(request, env, { error: "잘못된 작품 ID입니다." }, 400);
+
+  const query = workId
+    ? env.tagspark_snsd.prepare("SELECT id, object_key FROM works WHERE id = ?").bind(workId)
+    : env.tagspark_snsd.prepare("SELECT id, object_key FROM works ORDER BY id");
+  const result = await query.all<{ id: number; object_key: string }>();
+  const updated: Array<{ id: number; chapterCount: number | null }> = [];
+  const failed: Array<{ id: number; reason: string }> = [];
+
+  for (const work of result.results) {
+    try {
+      const object = await env.FILES.get(work.object_key);
+      if (!object) throw new Error("파일을 찾을 수 없습니다.");
+      const decoded = decodeUploadedText(await object.arrayBuffer());
+      const count = countSnsdChapters(decoded.text);
+      await env.tagspark_snsd.prepare("UPDATE works SET chapter_count = ? WHERE id = ?")
+        .bind(count || null, work.id)
+        .run();
+      updated.push({ id: work.id, chapterCount: count || null });
+    } catch (error) {
+      failed.push({
+        id: work.id,
+        reason: error instanceof Error ? error.message : "알 수 없는 오류",
+      });
+    }
+  }
+
+  return json(request, env, {
+    processed: result.results.length,
+    updated,
+    failed,
+  });
 }
 
 async function getWork(request: Request, env: Env, workId: number) {
@@ -305,6 +349,9 @@ export default {
       if (parts[0] !== "api" || parts[1] !== "works") return json(request, env, { error: "Not found" }, 404);
       if (parts.length === 2 && request.method === "GET") return listWorks(request, env, url);
       if (parts.length === 2 && request.method === "POST") return createWork(request, env);
+      if (parts.length === 3 && parts[2] === "recalculate-chapters" && request.method === "POST") {
+        return recalculateChapterCounts(request, env, url);
+      }
 
       const workId = parseId(parts[2]);
       if (!workId) return json(request, env, { error: "잘못된 작품 ID입니다." }, 400);

@@ -248,6 +248,10 @@ export default function SnsdViewer() {
     setFontSizeOpen(false);
   };
 
+  const chapterPartCount = chapters
+    ? new Set(chapters.map(chapter => chapter.part ?? 1)).size
+    : 0;
+
   const returnToList = () => {
     const openedFromList = new URLSearchParams(window.location.search).get("from") === "list";
     if (openedFromList) {
@@ -329,13 +333,18 @@ export default function SnsdViewer() {
       {chaptersOpen && (
         <div className={styles.chapterOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
           <section className={styles.chapterSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
-            <div className={styles.chapterSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.chapterSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : `${chapters.length}${chapterPartCount > 1 ? ` · ${chapterPartCount}파트` : ""}`}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.chapterList}>
               {chapters === null && <p className={styles.emptyChapters}>목차를 준비 중입니다…</p>}
               {chapters?.length === 0 && <p className={styles.emptyChapters}>감지된 목차가 없습니다.</p>}
               {chapters?.map((chapter, index) => (
-                <div className={styles.chapterItem} key={chapter.id}>
-                  <button className={styles.chapterLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
+                <div key={chapter.id}>
+                  {chapterPartCount > 1 && (index === 0 || chapter.part !== chapters[index - 1]?.part) && (
+                    <h3 className={styles.chapterPartTitle}>파트 {chapter.part}</h3>
+                  )}
+                  <div className={styles.chapterItem}>
+                    <button className={styles.chapterLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
+                  </div>
                 </div>
               ))}
             </div>

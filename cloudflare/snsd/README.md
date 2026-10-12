@@ -29,3 +29,29 @@ npx wrangler dev --config cloudflare/snsd/wrangler.jsonc
 ```
 
 Set `ALLOWED_ORIGIN` in `wrangler.jsonc` to the deployed TagSpark origin. Multiple origins may be comma-separated. Set the frontend's `VITE_SNSD_API_URL` to the deployed Worker URL.
+
+## Recalculate existing chapter counts
+
+새 파서를 기존 작품에도 적용하려면 유지보수 토큰을 한 번 설정한 뒤 백필 API를 호출합니다.
+
+```bash
+npx wrangler secret put SNSD_MAINTENANCE_TOKEN --config cloudflare/snsd/wrangler.jsonc
+```
+
+전체 작품을 다시 계산합니다.
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_MAINTENANCE_TOKEN" \
+  "https://YOUR_WORKER_URL/api/works/recalculate-chapters"
+```
+
+특정 작품만 다시 계산하려면 `workId`를 추가합니다.
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_MAINTENANCE_TOKEN" \
+  "https://YOUR_WORKER_URL/api/works/recalculate-chapters?workId=123"
+```
+
+이 작업은 R2의 원문을 다시 읽고 D1의 `chapter_count`만 갱신합니다. 파일 내용이나 작품 정보는 변경하지 않습니다.

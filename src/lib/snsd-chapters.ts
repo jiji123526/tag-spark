@@ -2,6 +2,7 @@ export type SnsdChapter = {
   id: string;
   label: string;
   paragraph: number;
+  part?: number;
 };
 
 type ChapterCandidate = SnsdChapter & {
@@ -114,17 +115,30 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
     return hasChronologicalNeighbor(candidate);
   });
   const seenParagraphs = new Set<number>();
-  return filtered
+  const chapters = filtered
     .filter(candidate => {
       if (seenParagraphs.has(candidate.paragraph)) return false;
       seenParagraphs.add(candidate.paragraph);
       return true;
     })
-    .map((candidate, index) => ({
+    .map(candidate => ({
       id: candidate.id,
       label: candidate.label,
       paragraph: candidate.paragraph,
+      sequenceNumber: candidate.sequenceNumber,
     }));
+
+  let part = 1;
+  let previousSequence: number | undefined;
+  return chapters.map(({ sequenceNumber, ...chapter }) => {
+    if (sequenceNumber !== undefined
+      && previousSequence !== undefined
+      && sequenceNumber < previousSequence) {
+      part += 1;
+    }
+    if (sequenceNumber !== undefined) previousSequence = sequenceNumber;
+    return { ...chapter, part };
+  });
 }
 
 export function countSnsdChapters(text: string) {
