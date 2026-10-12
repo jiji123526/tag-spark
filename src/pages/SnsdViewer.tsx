@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { cacheSnsdViewerWork, getCachedSnsdViewerWork, markSnsdWorkRead, readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
 import styles from "./SnsdViewer.module.css";
@@ -14,6 +14,14 @@ type ReaderBookmark = {
 };
 
 const BookmarkIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 3A2.5 2.5 0 0 0 4 5.5v15.56a.94.94 0 0 0 1.48.77L12 17.17l6.52 4.66a.94.94 0 0 0 1.48-.77V5.5A2.5 2.5 0 0 0 17.5 3h-11ZM6 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v13.62l-5.45-3.9a.94.94 0 0 0-1.1 0L6 19.12V5.5Z" fill="currentColor" /></svg>;
+const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
+const TextSizeIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.25A1.25 1.25 0 0 1 5.25 4h7.5A1.25 1.25 0 0 1 14 5.25v1a.75.75 0 0 1-1.5 0v-.75H10.5v12h1.25a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5H8.5v-12H6.25v.75a.75.75 0 0 1-1.5 0v-1ZM15.5 11.25A1.25 1.25 0 0 1 16.75 10h3A1.25 1.25 0 0 1 21 11.25v.75a.75.75 0 0 1-1.5 0v-.5h-.5v5.25h.5a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.5V11.5h-.5v.5a.75.75 0 0 1-1.5 0v-.75Z" fill="currentColor" /></svg>;
+
+type SearchRange = {
+  start: number;
+  end: number;
+  globalIndex: number;
+};
 
 export default function SnsdViewer() {
   const { id } = useParams();
@@ -24,10 +32,34 @@ export default function SnsdViewer() {
   const [fontSize, setFontSize] = useState(() => Number(window.localStorage.getItem("snsd-reader-font-size")) || 17);
   const [error, setError] = useState("");
   const [headerHidden, setHeaderHidden] = useState(() => window.scrollY > 40);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeSearchMatch, setActiveSearchMatch] = useState(0);
+  const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
   const bookmarkKey = `snsd-reader-bookmarks-${id}`;
+  const searchRanges = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase("ko");
+    let globalIndex = 0;
+
+    return paragraphs.map(paragraph => {
+      if (!query) return [] as SearchRange[];
+      const normalizedParagraph = paragraph.toLocaleLowerCase("ko");
+      const ranges: SearchRange[] = [];
+      let start = normalizedParagraph.indexOf(query);
+      while (start !== -1) {
+        ranges.push({ start, end: start + query.length, globalIndex });
+        globalIndex += 1;
+        start = normalizedParagraph.indexOf(query, start + query.length);
+      }
+      return ranges;
+    });
+  }, [paragraphs, searchQuery]);
+  const searchMatchCount = searchRanges.reduce((count, ranges) => count + ranges.length, 0);
 
   useEffect(() => {
     if (!id) return;
@@ -109,6 +141,28 @@ export default function SnsdViewer() {
   }, [bookmarksOpen]);
 
   useEffect(() => {
+    if (!searchOpen) return;
+    requestAnimationFrame(() => searchInputRef.current?.focus());
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSearchOpen(false);
+        setSearchQuery("");
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [searchOpen]);
+
+  useEffect(() => {
+    setActiveSearchMatch(current => Math.min(current, Math.max(0, searchMatchCount - 1)));
+  }, [searchMatchCount]);
+
+  useEffect(() => {
+    if (!searchOpen || !searchMatchCount) return;
+    requestAnimationFrame(() => searchMatchRefs.current[activeSearchMatch]?.scrollIntoView({ behavior: "smooth", block: "center" }));
+  }, [activeSearchMatch, searchMatchCount, searchOpen]);
+
+  useEffect(() => {
     let frame = 0;
     const updateHeader = () => {
       frame = 0;
@@ -133,6 +187,34 @@ export default function SnsdViewer() {
     const clamped = Math.min(24, Math.max(14, next));
     setFontSize(clamped);
     window.localStorage.setItem("snsd-reader-font-size", String(clamped));
+  };
+
+  const moveSearchMatch = (direction: 1 | -1) => {
+    if (!searchMatchCount) return;
+    setActiveSearchMatch(current => (current + direction + searchMatchCount) % searchMatchCount);
+  };
+
+  const renderParagraph = (paragraph: string, paragraphIndex: number): ReactNode => {
+    const ranges = searchRanges[paragraphIndex];
+    if (!ranges?.length) return paragraph;
+
+    const nodes: ReactNode[] = [];
+    let cursor = 0;
+    ranges.forEach(range => {
+      if (range.start > cursor) nodes.push(paragraph.slice(cursor, range.start));
+      nodes.push(
+        <mark
+          className={`${styles.searchMatch} ${range.globalIndex === activeSearchMatch ? styles.searchMatchActive : ""}`}
+          key={`${paragraphIndex}-${range.start}`}
+          ref={element => { searchMatchRefs.current[range.globalIndex] = element; }}
+        >
+          {paragraph.slice(range.start, range.end)}
+        </mark>,
+      );
+      cursor = range.end;
+    });
+    if (cursor < paragraph.length) nodes.push(paragraph.slice(cursor));
+    return nodes;
   };
 
   const saveBookmarks = (next: ReaderBookmark[]) => {
@@ -213,12 +295,57 @@ export default function SnsdViewer() {
       <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
         <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
         <div className={styles.workMeta}><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
-        <div className={styles.fontControls}><button type="button" onClick={() => changeFontSize(fontSize - 1)} aria-label="글자 작게">가</button><button type="button" onClick={() => changeFontSize(fontSize + 1)} aria-label="글자 크게">가+</button><button className={styles.bookmarkButton} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button></div>
+        <div className={styles.headerActions}>
+          <div className={styles.controlWrapper}>
+            <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
+            {searchOpen && (
+              <div className={`${styles.popover} ${styles.searchPopover}`} role="search">
+                <div className={styles.searchField}>
+                  <input
+                    ref={searchInputRef}
+                    value={searchQuery}
+                    onChange={event => { setSearchQuery(event.target.value); setActiveSearchMatch(0); }}
+                    onKeyDown={event => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        moveSearchMatch(event.shiftKey ? -1 : 1);
+                      }
+                    }}
+                    placeholder="본문 검색"
+                    aria-label="본문 검색"
+                  />
+                  <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(""); }} aria-label="검색 닫기">×</button>
+                </div>
+                <div className={styles.searchFooter}>
+                  <span>{searchQuery.trim() ? (searchMatchCount ? `${activeSearchMatch + 1} / ${searchMatchCount}` : "검색 결과 없음") : "검색어를 입력하세요"}</span>
+                  <div className={styles.searchNavigation}>
+                    <button type="button" onClick={() => moveSearchMatch(-1)} disabled={!searchMatchCount} aria-label="이전 검색 결과">↑</button>
+                    <button type="button" onClick={() => moveSearchMatch(1)} disabled={!searchMatchCount} aria-label="다음 검색 결과">↓</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className={styles.controlWrapper}>
+            <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
+            {fontSizeOpen && (
+              <div className={`${styles.popover} ${styles.fontPopover}`} role="dialog" aria-label="글자 크기 조절">
+                <span>글자 크기</span>
+                <div className={styles.fontAdjuster}>
+                  <button type="button" onClick={() => changeFontSize(fontSize - 1)} disabled={fontSize <= 14} aria-label="글자 작게">−</button>
+                  <output>{fontSize}px</output>
+                  <button type="button" onClick={() => changeFontSize(fontSize + 1)} disabled={fontSize >= 24} aria-label="글자 크게">＋</button>
+                </div>
+              </div>
+            )}
+          </div>
+          <button className={`${styles.iconButton} ${styles.bookmarkButton}`} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button>
+        </div>
       </header>
       <main className={styles.reader}>
         {error && <p className={styles.error} role="alert">{error}</p>}
         {!error && <article style={{ fontSize }}>{content
-          ? paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{paragraph}</p>)
+          ? paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{renderParagraph(paragraph, index)}</p>)
           : "본문을 불러오는 중입니다…"}</article>}
       </main>
       {bookmarksOpen && (
