@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { markSnsdWorkRead, readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
+import { cacheSnsdViewerWork, getCachedSnsdViewerWork, markSnsdWorkRead, readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
 import styles from "./SnsdViewer.module.css";
 
 type ReaderBookmark = {
@@ -19,7 +19,7 @@ export default function SnsdViewer() {
   const { id } = useParams();
   const paragraphRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   const lastScrollY = useRef(window.scrollY);
-  const [work, setWork] = useState<SnsdWork | null>(null);
+  const [work, setWork] = useState<SnsdWork | null>(() => id ? getCachedSnsdViewerWork(id) : null);
   const [content, setContent] = useState("");
   const [fontSize, setFontSize] = useState(() => Number(window.localStorage.getItem("snsd-reader-font-size")) || 17);
   const [error, setError] = useState("");
@@ -33,22 +33,23 @@ export default function SnsdViewer() {
     if (!id) return;
     const controller = new AbortController();
     const loadViewer = async () => {
+      const cachedWork = getCachedSnsdViewerWork(id);
       const [workResponse, contentResponse] = await Promise.all([
-        fetch(snsdApiUrl(`/api/works/${id}`), { signal: controller.signal }),
-        fetch(snsdApiUrl(`/api/works/${id}/content`), { signal: controller.signal }),
+        cachedWork ? Promise.resolve(null) : fetch(snsdApiUrl(`/api/works/${id}`), { signal: controller.signal }),
+        fetch(snsdApiUrl(`/api/works/${id}/content`), { signal: controller.signal, cache: "force-cache" }),
       ]);
 
-      let loadedWork: SnsdWork | undefined;
-      if (workResponse.ok) {
+      let loadedWork: SnsdWork | undefined = cachedWork ?? undefined;
+      if (workResponse?.ok) {
         loadedWork = await workResponse.json();
-      } else if (workResponse.status === 404) {
+      } else if (workResponse?.status === 404) {
         // Older Worker deployments may have the list/content routes without the
         // single-work metadata route. The list is a safe compatibility fallback.
         const listResponse = await fetch(snsdApiUrl("/api/works?sort=new"), { signal: controller.signal });
         if (!listResponse.ok) throw new Error(await readApiError(listResponse));
         const works = await listResponse.json() as SnsdWork[];
         loadedWork = works.find(candidate => String(candidate.id) === id);
-      } else {
+      } else if (workResponse) {
         throw new Error(await readApiError(workResponse));
       }
 
@@ -56,6 +57,7 @@ export default function SnsdViewer() {
       if (!contentResponse.ok) throw new Error(await readApiError(contentResponse));
       const loadedContent = await contentResponse.text();
       setWork(loadedWork);
+      cacheSnsdViewerWork(loadedWork);
       setContent(loadedContent);
       markSnsdWorkRead(id);
     };

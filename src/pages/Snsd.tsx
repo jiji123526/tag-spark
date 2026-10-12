@@ -2,6 +2,8 @@ import { ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo, use
 import {
   getSnsdUserId,
   getSnsdReadHistory,
+  cacheSnsdViewerWork,
+  prefetchSnsdViewer,
   readApiError,
   SNSD_READ_HISTORY_KEY,
   snsdApiUrl,
@@ -182,6 +184,15 @@ export default function Snsd() {
     return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
   }, [bookmarked, readHistory, searchOpen, searchQuery, sort, works]);
 
+  useEffect(() => {
+    if (loading) return;
+    const candidates = visibleWorks.filter(work => work.file_size <= 512 * 1024).slice(0, 3);
+    const timer = window.setTimeout(() => {
+      candidates.forEach(work => { void prefetchSnsdViewer(work); });
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [loading, visibleWorks]);
+
   const closeSearch = () => {
     setSearchOpen(false);
     setSearchQuery("");
@@ -313,8 +324,10 @@ export default function Snsd() {
     window.setTimeout(() => setToast(""), 2200);
   };
 
-  const openWork = (workId: number) => {
-    window.open(`/snsd/view/${workId}?from=list`, "_blank", "noopener,noreferrer");
+  const openWork = (work: SnsdWork) => {
+    cacheSnsdViewerWork(work);
+    void prefetchSnsdViewer(work);
+    window.open(`/snsd/view/${work.id}?from=list`, "_blank", "noopener,noreferrer");
   };
 
   const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
@@ -447,11 +460,13 @@ export default function Snsd() {
               onClick={event => {
                 const target = event.target as HTMLElement;
                 if (target.closest("button, a, input, textarea, label, [data-card-action]")) return;
-                openWork(work.id);
+                openWork(work);
               }}
               onKeyDown={event => {
-                if (event.target === event.currentTarget && event.key === "Enter") openWork(work.id);
+                if (event.target === event.currentTarget && event.key === "Enter") openWork(work);
               }}
+              onPointerEnter={() => { void prefetchSnsdViewer(work); }}
+              onTouchStart={() => { void prefetchSnsdViewer(work); }}
             >
               <div className={styles.cardBody}>
                 <div className={styles.postHeader}>
@@ -475,7 +490,7 @@ export default function Snsd() {
                   )}
                 </div>
                 <div className={styles.postContent}>
-                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer">{work.title}</a>
+                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={() => { cacheSnsdViewerWork(work); void prefetchSnsdViewer(work); }}>{work.title}</a>
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>

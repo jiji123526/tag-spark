@@ -24,6 +24,8 @@ export type SnsdComment = {
 const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
+const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
+const viewerContentRequests = new Map<number, Promise<void>>();
 
 export function snsdApiUrl(path: string) {
   return `${SNSD_API_URL}${path}`;
@@ -52,6 +54,39 @@ export function markSnsdWorkRead(workId: string | number) {
   const history = getSnsdReadHistory();
   history[String(workId)] = Date.now();
   window.localStorage.setItem(SNSD_READ_HISTORY_KEY, JSON.stringify(history));
+}
+
+export function cacheSnsdViewerWork(work: SnsdWork) {
+  try {
+    window.localStorage.setItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${work.id}`, JSON.stringify(work));
+  } catch {
+    // The viewer still works through the API when storage is unavailable.
+  }
+}
+
+export function getCachedSnsdViewerWork(workId: string | number) {
+  try {
+    const stored = window.localStorage.getItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${workId}`);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored) as SnsdWork;
+    return String(parsed?.id) === String(workId) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function prefetchSnsdViewer(work: SnsdWork) {
+  cacheSnsdViewerWork(work);
+  const existing = viewerContentRequests.get(work.id);
+  if (existing) return existing;
+  const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "force-cache" })
+    .then(async response => {
+      if (response.ok) await response.arrayBuffer();
+    })
+    .catch(() => undefined)
+    .finally(() => viewerContentRequests.delete(work.id));
+  viewerContentRequests.set(work.id, request);
+  return request;
 }
 
 export async function readApiError(response: Response) {
