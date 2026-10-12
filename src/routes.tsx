@@ -28,7 +28,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/mobile-list": "현재 등록된 추천작",
   "/weather-test": "🧪 Weather Controls",
   "/tag-comparison": "태그 비교",
-  "/snsd": "snsdff",
+  "/snsd": "SNSDFF",
 };
 
 const AppRoutes = () => {
@@ -37,7 +37,7 @@ const AppRoutes = () => {
   useEffect(() => {
     const normalizedPath = pathname.replace(/\/+$/, "").toLowerCase() || "/";
     document.title = normalizedPath.startsWith("/snsd/view/")
-      ? "작품 읽기 · snsdff"
+      ? "작품 읽기 · SNSDFF"
       : PAGE_TITLES[normalizedPath] ?? "404";
   }, [pathname]);
 

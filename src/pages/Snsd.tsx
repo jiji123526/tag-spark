@@ -259,7 +259,7 @@ export default function Snsd() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}><h1>snsdff</h1></header>
+      <header className={styles.header}><h1>SNSDFF</h1></header>
       <main className={styles.main}>
         <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
           <button className={styles.composeToggle} type="button" onClick={() => setComposeOpen(open => !open)} aria-expanded={composeOpen}>
