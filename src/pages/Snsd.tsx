@@ -79,6 +79,7 @@ export default function Snsd() {
   const commentRequestsRef = useRef<Map<number, Promise<SnsdComment[]>>>(new Map());
   const commentPrefetchTimersRef = useRef<Map<number, number>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>([]);
+  const [visibleWorkLimit, setVisibleWorkLimit] = useState(40);
   const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("new");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -188,6 +189,10 @@ export default function Snsd() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [helpOpen]);
+
+  useEffect(() => {
+    setVisibleWorkLimit(40);
+  }, [searchOpen, searchQuery, sort]);
 
   const visibleWorks = useMemo(() => {
     if (searchOpen) {
@@ -494,7 +499,7 @@ export default function Snsd() {
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
           )}
-          {visibleWorks.map(work => (
+          {visibleWorks.slice(0, visibleWorkLimit).map(work => (
             <article
               className={styles.card}
               key={work.id}
@@ -565,6 +570,11 @@ export default function Snsd() {
               </div>
             </article>
           ))}
+          {visibleWorks.length > visibleWorkLimit && (
+            <button className={styles.loadMoreButton} type="button" onClick={() => setVisibleWorkLimit(current => current + 40)}>
+              작품 더 보기 ({visibleWorks.length - visibleWorkLimit})
+            </button>
+          )}
         </section>
       </main>
       {openMenu !== null && <button className={styles.menuBackdrop} type="button" aria-label="메뉴 닫기" onClick={() => setOpenMenu(null)} />}
