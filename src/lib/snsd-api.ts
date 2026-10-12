@@ -33,7 +33,7 @@ const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
-const SNSD_CONTENT_CACHE_NAME = "snsd-content-v2";
+const SNSD_CONTENT_CACHE_NAME = "snsd-content-v3";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
 const SNSD_VIEWER_WORK_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const viewerContentRequests = new Map<number, Promise<void>>();
@@ -130,10 +130,9 @@ export function getCachedSnsdViewerWork(workId: string | number) {
 }
 
 export function prefetchSnsdViewer(work: SnsdWork) {
-  cacheSnsdViewerWork(work);
   const existing = viewerContentRequests.get(work.id);
   if (existing) return existing;
-  const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "force-cache" })
+  const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "no-store" })
     .then(async response => {
       if (response.ok) await response.arrayBuffer();
     })
@@ -153,11 +152,15 @@ export async function getCachedSnsdViewerContent(workId: string | number) {
   }
 }
 
-async function fetchAndCacheSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
+async function fetchAndCacheSnsdViewerContent(
+  workId: string | number,
+  signal?: AbortSignal,
+  options: { cacheForOffline?: boolean } = {},
+) {
   const url = snsdApiUrl(`/api/works/${workId}/content`);
   try {
-    const response = await fetch(url, { signal, cache: "force-cache" });
-    if (response.ok && "caches" in window) {
+    const response = await fetch(url, { signal, cache: "no-store" });
+    if (options.cacheForOffline && response.ok && "caches" in window) {
       try {
         const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
         await cache.put(url, response.clone());
@@ -174,8 +177,12 @@ async function fetchAndCacheSnsdViewerContent(workId: string | number, signal?: 
   }
 }
 
-export function fetchSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
-  return fetchAndCacheSnsdViewerContent(workId, signal);
+export function fetchSnsdViewerContent(
+  workId: string | number,
+  signal?: AbortSignal,
+  options?: { cacheForOffline?: boolean },
+) {
+  return fetchAndCacheSnsdViewerContent(workId, signal, options);
 }
 
 export async function removeCachedSnsdViewerContent(workId: string | number) {

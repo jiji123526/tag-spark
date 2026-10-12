@@ -546,9 +546,9 @@ export default function Snsd() {
         });
         setToast("오프라인 저장본을 삭제했습니다.");
       } else {
-        cacheSnsdViewerWork(work);
-        const response = await fetchSnsdViewerContent(work.id);
+        const response = await fetchSnsdViewerContent(work.id, undefined, { cacheForOffline: true });
         if (!response.ok) throw new Error(await readApiError(response));
+        cacheSnsdViewerWork(work);
         setOfflineSaved(current => new Set(current).add(work.id));
         setToast("오프라인에서 읽을 수 있도록 저장했습니다.");
         if (window.localStorage.getItem(OFFLINE_GUIDE_SEEN_KEY) !== "true") setOfflineGuideOpen(true);
@@ -574,7 +574,6 @@ export default function Snsd() {
 
   const openWork = (work: SnsdWork) => {
     const url = `/snsd/view/${work.id}?from=list`;
-    cacheSnsdViewerWork(work);
     const viewerWindow = window.open("", "_blank");
 
     if (!viewerWindow) {
@@ -622,7 +621,7 @@ export default function Snsd() {
     setSavingEdit(false);
     if (!response.ok) { setError(await readApiError(response)); return; }
     const updatedWork = { ...editing, ...editDraft };
-    cacheSnsdViewerWork(updatedWork);
+    if (offlineSaved.has(editing.id)) cacheSnsdViewerWork(updatedWork);
     setWorks(current => current.map(work => work.id === editing.id ? updatedWork : work));
     setEditing(null);
     setError("");
