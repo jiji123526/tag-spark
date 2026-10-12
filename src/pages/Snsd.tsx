@@ -386,7 +386,7 @@ export default function Snsd() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-page="snsd-dashboard">
       <header className={styles.header}>
         <div className={styles.titleGroup}><h1>SNSDFF</h1><button className={styles.helpButton} type="button" onClick={() => setHelpOpen(true)}>사용법</button></div>
         <button className={styles.searchButton} type="button" aria-label="작품 검색" aria-expanded={searchOpen} onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><SearchIcon /></button>

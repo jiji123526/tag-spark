@@ -73,7 +73,7 @@
 }
 .searchButton:hover { background: var(--snsd-field); }
 .searchButton svg { width: 21px; height: 21px; }
-.main { width: 100%; max-width: 640px; margin: 0 auto; padding: 0 16px; }
+.main { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; padding: 0 24px; }
 .searchPanel {
   position: sticky;
   top: 56px;

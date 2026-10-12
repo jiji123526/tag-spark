@@ -31,6 +31,9 @@ html.dark {
 #root:has([data-page="snsd-viewer"]) {
   max-width: none;
 }
+#root:has([data-page="snsd-dashboard"]) {
+  max-width: none;
+}
 :root {
   	
   	/* Color */
