@@ -24,8 +24,15 @@ const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const DownloadIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M11 3a1 1 0 1 1 2 0v10.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V3Zm-7 13a1 1 0 0 1 1 1v2h14v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1Z" fill="currentColor" /></svg>;
 
+function parseSnsdTimestamp(value: string) {
+  const trimmed = value.trim();
+  const normalized = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T");
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
+  return new Date(hasTimezone ? normalized : `${normalized}Z`);
+}
+
 function relativeDate(value: string) {
-  const date = new Date(value);
+  const date = parseSnsdTimestamp(value);
   const diff = Date.now() - date.getTime();
   if (!Number.isFinite(diff)) return "";
   const minutes = Math.floor(diff / 60_000);
@@ -209,9 +216,9 @@ export default function Snsd() {
     }
     const sorted = [...works];
     if (sort === "new") {
-      return sorted.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+      return sorted.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
     }
-    return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
+    return sorted.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
   }, [bookmarked, readHistory, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
