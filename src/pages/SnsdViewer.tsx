@@ -20,7 +20,7 @@ type ReaderChapter = {
 };
 
 const BookmarkIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 3A2.5 2.5 0 0 0 4 5.5v15.56a.94.94 0 0 0 1.48.77L12 17.17l6.52 4.66a.94.94 0 0 0 1.48-.77V5.5A2.5 2.5 0 0 0 17.5 3h-11ZM6 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v13.62l-5.45-3.9a.94.94 0 0 0-1.1 0L6 19.12V5.5Z" fill="currentColor" /></svg>;
-const MenuIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Zm0 4.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Zm0 4.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Z" fill="currentColor" /></svg>;
+const ChevronDownIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.7 8.7 5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 1.4-1.4Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const TextSizeIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.25A1.25 1.25 0 0 1 5.25 4h7.5A1.25 1.25 0 0 1 14 5.25v1a.75.75 0 0 1-1.5 0v-.75H10.5v12h1.25a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5H8.5v-12H6.25v.75a.75.75 0 0 1-1.5 0v-1ZM15.5 11.25A1.25 1.25 0 0 1 16.75 10h3A1.25 1.25 0 0 1 21 11.25v.75a.75.75 0 0 1-1.5 0v-.5h-.5v5.25h.5a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.5V11.5h-.5v.5a.75.75 0 0 1-1.5 0v-.75Z" fill="currentColor" /></svg>;
 
@@ -49,7 +49,7 @@ function detectReaderChapters(paragraphs: string[]) {
       || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
       || /(?:完|완결)/.test(line)
       || /#\s*\d{1,3}\b/.test(line);
-    const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.)]?(?:\s+.{1,60})?$/.test(line);
+    const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.test(line);
     const titleNumber = /^[^0-9].{0,58}\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.test(line);
 
     if (special || explicit || numeric || titleNumber) {
@@ -57,14 +57,15 @@ function detectReaderChapters(paragraphs: string[]) {
         id: `chapter-${paragraphIndex}`,
         label: line,
         paragraph: paragraphIndex,
-        numbered: numeric || titleNumber,
+        numbered: numeric,
       });
     }
   });
 
   const numberedCount = candidates.filter(candidate => candidate.numbered).length;
+  const structuredSeries = candidates.filter(candidate => !candidate.numbered).length >= 2;
   return candidates
-    .filter(candidate => !candidate.numbered || numberedCount >= 2)
+    .filter(candidate => !candidate.numbered || (!structuredSeries && numberedCount >= 2))
     .filter((candidate, index, all) => index === all.findIndex(other => other.paragraph === candidate.paragraph))
     .map(candidate => ({ id: candidate.id, label: candidate.label, paragraph: candidate.paragraph }));
 }
@@ -371,7 +372,13 @@ export default function SnsdViewer() {
     <div className={styles.page} data-page="snsd-viewer">
       <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
         <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
-        <div className={styles.workMeta}><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
+        <div className={styles.workMeta}>
+          <div className={styles.workTitleRow}>
+            <strong>{work?.title ?? "불러오는 중…"}</strong>
+            {work && <button className={styles.chapterToggle} type="button" onClick={() => { setChaptersOpen(true); setSearchOpen(false); setFontSizeOpen(false); }} aria-label="목차 열기" aria-expanded={chaptersOpen}><ChevronDownIcon /></button>}
+          </div>
+          {work && <span>{work.author} · {work.pairing}</span>}
+        </div>
         <div className={styles.headerActions}>
           <div className={styles.controlWrapper}>
             <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
@@ -416,7 +423,6 @@ export default function SnsdViewer() {
               </div>
             )}
           </div>
-          <button className={styles.iconButton} type="button" onClick={() => { setChaptersOpen(true); setSearchOpen(false); setFontSizeOpen(false); }} aria-label="목차 열기" aria-expanded={chaptersOpen}><MenuIcon /></button>
           <button className={`${styles.iconButton} ${styles.bookmarkButton}`} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button>
         </div>
       </header>

@@ -6,8 +6,12 @@
 :global(.dark) .offlineBanner { background: #3d341b; color: #f5d978; }
 .backLink { justify-self: start; padding: 8px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; cursor: pointer; white-space: nowrap; }
 .workMeta { display: flex; min-width: 0; flex-direction: column; text-align: center; }
+.workTitleRow { display: flex; min-width: 0; align-items: center; justify-content: center; gap: 2px; }
 .header strong { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
 .header span { overflow: hidden; color: var(--viewer-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.chapterToggle { display: inline-flex; width: 24px; height: 24px; flex: 0 0 auto; align-items: center; justify-content: center; padding: 3px; border: 0; border-radius: 6px; background: transparent; color: var(--viewer-muted); cursor: pointer; }
+.chapterToggle:hover, .chapterToggle[aria-expanded="true"] { background: var(--viewer-border); color: var(--viewer-text); }
+.chapterToggle svg { width: 16px; height: 16px; }
 .headerActions { display: flex; align-items: center; justify-self: end; gap: 2px; white-space: nowrap; }
 .controlWrapper { position: relative; }
 .iconButton { position: relative; display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; padding: 6px; border: 0; border-radius: 8px; background: transparent; color: var(--viewer-text); cursor: pointer; }
