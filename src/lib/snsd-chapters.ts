@@ -9,6 +9,7 @@ type ChapterCandidate = SnsdChapter & {
   format: "generic" | "title" | "explicit" | "hash" | "bracket" | "special";
   sequenceNumber?: number;
   seriesKey?: string;
+  bareNumber?: boolean;
 };
 
 export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
@@ -24,7 +25,7 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
     for (const line of lines) {
       if (!line || line.length > 80 || /^[·•\s]{3,}$/.test(line)) continue;
       if (/^step\s*\d+/i.test(line)) continue;
-      if (/\d\s*[.,]\s*\d/.test(line)) continue;
+      if (/\d[.,]\d/.test(line)) continue;
 
       const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
       const hashMatch = /^(.{0,40}?)#\s*(\d{1,3}(?:[-–]\d{1,3})?)(?:\s*[.)])?(?:\s+.{1,80})?$/.exec(line);
@@ -83,6 +84,7 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
               : format === "explicit"
                 ? "explicit"
                 : format,
+          bareNumber: format === "generic" && /^\d{1,3}(?:[-–]\d{1,3})?[.．)]?\s*$/.test(line),
         });
         break;
       }
@@ -109,8 +111,12 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
   const hasNumberedSeries = candidates.some(candidate => candidate.format !== "special"
     && candidate.sequenceNumber !== undefined
     && hasChronologicalNeighbor(candidate));
+  const hasTitledGenericSeries = candidates.some(candidate => candidate.format === "generic"
+    && !candidate.bareNumber
+    && hasChronologicalNeighbor(candidate));
   const filtered = candidates.filter(candidate => {
     if (candidate.format === "special") return hasNumberedSeries;
+    if (candidate.format === "generic" && candidate.bareNumber && hasTitledGenericSeries) return false;
     if (hasStrongSeries && candidate.format === "generic") return false;
     return hasChronologicalNeighbor(candidate);
   });

@@ -213,6 +213,10 @@ export default function SnsdViewer() {
     setActiveSearchMatch(current => (current + direction + searchMatchCount) % searchMatchCount);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const renderParagraph = (paragraph: string, paragraphIndex: number): ReactNode => {
     const ranges = searchRanges[paragraphIndex];
     if (!ranges?.length) return paragraph;
@@ -266,7 +270,13 @@ export default function SnsdViewer() {
 
   return (
     <div className={styles.page} data-page="snsd-viewer">
-      <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
+      <header
+        className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}
+        onClick={event => {
+          const target = event.target as HTMLElement;
+          if (!target.closest("button, a, input, textarea, [role='button']")) scrollToTop();
+        }}
+      >
         <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
         <div className={styles.workMeta}>
           <div className={styles.workTitleRow}>
