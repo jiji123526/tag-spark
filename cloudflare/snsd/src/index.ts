@@ -190,7 +190,13 @@ async function toggleVote(request: Request, env: Env, workId: number) {
 
 async function listComments(request: Request, env: Env, workId: number) {
   const result = await env.tagspark_snsd.prepare("SELECT id, work_id, author, content, created_at FROM comments WHERE work_id = ? ORDER BY created_at ASC").bind(workId).all();
-  return json(request, env, result.results);
+  return new Response(JSON.stringify(result.results), {
+    headers: {
+      ...corsHeaders(request, env),
+      "Content-Type": "application/json; charset=UTF-8",
+      "Cache-Control": "private, max-age=5, stale-while-revalidate=30",
+    },
+  });
 }
 
 async function createComment(request: Request, env: Env, workId: number) {
