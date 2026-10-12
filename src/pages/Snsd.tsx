@@ -62,6 +62,7 @@ function downloadFilename(work: SnsdWork) {
 export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const commentRequestsRef = useRef<Map<number, Promise<SnsdComment[]>>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>([]);
   const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("top");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -110,7 +111,30 @@ export default function Snsd() {
     }
   }, []);
 
+  const fetchComments = useCallback((workId: number) => {
+    const pending = commentRequestsRef.current.get(workId);
+    if (pending) return pending;
+    const request = (async () => {
+      const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments`));
+      if (!response.ok) throw new Error(await readApiError(response));
+      const loaded = await response.json() as SnsdComment[];
+      setComments(current => ({ ...current, [workId]: loaded }));
+      return loaded;
+    })();
+    commentRequestsRef.current.set(workId, request);
+    void request.finally(() => commentRequestsRef.current.delete(workId)).catch(() => undefined);
+    return request;
+  }, []);
+
   useEffect(() => { void loadWorks(); }, [loadWorks]);
+
+  useEffect(() => {
+    if (loading) return;
+    const workIds = works.filter(work => work.comment_count > 0 && comments[work.id] === undefined).slice(0, 10).map(work => work.id);
+    const prefetch = () => workIds.forEach(workId => { void fetchComments(workId).catch(() => undefined); });
+    const timer = window.setTimeout(prefetch, 500);
+    return () => window.clearTimeout(timer);
+  }, [comments, fetchComments, loading, works]);
 
   useEffect(() => {
     const refreshReadHistory = () => setReadHistory(getSnsdReadHistory());
@@ -244,10 +268,16 @@ export default function Snsd() {
     if (openComments === workId) { setOpenComments(null); return; }
     setOpenComments(workId);
     if (comments[workId]) return;
-    const response = await fetch(snsdApiUrl(`/api/works/${workId}/comments`));
-    if (!response.ok) { setError(await readApiError(response)); return; }
-    const loadedComments = await response.json();
-    setComments(current => ({ ...current, [workId]: loadedComments }));
+    const work = works.find(candidate => candidate.id === workId);
+    if (!work?.comment_count) {
+      setComments(current => ({ ...current, [workId]: [] }));
+      return;
+    }
+    try {
+      await fetchComments(workId);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "댓글을 불러오지 못했습니다.");
+    }
   };
 
   const submitComment = async (workId: number) => {
@@ -453,7 +483,7 @@ export default function Snsd() {
                 <div className={styles.actions}>
                   <div className={styles.actionsLeft}>
                     <button className={`${styles.voteButton} ${voted.has(work.id) ? styles.voted : ""}`} onClick={() => void toggleVote(work.id)} type="button" aria-label="좋아요"><HeartIcon filled={voted.has(work.id)} /><span>{work.score}</span></button>
-                    <button className={styles.commentButton} onClick={() => void toggleComments(work.id)} type="button" aria-label="댓글"><CommentIcon /><span>{work.comment_count}</span></button>
+                    <button className={styles.commentButton} onPointerEnter={() => { if (work.comment_count > 0 && !comments[work.id]) void fetchComments(work.id).catch(() => undefined); }} onFocus={() => { if (work.comment_count > 0 && !comments[work.id]) void fetchComments(work.id).catch(() => undefined); }} onClick={() => void toggleComments(work.id)} type="button" aria-label="댓글"><CommentIcon /><span>{work.comment_count}</span></button>
                   </div>
                   <div className={styles.actionsRight}>
                     <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
@@ -461,7 +491,7 @@ export default function Snsd() {
                   </div>
                 </div>
                 {(work.reason || work.preview_comment) && (
-                  <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
+                  <button className={styles.reason} type="button" onPointerEnter={() => { if (work.comment_count > 0 && !comments[work.id]) void fetchComments(work.id).catch(() => undefined); }} onFocus={() => { if (work.comment_count > 0 && !comments[work.id]) void fetchComments(work.id).catch(() => undefined); }} onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
                 )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
