@@ -159,6 +159,12 @@
 }
 .moreButton svg { width: 20px; height: 20px; }
 .moreButton:hover { background: rgba(118, 118, 127, 0.08); }
+.moreWrapper { position: relative; z-index: 51; }
+.postDropdown { position: absolute; top: 100%; right: 0; z-index: 52; min-width: 100px; overflow: hidden; border: 1px solid var(--snsd-border); border-radius: 8px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.postDropdown button { display: block; width: 100%; padding: 7px 16px; border: 0; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.postDropdown button:hover { background: #f2f2f3; }
+.postDropdown button:last-child { color: #f33d4d; }
+.menuBackdrop { position: fixed; inset: 0; z-index: 50; padding: 0; border: 0; background: transparent; }
 .postContent { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 0; }
 .workTitle {
   display: inline;
@@ -259,6 +265,20 @@
 .commentFormRow button { padding: 6px 12px; border: 0; border-radius: 8px; background: var(--snsd-text); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .toast { position: fixed; right: 24px; bottom: 24px; z-index: 999; padding: 11px 19px; border-radius: 8px; background: #111; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 .toastVisible { opacity: 1; }
+.modalOverlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.25); }
+.modalBox { width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; border-radius: 12px; background: #fff; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12); }
+.modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--snsd-border); }
+.modalHeader h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.modalHeader button { padding: 4px; border: 0; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 20px; cursor: pointer; }
+.modalBody { display: flex; flex-direction: column; gap: 14px; padding: 20px; }
+.modalBody label { display: block; color: var(--snsd-muted); font-size: 13px; font-weight: 600; }
+.modalBody input, .modalBody textarea { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--snsd-border); border-radius: 8px; background: #fff; color: var(--snsd-text); font: inherit; font-size: 14px; resize: vertical; }
+.modalBody input:focus, .modalBody textarea:focus { outline: 0; border-color: var(--snsd-primary); }
+.modalFooter { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--snsd-border); }
+.cancelButton, .confirmButton { padding: 8px 16px; border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; }
+.cancelButton { border: 1px solid var(--snsd-border); background: transparent; color: var(--snsd-text); }
+.confirmButton { border: 0; background: var(--snsd-text); color: #fff; font-weight: 600; }
+.confirmButton:disabled { opacity: 0.5; cursor: wait; }
 
 @media (max-width: 743px) {
   .main { padding: 0 16px; }

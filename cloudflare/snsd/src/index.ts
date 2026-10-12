@@ -11,7 +11,7 @@ function corsHeaders(request: Request, env: Env) {
   const allowed = env.ALLOWED_ORIGIN.split(",").map(value => value.trim()).filter(Boolean);
   return {
     "Access-Control-Allow-Origin": allowed.includes(origin) ? origin : allowed[0] ?? "",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
@@ -32,6 +32,7 @@ function parseId(value: string) {
 }
 
 async function listWorks(request: Request, env: Env, url: URL) {
+  const viewer = url.searchParams.get("viewer")?.trim().slice(0, 100) ?? "";
   const order = url.searchParams.get("sort") === "new"
     ? "w.created_at DESC"
     : "score DESC, w.created_at DESC";
@@ -39,13 +40,14 @@ async function listWorks(request: Request, env: Env, url: URL) {
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
       w.file_size, w.created_at,
       COUNT(DISTINCT l.voter) AS score,
-      COUNT(DISTINCT c.id) AS comment_count
+      COUNT(DISTINCT c.id) AS comment_count,
+      CASE WHEN w.created_by = ? THEN 1 ELSE 0 END AS is_owner
     FROM works w
     LEFT JOIN likes l ON l.work_id = w.id
     LEFT JOIN comments c ON c.work_id = w.id
     GROUP BY w.id
     ORDER BY ${order}
-  `).all();
+  `).bind(viewer).all();
   return json(request, env, result.results);
 }
 
@@ -155,6 +157,36 @@ async function createComment(request: Request, env: Env, workId: number) {
   return json(request, env, comment, 201);
 }
 
+async function updateWork(request: Request, env: Env, workId: number) {
+  const body = await request.json<{ title?: string; author?: string; pairing?: string; reason?: string; createdBy?: string }>();
+  const title = body.title?.trim().slice(0, 120) ?? "";
+  const author = body.author?.trim().slice(0, 80) ?? "";
+  const pairing = body.pairing?.trim().slice(0, 80) ?? "";
+  const reason = body.reason?.trim().slice(0, 1000) ?? "";
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!title || !author || !pairing || !reason || !createdBy) {
+    return json(request, env, { error: "모든 항목을 입력해주세요." }, 400);
+  }
+  const existing = await env.tagspark_snsd.prepare("SELECT created_by FROM works WHERE id = ?").bind(workId).first<{ created_by: string }>();
+  if (!existing) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
+  if (existing.created_by !== createdBy) return json(request, env, { error: "작성자만 수정할 수 있습니다." }, 403);
+  await env.tagspark_snsd.prepare("UPDATE works SET title = ?, author = ?, pairing = ?, reason = ? WHERE id = ?")
+    .bind(title, author, pairing, reason, workId).run();
+  return json(request, env, { success: true });
+}
+
+async function deleteWork(request: Request, env: Env, workId: number) {
+  const body = await request.json<{ createdBy?: string }>();
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!createdBy) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
+  const existing = await env.tagspark_snsd.prepare("SELECT created_by, object_key FROM works WHERE id = ?").bind(workId).first<{ created_by: string; object_key: string }>();
+  if (!existing) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
+  if (existing.created_by !== createdBy) return json(request, env, { error: "작성자만 삭제할 수 있습니다." }, 403);
+  await env.tagspark_snsd.prepare("DELETE FROM works WHERE id = ?").bind(workId).run();
+  await env.FILES.delete(existing.object_key);
+  return json(request, env, { success: true });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders(request, env) });
@@ -169,6 +201,8 @@ export default {
       const workId = parseId(parts[2]);
       if (!workId) return json(request, env, { error: "잘못된 작품 ID입니다." }, 400);
       if (parts.length === 3 && request.method === "GET") return getWork(request, env, workId);
+      if (parts.length === 3 && request.method === "PUT") return updateWork(request, env, workId);
+      if (parts.length === 3 && request.method === "DELETE") return deleteWork(request, env, workId);
       if (parts[3] === "content" && request.method === "GET") return getContent(request, env, workId);
       if (parts[3] === "vote" && request.method === "POST") return toggleVote(request, env, workId);
       if (parts[3] === "comments" && request.method === "GET") return listComments(request, env, workId);

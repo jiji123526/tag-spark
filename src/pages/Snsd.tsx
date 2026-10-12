@@ -64,6 +64,10 @@ export default function Snsd() {
   const [comments, setComments] = useState<Record<number, SnsdComment[]>>({});
   const [commentText, setCommentText] = useState<Record<number, string>>({});
   const [toast, setToast] = useState("");
+  const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const [editing, setEditing] = useState<SnsdWork | null>(null);
+  const [editDraft, setEditDraft] = useState({ title: "", author: "", pairing: "", reason: "" });
+  const [savingEdit, setSavingEdit] = useState(false);
   const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
     const stored = window.localStorage.getItem("snsd-bookmarked-ids");
     try { return new Set(stored ? JSON.parse(stored) : []); } catch { return new Set(); }
@@ -77,7 +81,8 @@ export default function Snsd() {
     setLoading(true);
     try {
       const apiSort = sort === "new" ? "new" : "top";
-      const response = await fetch(snsdApiUrl(`/api/works?sort=${apiSort}`));
+      const viewer = encodeURIComponent(getSnsdUserId());
+      const response = await fetch(snsdApiUrl(`/api/works?sort=${apiSort}&viewer=${viewer}`));
       if (!response.ok) throw new Error(await readApiError(response));
       setWorks(await response.json());
       setError("");
@@ -199,6 +204,52 @@ export default function Snsd() {
     window.setTimeout(() => setToast(""), 2200);
   };
 
+  const beginEdit = (work: SnsdWork) => {
+    setOpenMenu(null);
+    setEditing(work);
+    setEditDraft({ title: work.title, author: work.author, pairing: work.pairing, reason: work.reason });
+  };
+
+  const saveEdit = async () => {
+    if (!editing || !editDraft.title.trim() || !editDraft.author.trim() || !editDraft.pairing.trim() || !editDraft.reason.trim()) {
+      setError("모든 항목을 입력해주세요.");
+      return;
+    }
+    setSavingEdit(true);
+    const response = await fetch(snsdApiUrl(`/api/works/${editing.id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...editDraft, createdBy: getSnsdUserId() }),
+    });
+    setSavingEdit(false);
+    if (!response.ok) { setError(await readApiError(response)); return; }
+    setWorks(current => current.map(work => work.id === editing.id ? { ...work, ...editDraft } : work));
+    setEditing(null);
+    setError("");
+    setToast("수정되었습니다.");
+    window.setTimeout(() => setToast(""), 2200);
+  };
+
+  const deleteWork = async (work: SnsdWork) => {
+    setOpenMenu(null);
+    if (!window.confirm(`‘${work.title}’ 작품을 삭제할까요?\n삭제한 작품과 TXT 파일은 복구할 수 없습니다.`)) return;
+    const response = await fetch(snsdApiUrl(`/api/works/${work.id}`), {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ createdBy: getSnsdUserId() }),
+    });
+    if (!response.ok) { setError(await readApiError(response)); return; }
+    setWorks(current => current.filter(candidate => candidate.id !== work.id));
+    setBookmarked(current => {
+      const next = new Set(current);
+      next.delete(work.id);
+      window.localStorage.setItem("snsd-bookmarked-ids", JSON.stringify([...next]));
+      return next;
+    });
+    setToast("삭제되었습니다.");
+    window.setTimeout(() => setToast(""), 2200);
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}><h1>ZZIKSTYPE</h1></header>
@@ -256,7 +307,17 @@ export default function Snsd() {
                     <div className={styles.postAvatar}><img src={AVATAR_URL} alt="" width="32" height="32" /></div>
                     <div className={styles.postHeaderInfo}><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
                   </div>
-                  <button className={styles.moreButton} type="button" aria-label="더보기"><MoreIcon /></button>
+                  {Boolean(work.is_owner) && (
+                    <div className={styles.moreWrapper}>
+                      <button className={styles.moreButton} type="button" aria-label="더보기" aria-expanded={openMenu === work.id} onClick={() => setOpenMenu(current => current === work.id ? null : work.id)}><MoreIcon /></button>
+                      {openMenu === work.id && (
+                        <div className={styles.postDropdown}>
+                          <button type="button" onClick={() => beginEdit(work)}>수정</button>
+                          <button type="button" onClick={() => void deleteWork(work)}>삭제</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={styles.postContent}>
                   <a className={styles.workTitle} href={`/snsd/view/${work.id}`} target="_blank" rel="noopener noreferrer">{work.title}</a>
@@ -292,6 +353,21 @@ export default function Snsd() {
           ))}
         </section>
       </main>
+      {openMenu !== null && <button className={styles.menuBackdrop} type="button" aria-label="메뉴 닫기" onClick={() => setOpenMenu(null)} />}
+      {editing && (
+        <div className={styles.modalOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setEditing(null); }}>
+          <div className={styles.modalBox} role="dialog" aria-modal="true" aria-labelledby="edit-work-title">
+            <div className={styles.modalHeader}><h2 id="edit-work-title">게시글 수정</h2><button type="button" onClick={() => setEditing(null)} aria-label="닫기">×</button></div>
+            <div className={styles.modalBody}>
+              <label>제목<input value={editDraft.title} onChange={event => setEditDraft(current => ({ ...current, title: event.target.value }))} maxLength={120} /></label>
+              <label>작가<input value={editDraft.author} onChange={event => setEditDraft(current => ({ ...current, author: event.target.value }))} maxLength={80} /></label>
+              <label>씨피<input value={editDraft.pairing} onChange={event => setEditDraft(current => ({ ...current, pairing: event.target.value }))} maxLength={80} /></label>
+              <label>추천 이유<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
+            </div>
+            <div className={styles.modalFooter}><button type="button" className={styles.cancelButton} onClick={() => setEditing(null)}>취소</button><button type="button" className={styles.confirmButton} disabled={savingEdit} onClick={() => void saveEdit()}>{savingEdit ? "저장 중…" : "수정하기"}</button></div>
+          </div>
+        </div>
+      )}
       <div className={`${styles.toast} ${toast ? styles.toastVisible : ""}`}>{toast}</div>
     </div>
   );
