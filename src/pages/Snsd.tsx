@@ -4,8 +4,9 @@ import {
   getSnsdReadHistory,
   getSnsdReadProgressMap,
   cacheSnsdViewerWork,
+  cancelPrefetchSnsdViewer,
   fetchSnsdViewerContent,
-  hasCachedSnsdViewerContent,
+  getCachedSnsdViewerWorkIds,
   prefetchSnsdViewer,
   readApiError,
   removeCachedSnsdViewerContent,
@@ -166,6 +167,7 @@ export default function Snsd() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commentRequestsRef = useRef<Map<number, Promise<SnsdComment[]>>>(new Map());
   const commentPrefetchTimersRef = useRef<Map<number, number>>(new Map());
+  const viewerPrefetchTimersRef = useRef<Map<number, number>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>(readCachedWorks);
   const hasWorksRef = useRef(works.length > 0);
   const [visibleWorkLimit, setVisibleWorkLimit] = useState(40);
@@ -221,8 +223,8 @@ export default function Snsd() {
       hasWorksRef.current = true;
       writeCachedWorks(loadedWorks);
       const refreshOfflineState = () => {
-        void Promise.all(loadedWorks.map(async work => [work.id, await hasCachedSnsdViewerContent(work.id)] as const))
-          .then(cachedIds => setOfflineSaved(new Set(cachedIds.filter(([, cached]) => cached).map(([workId]) => workId))));
+        void getCachedSnsdViewerWorkIds(loadedWorks.map(work => work.id))
+          .then(setOfflineSaved);
       };
       const idleWindow = window as Window & {
         requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
@@ -275,6 +277,8 @@ export default function Snsd() {
   useEffect(() => () => {
     commentPrefetchTimersRef.current.forEach(timer => window.clearTimeout(timer));
     commentPrefetchTimersRef.current.clear();
+    viewerPrefetchTimersRef.current.forEach(timer => window.clearTimeout(timer));
+    viewerPrefetchTimersRef.current.clear();
   }, []);
 
   useEffect(() => { void loadWorks(); }, [loadWorks]);
@@ -582,9 +586,25 @@ export default function Snsd() {
     }
 
     viewerWindow.opener = null;
-    viewerWindow.document.title = "불러오는 중 · SNSDFF";
-    viewerWindow.document.body.innerHTML = '<p style="margin:40px;font:16px system-ui,sans-serif">작품을 불러오는 중입니다…</p>';
     viewerWindow.location.replace(url);
+  };
+
+  const scheduleViewerPrefetch = (work: SnsdWork) => {
+    if (viewerPrefetchTimersRef.current.has(work.id)) return;
+    const timer = window.setTimeout(() => {
+      viewerPrefetchTimersRef.current.delete(work.id);
+      void prefetchSnsdViewer(work);
+    }, 180);
+    viewerPrefetchTimersRef.current.set(work.id, timer);
+  };
+
+  const cancelViewerPrefetch = (workId: number) => {
+    const timer = viewerPrefetchTimersRef.current.get(workId);
+    if (timer !== undefined) {
+      window.clearTimeout(timer);
+      viewerPrefetchTimersRef.current.delete(workId);
+    }
+    cancelPrefetchSnsdViewer(workId);
   };
 
   const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
@@ -734,18 +754,13 @@ export default function Snsd() {
             <article
               className={styles.card}
               key={work.id}
-              role="link"
-              tabIndex={0}
-              aria-label={`${work.title} 작품 읽기`}
               onClick={event => {
                 const target = event.target as HTMLElement;
                 if (target.closest("button, a, input, textarea, label, [data-card-action]")) return;
                 openWork(work);
               }}
-              onKeyDown={event => {
-                if (event.target === event.currentTarget && event.key === "Enter") openWork(work);
-              }}
-              onPointerEnter={() => { void prefetchSnsdViewer(work); }}
+              onPointerEnter={() => scheduleViewerPrefetch(work)}
+              onPointerLeave={() => cancelViewerPrefetch(work.id)}
               onTouchStart={() => { void prefetchSnsdViewer(work); }}
             >
               <div className={styles.cardBody}>
