@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getSnsdUserId,
   getSnsdReadHistory,
@@ -60,6 +60,18 @@ function downloadFilename(work: SnsdWork) {
   const author = safePart(work.author) || "작가 미상";
   return `[${pairing}] ${title} w.${author}.txt`;
 }
+
+const SnsdCommentItem = memo(function SnsdCommentItem({ comment }: { comment: SnsdComment }) {
+  return (
+    <div className={styles.comment}>
+      <img src={AVATAR_URL} alt="" className={styles.commentAvatar} />
+      <div className={styles.commentBody}>
+        <div className={styles.commentHeader}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div>
+        <p>{comment.content}</p>
+      </div>
+    </div>
+  );
+});
 
 export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -542,9 +554,7 @@ export default function Snsd() {
                 )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
-                    {(comments[work.id] ?? []).map(comment => (
-                      <div className={styles.comment} key={comment.id}><img src={AVATAR_URL} alt="" className={styles.commentAvatar} /><div className={styles.commentBody}><div className={styles.commentHeader}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div><p>{comment.content}</p></div></div>
-                    ))}
+                    {(comments[work.id] ?? []).map(comment => <SnsdCommentItem comment={comment} key={comment.id} />)}
                     <div className={styles.commentForm}>
                       <div className={styles.commentInputHeader}><img src={AVATAR_URL} alt="" /><span>익명</span></div>
                       <textarea value={commentText[work.id] ?? ""} onChange={event => setCommentText(current => ({ ...current, [work.id]: event.target.value }))} placeholder="공감할래말래" rows={1} />
