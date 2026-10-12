@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
+import { markSnsdWorkRead, readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
 import styles from "./SnsdViewer.module.css";
 
 type ReaderBookmark = {
@@ -54,8 +54,10 @@ export default function SnsdViewer() {
 
       if (!loadedWork) throw new Error("작품을 찾을 수 없습니다.");
       if (!contentResponse.ok) throw new Error(await readApiError(contentResponse));
+      const loadedContent = await contentResponse.text();
       setWork(loadedWork);
-      setContent(await contentResponse.text());
+      setContent(loadedContent);
+      markSnsdWorkRead(id);
     };
 
     loadViewer().catch(requestError => {

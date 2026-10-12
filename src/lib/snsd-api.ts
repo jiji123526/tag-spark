@@ -23,6 +23,7 @@ export type SnsdComment = {
 
 const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
+export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 
 export function snsdApiUrl(path: string) {
   return `${SNSD_API_URL}${path}`;
@@ -35,6 +36,22 @@ export function getSnsdUserId() {
   const id = crypto.randomUUID();
   window.localStorage.setItem(key, id);
   return id;
+}
+
+export function getSnsdReadHistory() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SNSD_READ_HISTORY_KEY) ?? "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {} as Record<string, number>;
+    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "number" && Number.isFinite(value))) as Record<string, number>;
+  } catch {
+    return {} as Record<string, number>;
+  }
+}
+
+export function markSnsdWorkRead(workId: string | number) {
+  const history = getSnsdReadHistory();
+  history[String(workId)] = Date.now();
+  window.localStorage.setItem(SNSD_READ_HISTORY_KEY, JSON.stringify(history));
 }
 
 export async function readApiError(response: Response) {

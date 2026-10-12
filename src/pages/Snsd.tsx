@@ -1,7 +1,9 @@
 import { ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getSnsdUserId,
+  getSnsdReadHistory,
   readApiError,
+  SNSD_READ_HISTORY_KEY,
   snsdApiUrl,
   SnsdComment,
   SnsdWork,
@@ -53,7 +55,7 @@ export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [works, setWorks] = useState<SnsdWork[]>([]);
-  const [sort, setSort] = useState<"top" | "new" | "bookmarked">("top");
+  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("top");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [composeOpen, setComposeOpen] = useState(() => window.localStorage.getItem(COMPOSE_COLLAPSED_KEY) !== "true");
@@ -74,6 +76,7 @@ export default function Snsd() {
   const [editing, setEditing] = useState<SnsdWork | null>(null);
   const [editDraft, setEditDraft] = useState({ title: "", author: "", pairing: "", reason: "" });
   const [savingEdit, setSavingEdit] = useState(false);
+  const [readHistory, setReadHistory] = useState<Record<string, number>>(() => getSnsdReadHistory());
   const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
     const stored = window.localStorage.getItem("snsd-bookmarked-ids");
     try { return new Set(stored ? JSON.parse(stored) : []); } catch { return new Set(); }
@@ -101,6 +104,19 @@ export default function Snsd() {
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
   useEffect(() => {
+    const refreshReadHistory = () => setReadHistory(getSnsdReadHistory());
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === SNSD_READ_HISTORY_KEY) refreshReadHistory();
+    };
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", refreshReadHistory);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", refreshReadHistory);
+    };
+  }, []);
+
+  useEffect(() => {
     if (searchOpen) requestAnimationFrame(() => searchInputRef.current?.focus());
   }, [searchOpen]);
 
@@ -112,12 +128,17 @@ export default function Snsd() {
         .some(value => value.toLocaleLowerCase("ko").includes(query)));
     }
     if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
+    if (sort === "archive") {
+      return works
+        .filter(work => readHistory[String(work.id)])
+        .sort((a, b) => readHistory[String(b.id)] - readHistory[String(a.id)]);
+    }
     const sorted = [...works];
     if (sort === "new") {
       return sorted.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
     }
     return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
-  }, [bookmarked, searchOpen, searchQuery, sort, works]);
+  }, [bookmarked, readHistory, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
     setSearchOpen(false);
@@ -353,6 +374,7 @@ export default function Snsd() {
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">개추순</button>
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
+          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">보관함</button>
         </nav>}
 
         <section className={styles.list}>
@@ -362,6 +384,8 @@ export default function Snsd() {
                 ? "검색 결과가 없습니다."
                 : sort === "bookmarked"
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
+                  : sort === "archive"
+                    ? <>읽은 작품이 없습니다.<br />작품 카드를 열면 여기에 저장됩니다.</>
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
           )}
