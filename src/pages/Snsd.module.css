@@ -229,8 +229,8 @@
   align-items: center;
   justify-content: center;
   min-height: 32px;
-  margin-right: -2px;
-  padding: 4px 4px 4px 8px;
+  margin-right: -6px;
+  padding: 4px 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -291,7 +291,8 @@
   justify-content: center;
   gap: 3px;
   min-height: 32px;
-  padding: 0 8px 0 0;
+  margin-left: -8px;
+  padding: 4px 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -305,8 +306,8 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .voteButton svg, .commentButton svg, .iconButton svg { width: 20px; height: 20px; flex-shrink: 0; }
-.iconButton { gap: 6px; padding: 4px 8px; font-size: 14px; font-weight: 600; }
-.actionsRight .iconButton:last-child { padding-right: 3px; }
+.iconButton { gap: 6px; margin-left: 0; font-size: 14px; font-weight: 600; }
+.actionsRight .iconButton:last-child { margin-right: -5px; }
 .voteButton:hover, .commentButton:hover, .iconButton:hover { background: rgba(118, 118, 127, 0.08); color: var(--snsd-text); }
 .voteButton.voted { color: #f33d4d; }
 .bookmarked { color: var(--snsd-text); }
