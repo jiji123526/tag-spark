@@ -143,14 +143,17 @@ async function getWork(request: Request, env: Env, workId: number) {
 }
 
 async function getContent(request: Request, env: Env, workId: number) {
-  const work = await env.tagspark_snsd.prepare("SELECT object_key FROM works WHERE id = ?").bind(workId).first<{ object_key: string }>();
+  const work = await env.tagspark_snsd.prepare("SELECT object_key, original_filename FROM works WHERE id = ?").bind(workId).first<{ object_key: string; original_filename: string }>();
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
   const object = await env.FILES.get(work.object_key);
   if (!object) return json(request, env, { error: "파일을 찾을 수 없습니다." }, 404);
   const headers = new Headers(corsHeaders(request, env));
   object.writeHttpMetadata(headers);
   headers.set("Content-Type", "text/plain; charset=utf-8");
-  headers.set("Content-Disposition", "inline");
+  const download = new URL(request.url).searchParams.get("download") === "1";
+  headers.set("Content-Disposition", download
+    ? `attachment; filename="work-${workId}.txt"; filename*=UTF-8''${encodeURIComponent(work.original_filename)}`
+    : "inline");
   headers.set("Cache-Control", "private, max-age=300");
   headers.set("ETag", object.httpEtag);
   return new Response(object.body, { headers });

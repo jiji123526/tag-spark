@@ -18,6 +18,7 @@ const BookmarkIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hid
 const ShareIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12.664 2.275a.934.934 0 0 0-1.324 0l-5.004 5A.937.937 0 0 0 7.66 8.6l3.399-3.398v9.614c0 .519.418.937.937.937.52 0 .938-.418.938-.938V5.202L16.332 8.6a.937.937 0 0 0 1.324-1.324l-4.992-5ZM5.125 15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124a3.438 3.438 0 0 0 3.438 3.438h10.625a3.438 3.438 0 0 0 3.437-3.438V15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124c0 .864-.7 1.563-1.563 1.563H6.688c-.863 0-1.562-.7-1.562-1.563V15.44Z" fill="currentColor" /></svg>;
 const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.125 12a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm-6.25 0a1.875 1.875 0 1 1-3.751 0 1.875 1.875 0 0 1 3.751 0ZM5.75 13.875a1.875 1.875 0 1 1 0-3.75 1.875 1.875 0 0 1 0 3.75Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
+const DownloadIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M11 3a1 1 0 1 1 2 0v10.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V3Zm-7 13a1 1 0 0 1 1 1v2h14v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1Z" fill="currentColor" /></svg>;
 
 function relativeDate(value: string) {
   const date = new Date(value);
@@ -247,6 +248,8 @@ export default function Snsd() {
     window.open(`/snsd/view/${workId}`, "_blank", "noopener,noreferrer");
   };
 
+  const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
+
   const beginEdit = (work: SnsdWork) => {
     setOpenMenu(null);
     setEditing(work);
@@ -384,16 +387,19 @@ export default function Snsd() {
                     <div className={styles.postAvatar}><img src={AVATAR_URL} alt="" width="32" height="32" /></div>
                     <div className={styles.postHeaderInfo}><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
                   </div>
-                  {Boolean(work.is_owner) && (
+                  {Boolean(work.is_owner) ? (
                     <div className={styles.moreWrapper}>
                       <button className={styles.moreButton} type="button" aria-label="더보기" aria-expanded={openMenu === work.id} onClick={() => setOpenMenu(current => current === work.id ? null : work.id)}><MoreIcon /></button>
                       {openMenu === work.id && (
                         <div className={styles.postDropdown}>
                           <button type="button" onClick={() => beginEdit(work)}>수정</button>
-                          <button type="button" onClick={() => void deleteWork(work)}>삭제</button>
+                          <button className={styles.deleteMenuItem} type="button" onClick={() => void deleteWork(work)}>삭제</button>
+                          <a href={downloadUrl(work.id)} download={work.original_filename} onClick={() => setOpenMenu(null)}>다운로드</a>
                         </div>
                       )}
                     </div>
+                  ) : (
+                    <a className={styles.moreButton} href={downloadUrl(work.id)} download={work.original_filename} aria-label={`${work.title} 다운로드`}><DownloadIcon /></a>
                   )}
                 </div>
                 <div className={styles.postContent}>
