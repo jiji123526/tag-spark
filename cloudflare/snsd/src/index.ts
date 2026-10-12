@@ -58,6 +58,18 @@ function parseId(value: string) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+function downloadFilename(work: { title: string; author: string; pairing: string }) {
+  const safePart = (value: string, maxLength: number) => value
+    .replace(/[\\/:*?"<>|\u0000-\u001f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
+  const pairing = safePart(work.pairing, 60) || "씨피 미상";
+  const title = safePart(work.title.replace(/\.txt$/i, ""), 120) || "제목 없음";
+  const author = safePart(work.author, 80) || "작가 미상";
+  return `[${pairing}] ${title} w.${author}.txt`;
+}
+
 async function listWorks(request: Request, env: Env, url: URL) {
   const viewer = url.searchParams.get("viewer")?.trim().slice(0, 100) ?? "";
   const order = url.searchParams.get("sort") === "new"
@@ -143,7 +155,7 @@ async function getWork(request: Request, env: Env, workId: number) {
 }
 
 async function getContent(request: Request, env: Env, workId: number) {
-  const work = await env.tagspark_snsd.prepare("SELECT object_key, original_filename FROM works WHERE id = ?").bind(workId).first<{ object_key: string; original_filename: string }>();
+  const work = await env.tagspark_snsd.prepare("SELECT object_key, title, author, pairing FROM works WHERE id = ?").bind(workId).first<{ object_key: string; title: string; author: string; pairing: string }>();
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
   const object = await env.FILES.get(work.object_key);
   if (!object) return json(request, env, { error: "파일을 찾을 수 없습니다." }, 404);
@@ -151,8 +163,9 @@ async function getContent(request: Request, env: Env, workId: number) {
   object.writeHttpMetadata(headers);
   headers.set("Content-Type", "text/plain; charset=utf-8");
   const download = new URL(request.url).searchParams.get("download") === "1";
+  const filename = downloadFilename(work);
   headers.set("Content-Disposition", download
-    ? `attachment; filename="work-${workId}.txt"; filename*=UTF-8''${encodeURIComponent(work.original_filename)}`
+    ? `attachment; filename="work-${workId}.txt"; filename*=UTF-8''${encodeURIComponent(filename)}`
     : "inline");
   headers.set("Cache-Control", "private, max-age=300");
   headers.set("ETag", object.httpEtag);

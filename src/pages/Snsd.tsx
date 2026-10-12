@@ -51,6 +51,14 @@ function pairingTags(value: string) {
     .filter(Boolean);
 }
 
+function downloadFilename(work: SnsdWork) {
+  const safePart = (value: string) => value.replace(/[\\/:*?"<>|\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim();
+  const pairing = safePart(work.pairing) || "씨피 미상";
+  const title = safePart(work.title.replace(/\.txt$/i, "")) || "제목 없음";
+  const author = safePart(work.author) || "작가 미상";
+  return `[${pairing}] ${title} w.${author}.txt`;
+}
+
 export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -418,12 +426,12 @@ export default function Snsd() {
                         <div className={styles.postDropdown}>
                           <button type="button" onClick={() => beginEdit(work)}>수정</button>
                           <button className={styles.deleteMenuItem} type="button" onClick={() => void deleteWork(work)}>삭제</button>
-                          <a href={downloadUrl(work.id)} download={work.original_filename} onClick={() => setOpenMenu(null)}>다운로드</a>
+                          <a href={downloadUrl(work.id)} download={downloadFilename(work)} onClick={() => setOpenMenu(null)}>다운로드</a>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <a className={styles.moreButton} href={downloadUrl(work.id)} download={work.original_filename} aria-label={`${work.title} 다운로드`}><DownloadIcon /></a>
+                    <a className={styles.moreButton} href={downloadUrl(work.id)} download={downloadFilename(work)} aria-label={`${work.title} 다운로드`}><DownloadIcon /></a>
                   )}
                 </div>
                 <div className={styles.postContent}>
