@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
 import styles from "./SnsdViewer.module.css";
 
 export default function SnsdViewer() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [work, setWork] = useState<SnsdWork | null>(null);
   const [content, setContent] = useState("");
   const [fontSize, setFontSize] = useState(() => Number(window.localStorage.getItem("snsd-reader-font-size")) || 17);
@@ -14,15 +13,33 @@ export default function SnsdViewer() {
   useEffect(() => {
     if (!id) return;
     const controller = new AbortController();
-    Promise.all([
-      fetch(snsdApiUrl(`/api/works/${id}`), { signal: controller.signal }),
-      fetch(snsdApiUrl(`/api/works/${id}/content`), { signal: controller.signal }),
-    ]).then(async ([workResponse, contentResponse]) => {
-      if (!workResponse.ok) throw new Error(await readApiError(workResponse));
+    const loadViewer = async () => {
+      const [workResponse, contentResponse] = await Promise.all([
+        fetch(snsdApiUrl(`/api/works/${id}`), { signal: controller.signal }),
+        fetch(snsdApiUrl(`/api/works/${id}/content`), { signal: controller.signal }),
+      ]);
+
+      let loadedWork: SnsdWork | undefined;
+      if (workResponse.ok) {
+        loadedWork = await workResponse.json();
+      } else if (workResponse.status === 404) {
+        // Older Worker deployments may have the list/content routes without the
+        // single-work metadata route. The list is a safe compatibility fallback.
+        const listResponse = await fetch(snsdApiUrl("/api/works?sort=new"), { signal: controller.signal });
+        if (!listResponse.ok) throw new Error(await readApiError(listResponse));
+        const works = await listResponse.json() as SnsdWork[];
+        loadedWork = works.find(candidate => String(candidate.id) === id);
+      } else {
+        throw new Error(await readApiError(workResponse));
+      }
+
+      if (!loadedWork) throw new Error("작품을 찾을 수 없습니다.");
       if (!contentResponse.ok) throw new Error(await readApiError(contentResponse));
-      setWork(await workResponse.json());
+      setWork(loadedWork);
       setContent(await contentResponse.text());
-    }).catch(requestError => {
+    };
+
+    loadViewer().catch(requestError => {
       if (requestError?.name !== "AbortError") setError(requestError instanceof Error ? requestError.message : "작품을 불러오지 못했습니다.");
     });
     return () => controller.abort();
@@ -46,7 +63,7 @@ export default function SnsdViewer() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <button type="button" onClick={() => window.history.length > 1 ? navigate(-1) : navigate("/snsd")}>← 목록</button>
+        <a className={styles.backLink} href="/snsd">← 목록</a>
         <div><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
         <div className={styles.fontControls}><button type="button" onClick={() => changeFontSize(fontSize - 1)} aria-label="글자 작게">가</button><button type="button" onClick={() => changeFontSize(fontSize + 1)} aria-label="글자 크게">가+</button></div>
       </header>
