@@ -280,7 +280,7 @@ export default function SnsdViewer() {
         <button className={styles.backLink} type="button" onClick={returnToList}>← 목록</button>
         <div className={styles.workMeta}>
           <div className={styles.workTitleRow}>
-            <strong>{work?.title ?? "불러오는 중…"}</strong>
+            <strong>{work?.title}</strong>
           </div>
           {work && <span>{work.author} · {work.pairing}</span>}
         </div>
@@ -336,9 +336,9 @@ export default function SnsdViewer() {
       {offlineRead && <div className={styles.offlineBanner} role="status">오프라인 저장본으로 읽는 중</div>}
       <main className={styles.reader}>
         {error && <p className={styles.error} role="alert">{error}</p>}
-        {!error && <article style={{ fontSize }}>{content
-          ? paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{renderParagraph(paragraph, index)}</p>)
-          : "본문을 불러오는 중입니다…"}</article>}
+        {!error && <article style={{ fontSize }}>
+          {content && paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{renderParagraph(paragraph, index)}</p>)}
+        </article>}
       </main>
       {chaptersOpen && (
         <div className={styles.chapterOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>

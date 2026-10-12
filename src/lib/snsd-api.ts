@@ -36,7 +36,7 @@ export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
 const SNSD_CONTENT_CACHE_NAME = "snsd-content-v3";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
 const SNSD_VIEWER_WORK_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const viewerContentRequests = new Map<number, Promise<void>>();
+const viewerContentRequests = new Map<number, Promise<Response>>();
 
 export function snsdApiUrl(path: string) {
   return `${SNSD_API_URL}${path}`;
@@ -131,15 +131,11 @@ export function getCachedSnsdViewerWork(workId: string | number) {
 
 export function prefetchSnsdViewer(work: SnsdWork) {
   const existing = viewerContentRequests.get(work.id);
-  if (existing) return existing;
+  if (existing) return existing.catch(() => undefined);
   const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "no-store" })
-    .then(async response => {
-      if (response.ok) await response.arrayBuffer();
-    })
-    .catch(() => undefined)
     .finally(() => viewerContentRequests.delete(work.id));
   viewerContentRequests.set(work.id, request);
-  return request;
+  return request.catch(() => undefined);
 }
 
 export async function getCachedSnsdViewerContent(workId: string | number) {
@@ -159,7 +155,19 @@ async function fetchAndCacheSnsdViewerContent(
 ) {
   const url = snsdApiUrl(`/api/works/${workId}/content`);
   try {
-    const response = await fetch(url, { signal, cache: "no-store" });
+    const prefetchedRequest = viewerContentRequests.get(Number(workId));
+    let response: Response;
+    let reusedPrefetch = false;
+    if (prefetchedRequest) {
+      try {
+        response = await prefetchedRequest;
+        reusedPrefetch = true;
+      } catch {
+        response = await fetch(url, { signal, cache: "no-store" });
+      }
+    } else {
+      response = await fetch(url, { signal, cache: "no-store" });
+    }
     if (options.cacheForOffline && response.ok && "caches" in window) {
       try {
         const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
@@ -168,7 +176,7 @@ async function fetchAndCacheSnsdViewerContent(
         // Reading should still succeed if Cache Storage is unavailable or full.
       }
     }
-    return response;
+    return reusedPrefetch ? response.clone() : response;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const cached = await getCachedSnsdViewerContent(workId);
