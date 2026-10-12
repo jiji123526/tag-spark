@@ -9,7 +9,7 @@ export default function SnsdViewer() {
   const [content, setContent] = useState("");
   const [fontSize, setFontSize] = useState(() => Number(window.localStorage.getItem("snsd-reader-font-size")) || 17);
   const [error, setError] = useState("");
-  const [headerCompact, setHeaderCompact] = useState(() => window.scrollY > 40);
+  const [headerHidden, setHeaderHidden] = useState(() => window.scrollY > 40);
 
   useEffect(() => {
     if (!id) return;
@@ -59,7 +59,7 @@ export default function SnsdViewer() {
     let frame = 0;
     const updateHeader = () => {
       frame = 0;
-      setHeaderCompact(window.scrollY > 40);
+      setHeaderHidden(window.scrollY > 40);
     };
     const handleScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(updateHeader);
@@ -80,7 +80,7 @@ export default function SnsdViewer() {
 
   return (
     <div className={styles.page}>
-      <header className={`${styles.header} ${headerCompact ? styles.headerCompact : ""}`}>
+      <header className={`${styles.header} ${headerHidden ? styles.headerHidden : ""}`}>
         <a className={styles.backLink} href="/snsd">← 목록</a>
         <div className={styles.workMeta}><strong>{work?.title ?? "불러오는 중…"}</strong>{work && <span>{work.author} · {work.pairing}</span>}</div>
         <div className={styles.fontControls}><button type="button" onClick={() => changeFontSize(fontSize - 1)} aria-label="글자 작게">가</button><button type="button" onClick={() => changeFontSize(fontSize + 1)} aria-label="글자 크게">가+</button></div>
