@@ -46,6 +46,7 @@
   z-index: 100;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 56px;
   padding: 0 16px;
   background: var(--snsd-surface);
@@ -53,7 +54,57 @@
 }
 
 .header h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--snsd-text);
+  cursor: pointer;
+}
+.searchButton:hover { background: var(--snsd-field); }
+.searchButton svg { width: 21px; height: 21px; }
 .main { width: 100%; max-width: 640px; margin: 0 auto; padding: 0 16px; }
+.searchPanel {
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  border-bottom: 1px solid var(--snsd-border);
+  background: var(--snsd-surface);
+}
+.searchPanel > svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--snsd-muted); }
+.searchPanel input {
+  min-width: 0;
+  flex: 1;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--snsd-text);
+  font: inherit;
+  font-size: 15px;
+}
+.searchPanel input::placeholder { color: var(--snsd-muted); }
+.searchPanel button {
+  padding: 4px 0 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--snsd-muted);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
 .compose { border-bottom: 1px solid var(--snsd-border); }
 .composeOpen { padding-bottom: 20px; }
 
@@ -213,13 +264,16 @@
   min-height: 20px;
   padding: 1px 7px;
   border-radius: 999px;
+  border: 0;
   background: var(--snsd-field);
   color: #62626a;
   font-size: 11px;
   font-weight: 500;
   line-height: 18px;
   white-space: nowrap;
+  cursor: pointer;
 }
+.pairingTag:hover { color: var(--snsd-text); }
 .actions { display: flex; justify-content: space-between; align-items: center; padding-top: 0; margin-top: -5px; }
 .actionsLeft { display: flex; align-items: center; gap: 4px; }
 .actionsRight { display: flex; align-items: center; gap: 0; }

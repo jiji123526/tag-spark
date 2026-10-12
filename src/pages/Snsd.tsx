@@ -16,6 +16,7 @@ const CommentIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M
 const BookmarkIcon = ({ filled = false }: { filled?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={filled ? "M4.5 4.875C4.5 3.84 5.34 3 6.375 3h11.25c1.035 0 1.875.84 1.875 1.875v16.188a.938.938 0 0 1-1.48.762L12 17.526l-6.02 4.297a.938.938 0 0 1-1.48-.762V4.875Z" : "M4.5 4.875C4.5 3.84 5.34 3 6.375 3v16.242l5.082-3.629a.93.93 0 0 1 1.09 0l5.078 3.63V4.874H6.375V3h11.25c1.035 0 1.875.84 1.875 1.875v16.188a.938.938 0 0 1-1.48.762L12 17.526l-6.02 4.297a.938.938 0 0 1-1.48-.762z"} fill="currentColor" /></svg>;
 const ShareIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12.664 2.275a.934.934 0 0 0-1.324 0l-5.004 5A.937.937 0 0 0 7.66 8.6l3.399-3.398v9.614c0 .519.418.937.937.937.52 0 .938-.418.938-.938V5.202L16.332 8.6a.937.937 0 0 0 1.324-1.324l-4.992-5ZM5.125 15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124a3.438 3.438 0 0 0 3.438 3.438h10.625a3.438 3.438 0 0 0 3.437-3.438V15.44a.935.935 0 0 0-.938-.938.935.935 0 0 0-.937.938v3.124c0 .864-.7 1.563-1.563 1.563H6.688c-.863 0-1.562-.7-1.562-1.563V15.44Z" fill="currentColor" /></svg>;
 const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.125 12a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm-6.25 0a1.875 1.875 0 1 1-3.751 0 1.875 1.875 0 0 1 3.751 0ZM5.75 13.875a1.875 1.875 0 1 1 0-3.75 1.875 1.875 0 0 1 0 3.75Z" fill="currentColor" /></svg>;
+const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 
 function relativeDate(value: string) {
   const date = new Date(value);
@@ -48,8 +49,11 @@ function pairingTags(value: string) {
 
 export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [works, setWorks] = useState<SnsdWork[]>([]);
   const [sort, setSort] = useState<"top" | "new" | "bookmarked">("top");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [composeOpen, setComposeOpen] = useState(true);
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
@@ -94,14 +98,35 @@ export default function Snsd() {
 
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
+  useEffect(() => {
+    if (searchOpen) requestAnimationFrame(() => searchInputRef.current?.focus());
+  }, [searchOpen]);
+
   const visibleWorks = useMemo(() => {
+    if (searchOpen) {
+      const query = searchQuery.trim().toLocaleLowerCase("ko");
+      if (!query) return works;
+      return works.filter(work => [work.title, work.author, work.pairing]
+        .some(value => value.toLocaleLowerCase("ko").includes(query)));
+    }
     if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
     const sorted = [...works];
     if (sort === "new") {
       return sorted.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
     }
     return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
-  }, [bookmarked, sort, works]);
+  }, [bookmarked, searchOpen, searchQuery, sort, works]);
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  const searchPairing = (tag: string) => {
+    setSearchQuery(tag);
+    setSearchOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const chooseFile = (nextFile?: File) => {
     if (!nextFile) return;
@@ -259,9 +284,26 @@ export default function Snsd() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}><h1>SNSDFF</h1></header>
+      <header className={styles.header}>
+        <h1>SNSDFF</h1>
+        <button className={styles.searchButton} type="button" aria-label="작품 검색" aria-expanded={searchOpen} onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><SearchIcon /></button>
+      </header>
       <main className={styles.main}>
-        <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
+        {searchOpen && (
+          <div className={styles.searchPanel} role="search">
+            <SearchIcon />
+            <input
+              ref={searchInputRef}
+              value={searchQuery}
+              onChange={event => setSearchQuery(event.target.value)}
+              onKeyDown={event => { if (event.key === "Escape") closeSearch(); }}
+              placeholder="제목, 작가, 씨피 검색"
+              aria-label="제목, 작가, 씨피 검색"
+            />
+            <button type="button" onClick={closeSearch} aria-label="검색 닫기">×</button>
+          </div>
+        )}
+        {!searchOpen && <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
           <button className={styles.composeToggle} type="button" onClick={() => setComposeOpen(open => !open)} aria-expanded={composeOpen}>
             <span>작품 추천</span><span className={styles.chevron}>{composeOpen ? "−" : "+"}</span>
           </button>
@@ -290,19 +332,23 @@ export default function Snsd() {
               <button className={styles.submitButton} disabled={submitting} type="submit">{submitting ? "업로드 중…" : "제출"}</button>
             </form>
           )}
-        </section>
+        </section>}
 
-        {!composeOpen && error && <p className={styles.error} role="alert">{error}</p>}
-        <nav className={styles.sortBar} aria-label="작품 정렬">
+        {!searchOpen && !composeOpen && error && <p className={styles.error} role="alert">{error}</p>}
+        {!searchOpen && <nav className={styles.sortBar} aria-label="작품 정렬">
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">개추순</button>
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
-        </nav>
+        </nav>}
 
         <section className={styles.list}>
           {!loading && visibleWorks.length === 0 && (
             <div className={styles.empty}>
-              {sort === "bookmarked" ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</> : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
+              {searchOpen
+                ? "검색 결과가 없습니다."
+                : sort === "bookmarked"
+                  ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
+                  : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
           )}
           {visibleWorks.map(work => (
@@ -342,7 +388,7 @@ export default function Snsd() {
                 <div className={styles.postContent}>
                   <a className={styles.workTitle} href={`/snsd/view/${work.id}`} target="_blank" rel="noopener noreferrer">{work.title}</a>
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
-                    {pairingTags(work.pairing).map((tag, index) => <span className={styles.pairingTag} key={`${tag}-${index}`}>#{tag}</span>)}
+                    {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
                 </div>
                 <div className={styles.actions}>
