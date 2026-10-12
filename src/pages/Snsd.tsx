@@ -816,24 +816,30 @@ export default function Snsd() {
           <div className={`${styles.modalBox} ${styles.helpModal}`} role="dialog" aria-modal="true" aria-labelledby="snsd-help-title">
             <div className={styles.modalHeader}><h2 id="snsd-help-title">SNSDFF 사용법</h2><button type="button" onClick={() => setHelpOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.helpContent}>
-              <p><strong>작품 올리기</strong><span>제목, 작가, 씨피와 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
-              <p><strong>작품 읽기</strong><span>작품 카드를 누르면 본문이 열립니다. 돋보기로 본문을 검색하고, 씨피 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
-              <p><strong>목차</strong><span>뷰어 제목 옆의 아래 화살표를 누르세요. TXT에서 찾은 장·화로 이동할 수 있습니다. 파일에 목차가 없거나 형식이 다르면 목록이 없을 수 있습니다.</span></p>
-              <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
-              <p><strong>이어 읽기</strong><span>읽던 작품 카드에서 ‘이어 읽기’를 누르면 마지막으로 읽던 위치에서 시작합니다.</span></p>
-              <p><strong>뷰어 설정</strong><span>글자 크기를 바꾸고, 본문에서 현재 위치를 여러 곳 북마크할 수 있습니다.</span></p>
-              <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
-              <p><strong>파일 다운로드</strong><span>작품 카드의 점 메뉴에서 TXT 파일을 기기에 저장하세요.</span></p>
-              <p><strong>오프라인 저장</strong><span>작품 카드의 점 메뉴에서 ‘오프라인 저장’을 누르세요. 인터넷이 없어도 보관함의 오프라인 저장 목록에서 읽을 수 있습니다.</span></p>
-              <div className={styles.helpHowTo}>
-                <strong>홈 화면에 추가</strong>
-                <span className={styles.helpHowToIntro}>오프라인 저장한 작품을 인터넷 없이 읽고 싶다면 SNSDFF를 홈 화면에 추가하세요. 앱을 따로 설치하는 것이 아니라 바로가기를 만드는 기능입니다.</span>
-                <ol className={styles.helpSteps}>
-                  <li><strong>iPhone</strong><span>Safari에서 SNSDFF를 열고 공유 버튼 → ‘홈 화면에 추가’ → ‘추가’를 누르세요.</span></li>
-                  <li><strong>Android</strong><span>Chrome에서 SNSDFF를 열고 ⋮ 메뉴 → ‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
-                </ol>
-                <span className={styles.helpHowToNote}>작품을 먼저 오프라인 저장해야 인터넷 없이 읽을 수 있습니다.</span>
-              </div>
+              <section className={styles.helpSection}>
+                <h3>대시보드</h3>
+                <p><strong>작품 올리기</strong><span>제목, 작가, 씨피와 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
+                <p><strong>작품 읽기</strong><span>작품 카드를 누르면 뷰어가 열립니다. 씨피 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
+                <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
+                <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
+                <p><strong>파일 다운로드</strong><span>작품 카드의 점 메뉴에서 TXT 파일을 기기에 저장하세요.</span></p>
+                <p><strong>오프라인 저장</strong><span>작품 카드의 점 메뉴에서 ‘오프라인 저장’을 누르세요. 인터넷이 없어도 보관함의 오프라인 저장 목록에서 읽을 수 있습니다.</span></p>
+                <div className={styles.helpHowTo}>
+                  <strong>홈 화면에 추가</strong>
+                  <span className={styles.helpHowToIntro}>오프라인 저장한 작품을 인터넷 없이 읽고 싶다면 SNSDFF를 홈 화면에 추가하세요. 앱을 따로 설치하는 것이 아니라 바로가기를 만드는 기능입니다.</span>
+                  <ol className={styles.helpSteps}>
+                    <li><strong>iPhone</strong><span>Safari에서 SNSDFF를 열고 공유 버튼 → ‘홈 화면에 추가’ → ‘추가’를 누르세요.</span></li>
+                    <li><strong>Android</strong><span>Chrome에서 SNSDFF를 열고 ⋮ 메뉴 → ‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
+                  </ol>
+                  <span className={styles.helpHowToNote}>작품을 먼저 오프라인 저장해야 인터넷 없이 읽을 수 있습니다.</span>
+                </div>
+              </section>
+              <section className={styles.helpSection}>
+                <h3>뷰어</h3>
+                <p><strong>목차</strong><span>뷰어 오른쪽 위의 햄버거 메뉴에서 ‘목차’를 누르세요. TXT에서 찾은 장·화로 이동할 수 있습니다. 파일에 목차가 없거나 형식이 다르면 목록이 없을 수 있습니다.</span></p>
+                <p><strong>이어 읽기</strong><span>읽던 작품 카드에서 ‘이어 읽기’를 누르면 마지막으로 읽던 위치에서 시작합니다.</span></p>
+                <p><strong>검색과 글자 크기</strong><span>뷰어 오른쪽 위에서 본문을 검색하거나 글자 크기를 바꿀 수 있습니다.</span></p>
+              </section>
             </div>
           </div>
         </div>

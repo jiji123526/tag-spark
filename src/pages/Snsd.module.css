@@ -444,6 +444,9 @@
 .modalBody input, .modalBody textarea { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-field); color: var(--snsd-text); font: inherit; font-size: 14px; resize: vertical; }
 .modalBody input:focus, .modalBody textarea:focus { outline: 0; border-color: var(--snsd-primary); }
 .helpContent { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+.helpSection { display: flex; flex-direction: column; gap: 16px; }
+.helpSection + .helpSection { padding-top: 18px; border-top: 1px solid var(--snsd-border); }
+.helpSection h3 { margin: 0; color: var(--snsd-text); font-size: 16px; font-weight: 700; }
 .helpContent p { display: flex; flex-direction: column; gap: 3px; margin: 0; }
 .helpContent strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; }
 .helpContent span { color: var(--snsd-muted); font-size: 13px; line-height: 1.55; }

@@ -4,18 +4,7 @@ import { cacheSnsdViewerWork, fetchSnsdViewerContent, getCachedSnsdViewerWork, g
 import { detectSnsdChapters, SnsdChapter } from "@/lib/snsd-chapters";
 import styles from "./SnsdViewer.module.css";
 
-type ReaderBookmark = {
-  id: string;
-  paragraph: number;
-  paragraphOffset?: number;
-  excerpt: string;
-  progress: number;
-  scrollY: number;
-  createdAt: number;
-};
-
-const BookmarkIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 3A2.5 2.5 0 0 0 4 5.5v15.56a.94.94 0 0 0 1.48.77L12 17.17l6.52 4.66a.94.94 0 0 0 1.48-.77V5.5A2.5 2.5 0 0 0 17.5 3h-11ZM6 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v13.62l-5.45-3.9a.94.94 0 0 0-1.1 0L6 19.12V5.5Z" fill="currentColor" /></svg>;
-const ChevronDownIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.7 8.7 5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 1.4-1.4Z" fill="currentColor" /></svg>;
+const MenuIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6.75A.75.75 0 0 1 4.75 6h14.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 6.75Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H4.75a.75.75 0 0 1-.75-.75Zm.75 4.5a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H4.75Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const TextSizeIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.25A1.25 1.25 0 0 1 5.25 4h7.5A1.25 1.25 0 0 1 14 5.25v1a.75.75 0 0 1-1.5 0v-.75H10.5v12h1.25a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5H8.5v-12H6.25v.75a.75.75 0 0 1-1.5 0v-1ZM15.5 11.25A1.25 1.25 0 0 1 16.75 10h3A1.25 1.25 0 0 1 21 11.25v.75a.75.75 0 0 1-1.5 0v-.5h-.5v5.25h.5a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.5V11.5h-.5v.5a.75.75 0 0 1-1.5 0v-.75Z" fill="currentColor" /></svg>;
 
@@ -39,15 +28,13 @@ export default function SnsdViewer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
+  const [readerMenuOpen, setReaderMenuOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [chapters, setChapters] = useState<SnsdChapter[] | null>(null);
-  const [bookmarksOpen, setBookmarksOpen] = useState(false);
-  const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
   const normalizedParagraphs = useMemo(() => paragraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [paragraphs]);
-  const bookmarkKey = `snsd-reader-bookmarks-${id}`;
   const searchRanges = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("ko");
     let globalIndex = 0;
@@ -163,25 +150,16 @@ export default function SnsdViewer() {
   }, [content, id]);
 
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(bookmarkKey);
-      const parsed = stored ? JSON.parse(stored) : [];
-      setBookmarks(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      setBookmarks([]);
-    }
-  }, [bookmarkKey]);
-
   useEffect(() => {
-    if (!bookmarksOpen && !chaptersOpen) return;
+    if (!chaptersOpen && !readerMenuOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      setBookmarksOpen(false);
       setChaptersOpen(false);
+      setReaderMenuOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [bookmarksOpen, chaptersOpen]);
+  }, [chaptersOpen, readerMenuOpen]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -261,74 +239,14 @@ export default function SnsdViewer() {
     return nodes;
   };
 
-  const saveBookmarks = (next: ReaderBookmark[]) => {
-    const ordered = [...next].sort((a, b) => a.paragraph - b.paragraph || (a.paragraphOffset ?? 0) - (b.paragraphOffset ?? 0) || a.createdAt - b.createdAt);
-    setBookmarks(ordered);
-    window.localStorage.setItem(bookmarkKey, JSON.stringify(ordered));
-  };
-
-  const currentLocation = () => {
-    const anchor = window.innerHeight * 0.24;
-    let current = 0;
-    paragraphRefs.current.forEach((element, index) => {
-      if (element && element.getBoundingClientRect().top <= anchor) current = index;
-    });
-    const element = paragraphRefs.current[current];
-    const rect = element?.getBoundingClientRect();
-    const paragraphOffset = rect && rect.height > 0 ? Math.min(1, Math.max(0, (anchor - rect.top) / rect.height)) : 0;
-    return { paragraph: current, paragraphOffset };
-  };
-
-  const addBookmark = () => {
-    if (!paragraphs.length) return;
-    const { paragraph, paragraphOffset } = currentLocation();
-    const text = paragraphs[paragraph]?.replace(/\s+/g, " ").trim() || "빈 문단";
-    const excerptStart = Math.min(Math.max(0, Math.floor(text.length * paragraphOffset)), Math.max(0, text.length - 1));
-    const excerptText = text.slice(excerptStart, excerptStart + 72).trim() || text.slice(0, 72);
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const bookmark: ReaderBookmark = {
-      id: crypto.randomUUID(),
-      paragraph,
-      paragraphOffset,
-      excerpt: excerptStart + excerptText.length < text.length ? `${excerptText}…` : excerptText,
-      progress: Math.min(1, window.scrollY / maxScroll),
-      scrollY: window.scrollY,
-      createdAt: Date.now(),
-    };
-    saveBookmarks([...bookmarks, bookmark]);
-  };
-
-  const goToBookmark = (bookmark: ReaderBookmark) => {
-    setBookmarksOpen(false);
-    requestAnimationFrame(() => {
-      let target = paragraphRefs.current[bookmark.paragraph];
-      if (!target) {
-        const matchingIndex = paragraphs.findIndex(paragraph => paragraph.replace(/\s+/g, " ").includes(bookmark.excerpt.replace(/…$/, "")));
-        target = paragraphRefs.current[matchingIndex];
-      }
-      if (target) {
-        const rect = target.getBoundingClientRect();
-        const offset = Math.min(1, Math.max(0, bookmark.paragraphOffset ?? 0));
-        const top = window.scrollY + rect.top + rect.height * offset - window.innerHeight * 0.24;
-        window.scrollTo({ top, behavior: "smooth" });
-      } else {
-        const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-        window.scrollTo({ top: maxScroll * bookmark.progress, behavior: "smooth" });
-      }
-    });
-  };
-
-  const deleteBookmark = (bookmarkId: string) => {
-    saveBookmarks(bookmarks.filter(bookmark => bookmark.id !== bookmarkId));
-  };
-
-  const goToChapter = (chapter: ReaderChapter) => {
+  const goToChapter = (chapter: SnsdChapter) => {
     setChaptersOpen(false);
     requestAnimationFrame(() => paragraphRefs.current[chapter.paragraph]?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   const openChapterList = () => {
     if (chapters === null) setChapters(detectSnsdChapters(paragraphs));
+    setReaderMenuOpen(false);
     setChaptersOpen(true);
     setSearchOpen(false);
     setFontSizeOpen(false);
@@ -353,13 +271,12 @@ export default function SnsdViewer() {
         <div className={styles.workMeta}>
           <div className={styles.workTitleRow}>
             <strong>{work?.title ?? "불러오는 중…"}</strong>
-            {work && <button className={styles.chapterToggle} type="button" onClick={openChapterList} aria-label="목차 열기" aria-expanded={chaptersOpen}><ChevronDownIcon /></button>}
           </div>
           {work && <span>{work.author} · {work.pairing}</span>}
         </div>
         <div className={styles.headerActions}>
           <div className={styles.controlWrapper}>
-            <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
+            <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); setReaderMenuOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
             {searchOpen && (
               <div className={`${styles.popover} ${styles.searchPopover}`} role="search">
                 <div className={styles.searchField}>
@@ -389,7 +306,7 @@ export default function SnsdViewer() {
             )}
           </div>
           <div className={styles.controlWrapper}>
-            <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
+            <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); setReaderMenuOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
             {fontSizeOpen && (
               <div className={`${styles.popover} ${styles.fontPopover}`} role="dialog" aria-label="글자 크기 조절">
                 <span>글자 크기</span>
@@ -401,7 +318,17 @@ export default function SnsdViewer() {
               </div>
             )}
           </div>
-          <button className={`${styles.iconButton} ${styles.bookmarkButton}`} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button>
+          <div className={styles.controlWrapper}>
+            <button className={styles.iconButton} type="button" onClick={() => setReaderMenuOpen(current => !current)} aria-label="뷰어 메뉴" aria-expanded={readerMenuOpen}><MenuIcon /></button>
+            {readerMenuOpen && (
+              <div className={`${styles.popover} ${styles.readerMenuPopover}`} role="menu" aria-label="뷰어 메뉴">
+                <button type="button" role="menuitem" onClick={openChapterList}>
+                  <span>목차</span>
+                  <small>{chapters === null ? "" : chapters.length}</small>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
       {offlineRead && <div className={styles.offlineBanner} role="status">오프라인 저장본으로 읽는 중</div>}
@@ -411,33 +338,16 @@ export default function SnsdViewer() {
           ? paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{renderParagraph(paragraph, index)}</p>)
           : "본문을 불러오는 중입니다…"}</article>}
       </main>
-      {bookmarksOpen && (
-        <div className={styles.bookmarkOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setBookmarksOpen(false); }}>
-          <section className={styles.bookmarkSheet} role="dialog" aria-modal="true" aria-labelledby="bookmark-title">
-            <div className={styles.bookmarkSheetHeader}><h2 id="bookmark-title">북마크 {bookmarks.length}</h2><button type="button" onClick={() => setBookmarksOpen(false)} aria-label="닫기">×</button></div>
-            <button className={styles.addBookmarkButton} type="button" onClick={addBookmark}>현재 위치 북마크</button>
-            <div className={styles.bookmarkList}>
-              {bookmarks.length === 0 && <p className={styles.emptyBookmarks}>저장한 위치가 없습니다.</p>}
-              {bookmarks.map(bookmark => (
-                <div className={styles.bookmarkItem} key={bookmark.id}>
-                  <button className={styles.bookmarkLocation} type="button" onClick={() => goToBookmark(bookmark)}><strong>{Math.round(bookmark.progress * 100)}%</strong><span>{bookmark.excerpt}</span></button>
-                  <button className={styles.deleteBookmarkButton} type="button" onClick={() => deleteBookmark(bookmark.id)} aria-label="북마크 삭제">×</button>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
       {chaptersOpen && (
-        <div className={styles.bookmarkOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
-          <section className={styles.bookmarkSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
-            <div className={styles.bookmarkSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
-            <div className={styles.bookmarkList}>
-              {chapters === null && <p className={styles.emptyBookmarks}>목차를 준비 중입니다…</p>}
-              {chapters?.length === 0 && <p className={styles.emptyBookmarks}>감지된 목차가 없습니다.</p>}
+        <div className={styles.chapterOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
+          <section className={styles.chapterSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
+            <div className={styles.chapterSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.chapterList}>
+              {chapters === null && <p className={styles.emptyChapters}>목차를 준비 중입니다…</p>}
+              {chapters?.length === 0 && <p className={styles.emptyChapters}>감지된 목차가 없습니다.</p>}
               {chapters?.map((chapter, index) => (
-                <div className={styles.bookmarkItem} key={chapter.id}>
-                  <button className={styles.bookmarkLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
+                <div className={styles.chapterItem} key={chapter.id}>
+                  <button className={styles.chapterLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
                 </div>
               ))}
             </div>
