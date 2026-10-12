@@ -821,14 +821,14 @@ export default function Snsd() {
               <p><strong>파일 다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 파일 다운로드로 받은 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
               <div className={styles.helpHowTo}>
                 <strong>홈 화면에 추가</strong>
-                <span className={styles.helpHowToIntro}>앱을 따로 다운로드하지 않고, SNSDFF를 바로 여는 아이콘을 홈 화면에 만드는 기능입니다.</span>
+                <span className={styles.helpHowToIntro}>먼저 작품을 카드의 점 메뉴에서 ‘오프라인 저장’하세요. 그다음 홈 화면에 SNSDFF 바로가기를 추가하면, 인터넷이 없을 때도 SNSDFF를 열어 저장한 작품을 읽기 쉽습니다. 앱을 따로 다운로드하는 기능은 아닙니다.</span>
                 <ol className={styles.helpSteps}>
                   <li><strong>iPhone · Safari</strong><span>Safari에서 SNSDFF를 열고 하단의 공유 버튼(상자에서 위로 향한 화살표)을 누르세요.</span></li>
                   <li><span>‘홈 화면에 추가’ → 오른쪽 위 ‘추가’를 누르세요.</span></li>
                   <li><strong>Android · Chrome</strong><span>Chrome에서 SNSDFF를 열고 오른쪽 위 ⋮ 메뉴를 누르세요.</span></li>
                   <li><span>‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
                 </ol>
-                <span className={styles.helpHowToNote}>홈 화면의 SNSDFF 아이콘으로 열 수 있습니다. 오프라인으로 읽으려면 작품을 먼저 카드의 점 메뉴에서 ‘오프라인 저장’하세요.</span>
+                <span className={styles.helpHowToNote}>홈 화면의 SNSDFF 아이콘으로 열면, 미리 오프라인 저장한 작품을 네트워크 없이 읽을 수 있습니다.</span>
               </div>
             </div>
           </div>
