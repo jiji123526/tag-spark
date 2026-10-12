@@ -80,9 +80,8 @@ export default function Snsd() {
   const loadWorks = useCallback(async () => {
     setLoading(true);
     try {
-      const apiSort = sort === "new" ? "new" : "top";
       const viewer = encodeURIComponent(getSnsdUserId());
-      const response = await fetch(snsdApiUrl(`/api/works?sort=${apiSort}&viewer=${viewer}`));
+      const response = await fetch(snsdApiUrl(`/api/works?viewer=${viewer}`));
       if (!response.ok) throw new Error(await readApiError(response));
       setWorks(await response.json());
       setError("");
@@ -91,14 +90,18 @@ export default function Snsd() {
     } finally {
       setLoading(false);
     }
-  }, [sort]);
+  }, []);
 
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
-  const visibleWorks = useMemo(
-    () => sort === "bookmarked" ? works.filter(work => bookmarked.has(work.id)) : works,
-    [bookmarked, sort, works],
-  );
+  const visibleWorks = useMemo(() => {
+    if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
+    const sorted = [...works];
+    if (sort === "new") {
+      return sorted.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+    }
+    return sorted.sort((a, b) => b.score - a.score || Date.parse(b.created_at) - Date.parse(a.created_at));
+  }, [bookmarked, sort, works]);
 
   const chooseFile = (nextFile?: File) => {
     if (!nextFile) return;
@@ -297,7 +300,6 @@ export default function Snsd() {
         </nav>
 
         <section className={styles.list}>
-          {loading && <div className={styles.empty}>불러오는 중…</div>}
           {!loading && visibleWorks.length === 0 && (
             <div className={styles.empty}>
               {sort === "bookmarked" ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</> : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
