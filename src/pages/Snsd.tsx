@@ -204,6 +204,10 @@ export default function Snsd() {
     window.setTimeout(() => setToast(""), 2200);
   };
 
+  const openWork = (workId: number) => {
+    window.open(`/snsd/view/${workId}`, "_blank", "noopener,noreferrer");
+  };
+
   const beginEdit = (work: SnsdWork) => {
     setOpenMenu(null);
     setEditing(work);
@@ -252,7 +256,7 @@ export default function Snsd() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}><h1>ZZIKSTYPE</h1></header>
+      <header className={styles.header}><h1>snsdff</h1></header>
       <main className={styles.main}>
         <section className={`${styles.compose} ${composeOpen ? styles.composeOpen : ""}`}>
           <button className={styles.composeToggle} type="button" onClick={() => setComposeOpen(open => !open)} aria-expanded={composeOpen}>
@@ -300,7 +304,21 @@ export default function Snsd() {
             </div>
           )}
           {visibleWorks.map(work => (
-            <article className={styles.card} key={work.id}>
+            <article
+              className={styles.card}
+              key={work.id}
+              role="link"
+              tabIndex={0}
+              aria-label={`${work.title} 작품 읽기`}
+              onClick={event => {
+                const target = event.target as HTMLElement;
+                if (target.closest("button, a, input, textarea, label, [data-card-action]")) return;
+                openWork(work.id);
+              }}
+              onKeyDown={event => {
+                if (event.target === event.currentTarget && event.key === "Enter") openWork(work.id);
+              }}
+            >
               <div className={styles.cardBody}>
                 <div className={styles.postHeader}>
                   <div className={styles.postHeaderLeft}>
@@ -335,9 +353,9 @@ export default function Snsd() {
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
-                <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></button>
+                <div className={styles.reason}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></div>
                 {openComments === work.id && (
-                  <div className={styles.comments}>
+                  <div className={styles.comments} data-card-action>
                     {(comments[work.id] ?? []).map(comment => (
                       <div className={styles.comment} key={comment.id}><img src={AVATAR_URL} alt="" className={styles.commentAvatar} /><div className={styles.commentBody}><div className={styles.commentHeader}><strong>{comment.author}</strong><span>{relativeDate(comment.created_at)}</span></div><p>{comment.content}</p></div></div>
                     ))}
