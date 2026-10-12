@@ -1,3 +1,5 @@
+import iconv from "iconv-lite";
+
 interface Env {
   tagspark_snsd: D1Database;
   FILES: R2Bucket;
@@ -5,6 +7,31 @@ interface Env {
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+function bytesEqual(left: Uint8Array, right: Uint8Array) {
+  if (left.byteLength !== right.byteLength) return false;
+  return left.every((value, index) => value === right[index]);
+}
+
+function decodeUploadedText(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return { text: iconv.decode(bytes, "utf16-le"), encoding: "utf-16le" };
+  }
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) {
+    return { text: iconv.decode(bytes, "utf16-be"), encoding: "utf-16be" };
+  }
+
+  try {
+    return { text: new TextDecoder("utf-8", { fatal: true }).decode(bytes), encoding: "utf-8" };
+  } catch {
+    const text = iconv.decode(bytes, "cp949");
+    const roundTrip = new Uint8Array(iconv.encode(text, "cp949"));
+    if (bytesEqual(bytes, roundTrip)) return { text, encoding: "cp949" };
+    throw new Error("unsupported-encoding");
+  }
+}
 
 function corsHeaders(request: Request, env: Env) {
   const origin = request.headers.get("Origin") ?? "";
@@ -71,23 +98,26 @@ async function createWork(request: Request, env: Env) {
   }
 
   const bytes = await file.arrayBuffer();
+  let decoded: ReturnType<typeof decodeUploadedText>;
   try {
-    new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    decoded = decodeUploadedText(bytes);
   } catch {
-    return json(request, env, { error: "UTF-8로 저장된 TXT 파일만 업로드할 수 있습니다." }, 400);
+    return json(request, env, { error: "지원하지 않는 문자 인코딩입니다. UTF-8, UTF-16, CP949/EUC-KR TXT 파일을 사용해주세요." }, 400);
   }
 
+  const utf8Bytes = new TextEncoder().encode(decoded.text);
+
   const objectKey = `works/${crypto.randomUUID()}.txt`;
-  await env.FILES.put(objectKey, bytes, {
+  await env.FILES.put(objectKey, utf8Bytes, {
     httpMetadata: { contentType: "text/plain; charset=utf-8" },
-    customMetadata: { originalFilename: file.name },
+    customMetadata: { originalFilename: file.name, sourceEncoding: decoded.encoding },
   });
 
   try {
     const result = await env.tagspark_snsd.prepare(`
       INSERT INTO works (title, author, pairing, reason, object_key, original_filename, file_size, created_by)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(title, author, pairing, reason, objectKey, file.name.slice(0, 255), file.size, createdBy).run();
+    `).bind(title, author, pairing, reason, objectKey, file.name.slice(0, 255), utf8Bytes.byteLength, createdBy).run();
     return json(request, env, { id: result.meta.last_row_id }, 201);
   } catch (error) {
     await env.FILES.delete(objectKey);
