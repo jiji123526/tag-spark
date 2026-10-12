@@ -322,8 +322,8 @@
 .reason img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .reason span { display: flex; align-items: center; min-height: 24px; overflow: visible; }
 
-.comments { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--snsd-border); }
-.comment { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--snsd-border); }
+.comments { margin-top: 4px; border-top: 1px solid var(--snsd-border); }
+.comment { display: flex; align-items: flex-start; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--snsd-border); }
 .comment:last-child { border-bottom: 0; }
 .commentAvatar { width: 32px; height: 32px; border-radius: 50%; background: var(--snsd-field); flex-shrink: 0; }
 .commentBody { flex: 1; min-width: 0; }
