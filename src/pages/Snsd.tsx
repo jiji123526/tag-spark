@@ -577,7 +577,6 @@ export default function Snsd() {
     const viewerWindow = window.open("", "_blank");
 
     if (!viewerWindow) {
-      void prefetchSnsdViewer(work);
       window.open(url, "_blank", "noopener,noreferrer");
       return;
     }
@@ -585,18 +584,7 @@ export default function Snsd() {
     viewerWindow.opener = null;
     viewerWindow.document.title = "불러오는 중 · SNSDFF";
     viewerWindow.document.body.innerHTML = '<p style="margin:40px;font:16px system-ui,sans-serif">작품을 불러오는 중입니다…</p>';
-
-    let navigated = false;
-    const navigate = () => {
-      if (navigated || viewerWindow.closed) return;
-      navigated = true;
-      viewerWindow.location.replace(url);
-    };
-    const fallbackTimer = window.setTimeout(navigate, 5000);
-    void prefetchSnsdViewer(work).finally(() => {
-      window.clearTimeout(fallbackTimer);
-      navigate();
-    });
+    viewerWindow.location.replace(url);
   };
 
   const downloadUrl = (workId: number) => snsdApiUrl(`/api/works/${workId}/content?download=1`);
