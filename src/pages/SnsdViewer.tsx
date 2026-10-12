@@ -13,7 +13,14 @@ type ReaderBookmark = {
   createdAt: number;
 };
 
+type ReaderChapter = {
+  id: string;
+  label: string;
+  paragraph: number;
+};
+
 const BookmarkIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 3A2.5 2.5 0 0 0 4 5.5v15.56a.94.94 0 0 0 1.48.77L12 17.17l6.52 4.66a.94.94 0 0 0 1.48-.77V5.5A2.5 2.5 0 0 0 17.5 3h-11ZM6 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v13.62l-5.45-3.9a.94.94 0 0 0-1.1 0L6 19.12V5.5Z" fill="currentColor" /></svg>;
+const MenuIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Zm0 4.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Zm0 4.5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const TextSizeIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.25A1.25 1.25 0 0 1 5.25 4h7.5A1.25 1.25 0 0 1 14 5.25v1a.75.75 0 0 1-1.5 0v-.75H10.5v12h1.25a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5H8.5v-12H6.25v.75a.75.75 0 0 1-1.5 0v-1ZM15.5 11.25A1.25 1.25 0 0 1 16.75 10h3A1.25 1.25 0 0 1 21 11.25v.75a.75.75 0 0 1-1.5 0v-.5h-.5v5.25h.5a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.5V11.5h-.5v.5a.75.75 0 0 1-1.5 0v-.75Z" fill="currentColor" /></svg>;
 
@@ -22,6 +29,45 @@ type SearchRange = {
   end: number;
   globalIndex: number;
 };
+
+function detectReaderChapters(paragraphs: string[]) {
+  const candidates: Array<ReaderChapter & { numbered: boolean }> = [];
+
+  paragraphs.forEach((paragraph, paragraphIndex) => {
+    const lines = paragraph
+      .split(/\r?\n/)
+      .map(line => line.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, " ").trim())
+      .filter(Boolean);
+    if (lines.length > 2) return;
+
+    const line = lines[0] ?? "";
+    if (!line || line.length > 80 || /^[-=_*·•\s]{3,}$/.test(line)) return;
+    if (/^step\s*\d+/i.test(line)) return;
+
+    const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
+    const explicit = /(?:^|[\s#])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
+      || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
+      || /(?:完|완결)/.test(line)
+      || /#\s*\d{1,3}\b/.test(line);
+    const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.)]?(?:\s+.{1,60})?$/.test(line);
+    const titleNumber = /^[^0-9].{0,58}\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.test(line);
+
+    if (special || explicit || numeric || titleNumber) {
+      candidates.push({
+        id: `chapter-${paragraphIndex}`,
+        label: line,
+        paragraph: paragraphIndex,
+        numbered: numeric || titleNumber,
+      });
+    }
+  });
+
+  const numberedCount = candidates.filter(candidate => candidate.numbered).length;
+  return candidates
+    .filter(candidate => !candidate.numbered || numberedCount >= 2)
+    .filter((candidate, index, all) => index === all.findIndex(other => other.paragraph === candidate.paragraph))
+    .map(candidate => ({ id: candidate.id, label: candidate.label, paragraph: candidate.paragraph }));
+}
 
 export default function SnsdViewer() {
   const { id } = useParams();
@@ -37,11 +83,13 @@ export default function SnsdViewer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
+  const [chaptersOpen, setChaptersOpen] = useState(false);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
+  const chapters = useMemo(() => detectReaderChapters(paragraphs), [paragraphs]);
   const bookmarkKey = `snsd-reader-bookmarks-${id}`;
   const searchRanges = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("ko");
@@ -153,13 +201,15 @@ export default function SnsdViewer() {
   }, [bookmarkKey]);
 
   useEffect(() => {
-    if (!bookmarksOpen) return;
+    if (!bookmarksOpen && !chaptersOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setBookmarksOpen(false);
+      if (event.key !== "Escape") return;
+      setBookmarksOpen(false);
+      setChaptersOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [bookmarksOpen]);
+  }, [bookmarksOpen, chaptersOpen]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -300,6 +350,11 @@ export default function SnsdViewer() {
     saveBookmarks(bookmarks.filter(bookmark => bookmark.id !== bookmarkId));
   };
 
+  const goToChapter = (chapter: ReaderChapter) => {
+    setChaptersOpen(false);
+    requestAnimationFrame(() => paragraphRefs.current[chapter.paragraph]?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
   const returnToList = () => {
     const openedFromList = new URLSearchParams(window.location.search).get("from") === "list";
     if (openedFromList) {
@@ -361,6 +416,7 @@ export default function SnsdViewer() {
               </div>
             )}
           </div>
+          <button className={styles.iconButton} type="button" onClick={() => { setChaptersOpen(true); setSearchOpen(false); setFontSizeOpen(false); }} aria-label="목차 열기" aria-expanded={chaptersOpen}><MenuIcon /></button>
           <button className={`${styles.iconButton} ${styles.bookmarkButton}`} type="button" onClick={() => setBookmarksOpen(true)} aria-label={`북마크 ${bookmarks.length}개`}><BookmarkIcon />{bookmarks.length > 0 && <span>{bookmarks.length}</span>}</button>
         </div>
       </header>
@@ -382,6 +438,21 @@ export default function SnsdViewer() {
                 <div className={styles.bookmarkItem} key={bookmark.id}>
                   <button className={styles.bookmarkLocation} type="button" onClick={() => goToBookmark(bookmark)}><strong>{Math.round(bookmark.progress * 100)}%</strong><span>{bookmark.excerpt}</span></button>
                   <button className={styles.deleteBookmarkButton} type="button" onClick={() => deleteBookmark(bookmark.id)} aria-label="북마크 삭제">×</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+      {chaptersOpen && (
+        <div className={styles.bookmarkOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
+          <section className={styles.bookmarkSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
+            <div className={styles.bookmarkSheetHeader}><h2 id="chapter-title">목차 {chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.bookmarkList}>
+              {chapters.length === 0 && <p className={styles.emptyBookmarks}>감지된 목차가 없습니다.</p>}
+              {chapters.map((chapter, index) => (
+                <div className={styles.bookmarkItem} key={chapter.id}>
+                  <button className={styles.bookmarkLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
                 </div>
               ))}
             </div>
