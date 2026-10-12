@@ -29,8 +29,6 @@ const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const DownloadIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M11 3a1 1 0 1 1 2 0v10.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V3Zm-7 13a1 1 0 0 1 1 1v2h14v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1Z" fill="currentColor" /></svg>;
 
-const OfflineIcon = ({ saved = false }: { saved?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={saved ? "M12 3a9 9 0 1 0 8.485 6h-2.09A7 7 0 1 1 12 5V3Zm0 0 4 4h-3v6h-2V7H8l4-4Z" : "M12 3a9 9 0 1 0 8.485 6h-2.09A7 7 0 1 1 12 5V3Zm0 0 4 4h-3v6h-2V7H8l4-4Z"} fill="currentColor" /></svg>;
-
 function parseSnsdTimestamp(value: string) {
   const trimmed = value.trim();
   const normalized = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T");
@@ -579,20 +577,19 @@ export default function Snsd() {
                     <div className={styles.postAvatar}><img src={AVATAR_URL} alt="" width="32" height="32" /></div>
                     <div className={styles.postHeaderInfo}><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
                   </div>
-                  {Boolean(work.is_owner) ? (
-                    <div className={styles.moreWrapper}>
-                      <button className={styles.moreButton} type="button" aria-label="더보기" aria-expanded={openMenu === work.id} onClick={() => setOpenMenu(current => current === work.id ? null : work.id)}><MoreIcon /></button>
-                      {openMenu === work.id && (
-                        <div className={styles.postDropdown}>
-                          <button type="button" onClick={() => beginEdit(work)}>수정</button>
-                          <button className={styles.deleteMenuItem} type="button" onClick={() => void deleteWork(work)}>삭제</button>
-                          <a href={downloadUrl(work.id)} download={downloadFilename(work)} onClick={() => setOpenMenu(null)}>다운로드</a>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <a className={styles.moreButton} href={downloadUrl(work.id)} download={downloadFilename(work)} aria-label={`${work.title} 다운로드`}><DownloadIcon /></a>
-                  )}
+                  <div className={styles.moreWrapper}>
+                    <button className={styles.moreButton} type="button" aria-label="더보기" aria-expanded={openMenu === work.id} onClick={() => setOpenMenu(current => current === work.id ? null : work.id)}><MoreIcon /></button>
+                    {openMenu === work.id && (
+                      <div className={styles.postDropdown}>
+                        <button type="button" disabled={offlineBusy.has(work.id)} onClick={() => { setOpenMenu(null); void toggleOfflineSaved(work); }}>
+                          {offlineBusy.has(work.id) ? "저장 중…" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"}
+                        </button>
+                        <a href={downloadUrl(work.id)} download={downloadFilename(work)} onClick={() => setOpenMenu(null)}><DownloadIcon />다운로드</a>
+                        {Boolean(work.is_owner) && <button type="button" onClick={() => beginEdit(work)}>수정</button>}
+                        {Boolean(work.is_owner) && <button className={styles.deleteMenuItem} type="button" onClick={() => void deleteWork(work)}>삭제</button>}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className={styles.postContent}>
                   <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openWork(work); }}>{work.title}</a>
@@ -616,7 +613,6 @@ export default function Snsd() {
                   </div>
                   <div className={styles.actionsRight}>
                     <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
-                    <button className={`${styles.iconButton} ${offlineSaved.has(work.id) ? styles.offlineSaved : ""}`} type="button" disabled={offlineBusy.has(work.id)} onClick={() => void toggleOfflineSaved(work)} aria-label={offlineBusy.has(work.id) ? "오프라인 저장 중" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"} title={offlineBusy.has(work.id) ? "저장 중…" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"}><OfflineIcon saved={offlineSaved.has(work.id)} /></button>
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
@@ -655,7 +651,7 @@ export default function Snsd() {
               <p><strong>저장과 기록</strong><span>카드 북마크는 북마크 탭에, 읽은 작품은 최근 읽은 탭에 저장됩니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
               <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
-              <p><strong>오프라인 저장</strong><span>카드의 오프라인 아이콘을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
+              <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
               <p><strong>다운로드</strong><span>카드 우측 다운로드 아이콘 또는 작성자 점 메뉴에서 TXT 파일을 받을 수 있습니다.</span></p>
             </div>
           </div>

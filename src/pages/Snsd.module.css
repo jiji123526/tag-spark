@@ -244,7 +244,8 @@
 .moreButton:hover { background: rgba(118, 118, 127, 0.08); }
 .moreWrapper { position: relative; z-index: 51; }
 .postDropdown { position: absolute; top: 100%; right: 0; z-index: 52; min-width: 100px; overflow: hidden; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-elevated); box-shadow: 0 2px 8px var(--snsd-shadow); }
-.postDropdown button, .postDropdown a { display: block; width: 100%; padding: 7px 16px; border: 0; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; text-align: left; text-decoration: none; cursor: pointer; }
+.postDropdown button, .postDropdown a { display: flex; width: 100%; align-items: center; gap: 8px; padding: 7px 16px; border: 0; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; text-align: left; text-decoration: none; cursor: pointer; }
+.postDropdown svg { width: 16px; height: 16px; flex-shrink: 0; }
 .postDropdown button:hover, .postDropdown a:hover { background: var(--snsd-field); }
 .postDropdown .deleteMenuItem { color: #f33d4d; }
 .menuBackdrop { position: fixed; inset: 0; z-index: 50; padding: 0; border: 0; background: transparent; }
@@ -319,7 +320,6 @@
 .iconButton:disabled { cursor: wait; opacity: .45; }
 .voteButton.voted { color: #f33d4d; }
 .bookmarked { color: var(--snsd-text); }
-.offlineSaved { color: var(--snsd-primary); }
 .reason {
   display: flex;
   align-items: flex-start;

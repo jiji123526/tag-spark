@@ -31,7 +31,7 @@ const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
-const SNSD_CONTENT_CACHE_NAME = "snsd-content-v1";
+const SNSD_CONTENT_CACHE_NAME = "snsd-content-v2";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
 const SNSD_VIEWER_WORK_CACHE_TTL_MS = 60_000;
 const viewerContentRequests = new Map<number, Promise<void>>();
@@ -131,7 +131,7 @@ export function prefetchSnsdViewer(work: SnsdWork) {
   cacheSnsdViewerWork(work);
   const existing = viewerContentRequests.get(work.id);
   if (existing) return existing;
-  const request = fetchAndCacheSnsdViewerContent(work.id)
+  const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "force-cache" })
     .then(async response => {
       if (response.ok) await response.arrayBuffer();
     })
