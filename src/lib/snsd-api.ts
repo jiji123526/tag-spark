@@ -21,9 +21,17 @@ export type SnsdComment = {
   created_at: string;
 };
 
+export type SnsdReadProgress = {
+  lastReadAt: number;
+  progress: number;
+  scrollY: number;
+};
+
 const configuredBaseUrl = import.meta.env.VITE_SNSD_API_URL?.trim();
 export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://localhost:8787";
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
+export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
+const SNSD_CONTENT_CACHE_NAME = "snsd-content-v1";
 const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
 const SNSD_VIEWER_WORK_CACHE_TTL_MS = 60_000;
 const viewerContentRequests = new Map<number, Promise<void>>();
@@ -57,6 +65,44 @@ export function markSnsdWorkRead(workId: string | number) {
   window.localStorage.setItem(SNSD_READ_HISTORY_KEY, JSON.stringify(history));
 }
 
+export function getSnsdReadProgress(workId: string | number) {
+  try {
+    const stored = window.localStorage.getItem(`${SNSD_READ_PROGRESS_PREFIX}${workId}`);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored) as Partial<SnsdReadProgress>;
+    if (typeof parsed.lastReadAt !== "number" || typeof parsed.progress !== "number" || typeof parsed.scrollY !== "number") return null;
+    return {
+      lastReadAt: parsed.lastReadAt,
+      progress: Math.min(1, Math.max(0, parsed.progress)),
+      scrollY: Math.max(0, parsed.scrollY),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function getSnsdReadProgressMap() {
+  const progress: Record<string, SnsdReadProgress> = {};
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key?.startsWith(SNSD_READ_PROGRESS_PREFIX)) continue;
+    const workId = key.slice(SNSD_READ_PROGRESS_PREFIX.length);
+    const value = getSnsdReadProgress(workId);
+    if (value) progress[workId] = value;
+  }
+  return progress;
+}
+
+export function saveSnsdReadProgress(workId: string | number, value: Omit<SnsdReadProgress, "lastReadAt"> & { lastReadAt?: number }) {
+  const progress: SnsdReadProgress = {
+    lastReadAt: value.lastReadAt ?? Date.now(),
+    progress: Math.min(1, Math.max(0, value.progress)),
+    scrollY: Math.max(0, value.scrollY),
+  };
+  window.localStorage.setItem(`${SNSD_READ_PROGRESS_PREFIX}${workId}`, JSON.stringify(progress));
+  markSnsdWorkRead(workId);
+}
+
 export function cacheSnsdViewerWork(work: SnsdWork) {
   try {
     window.localStorage.setItem(`${SNSD_VIEWER_WORK_CACHE_PREFIX}${work.id}`, JSON.stringify({
@@ -85,7 +131,7 @@ export function prefetchSnsdViewer(work: SnsdWork) {
   cacheSnsdViewerWork(work);
   const existing = viewerContentRequests.get(work.id);
   if (existing) return existing;
-  const request = fetch(snsdApiUrl(`/api/works/${work.id}/content`), { cache: "force-cache" })
+  const request = fetchAndCacheSnsdViewerContent(work.id)
     .then(async response => {
       if (response.ok) await response.arrayBuffer();
     })
@@ -93,6 +139,37 @@ export function prefetchSnsdViewer(work: SnsdWork) {
     .finally(() => viewerContentRequests.delete(work.id));
   viewerContentRequests.set(work.id, request);
   return request;
+}
+
+async function getCachedSnsdViewerContent(workId: string | number) {
+  if (!("caches" in window)) return null;
+  const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
+  return cache.match(snsdApiUrl(`/api/works/${workId}/content`));
+}
+
+async function fetchAndCacheSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
+  const url = snsdApiUrl(`/api/works/${workId}/content`);
+  try {
+    const response = await fetch(url, { signal, cache: "force-cache" });
+    if (response.ok && "caches" in window) {
+      try {
+        const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
+        await cache.put(url, response.clone());
+      } catch {
+        // Reading should still succeed if Cache Storage is unavailable or full.
+      }
+    }
+    return response;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    const cached = await getCachedSnsdViewerContent(workId);
+    if (cached) return cached;
+    throw error;
+  }
+}
+
+export function fetchSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
+  return fetchAndCacheSnsdViewerContent(workId, signal);
 }
 
 export async function readApiError(response: Response) {

@@ -284,6 +284,11 @@
   cursor: pointer;
 }
 .pairingTag:hover { color: var(--snsd-text); }
+.readProgress { width: 100%; margin-top: 8px; }
+.readProgressHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--snsd-muted); font-size: 12px; }
+.readProgressHeader button { padding: 0; border: 0; background: transparent; color: var(--snsd-primary); font: inherit; font-weight: 600; cursor: pointer; }
+.readProgressTrack { height: 4px; margin-top: 6px; overflow: hidden; border-radius: 999px; background: var(--snsd-field); }
+.readProgressTrack span { display: block; height: 100%; border-radius: inherit; background: var(--snsd-primary); }
 .actions { display: flex; justify-content: space-between; align-items: center; padding-top: 0; margin-top: -5px; }
 .actionsLeft { display: flex; align-items: center; gap: 4px; }
 .actionsRight { display: flex; align-items: center; gap: 0; }

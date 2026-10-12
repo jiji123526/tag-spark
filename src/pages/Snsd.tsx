@@ -2,10 +2,12 @@ import { ChangeEvent, DragEvent, FormEvent, memo, useCallback, useEffect, useMem
 import {
   getSnsdUserId,
   getSnsdReadHistory,
+  getSnsdReadProgressMap,
   cacheSnsdViewerWork,
   prefetchSnsdViewer,
   readApiError,
   SNSD_READ_HISTORY_KEY,
+  SNSD_READ_PROGRESS_PREFIX,
   snsdApiUrl,
   SnsdComment,
   SnsdWork,
@@ -110,6 +112,7 @@ export default function Snsd() {
   const [editDraft, setEditDraft] = useState({ title: "", author: "", pairing: "", reason: "" });
   const [savingEdit, setSavingEdit] = useState(false);
   const [readHistory, setReadHistory] = useState<Record<string, number>>(() => getSnsdReadHistory());
+  const [readProgress, setReadProgress] = useState(() => getSnsdReadProgressMap());
   const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
     const stored = window.localStorage.getItem("snsd-bookmarked-ids");
     try { return new Set(stored ? JSON.parse(stored) : []); } catch { return new Set(); }
@@ -172,9 +175,12 @@ export default function Snsd() {
   useEffect(() => { void loadWorks(); }, [loadWorks]);
 
   useEffect(() => {
-    const refreshReadHistory = () => setReadHistory(getSnsdReadHistory());
+    const refreshReadHistory = () => {
+      setReadHistory(getSnsdReadHistory());
+      setReadProgress(getSnsdReadProgressMap());
+    };
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === SNSD_READ_HISTORY_KEY) refreshReadHistory();
+      if (event.key === SNSD_READ_HISTORY_KEY || event.key?.startsWith(SNSD_READ_PROGRESS_PREFIX)) refreshReadHistory();
     };
     window.addEventListener("storage", handleStorage);
     window.addEventListener("focus", refreshReadHistory);
@@ -211,15 +217,16 @@ export default function Snsd() {
     if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
     if (sort === "archive") {
       return works
-        .filter(work => readHistory[String(work.id)])
-        .sort((a, b) => readHistory[String(b.id)] - readHistory[String(a.id)]);
+        .filter(work => readProgress[String(work.id)] || readHistory[String(work.id)])
+        .sort((a, b) => (readProgress[String(b.id)]?.lastReadAt ?? readHistory[String(b.id)] ?? 0)
+          - (readProgress[String(a.id)]?.lastReadAt ?? readHistory[String(a.id)] ?? 0));
     }
     const sorted = [...works];
     if (sort === "new") {
       return sorted.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
     }
     return sorted.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
-  }, [bookmarked, readHistory, searchOpen, searchQuery, sort, works]);
+  }, [bookmarked, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
     setSearchOpen(false);
@@ -491,7 +498,7 @@ export default function Snsd() {
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
           <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
-          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">기록</button>
+          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">최근 읽은</button>
         </nav>}
 
         <section className={styles.list}>
@@ -502,11 +509,14 @@ export default function Snsd() {
                 : sort === "bookmarked"
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
                   : sort === "archive"
-                    ? <>읽은 작품이 없습니다.<br />작품 카드를 열면 여기에 저장됩니다.</>
+                    ? <>최근 읽은 작품이 없습니다.<br />작품을 열면 여기에 저장됩니다.</>
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
           )}
-          {visibleWorks.slice(0, visibleWorkLimit).map(work => (
+          {visibleWorks.slice(0, visibleWorkLimit).map(work => {
+            const progress = readProgress[String(work.id)];
+            const progressPercent = progress ? Math.round(progress.progress * 100) : 0;
+            return (
             <article
               className={styles.card}
               key={work.id}
@@ -550,6 +560,15 @@ export default function Snsd() {
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
+                  {progress && progressPercent > 0 && (
+                    <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>
+                      <div className={styles.readProgressHeader}>
+                        <span>{progressPercent >= 98 ? "완독" : `${progressPercent}% 읽음`}</span>
+                        <button type="button" onClick={() => openWork(work)}>{progressPercent >= 98 ? "다시 읽기" : "이어 읽기"}</button>
+                      </div>
+                      <div className={styles.readProgressTrack}><span style={{ width: `${progressPercent}%` }} /></div>
+                    </div>
+                  )}
                 </div>
                 <div className={styles.actions}>
                   <div className={styles.actionsLeft}>
@@ -576,7 +595,8 @@ export default function Snsd() {
                 )}
               </div>
             </article>
-          ))}
+            );
+          })}
           {visibleWorks.length > visibleWorkLimit && (
             <button className={styles.loadMoreButton} type="button" onClick={() => setVisibleWorkLimit(current => current + 40)}>
               작품 더 보기 ({visibleWorks.length - visibleWorkLimit})

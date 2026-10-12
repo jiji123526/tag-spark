@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { cacheSnsdViewerWork, getCachedSnsdViewerWork, markSnsdWorkRead, readApiError, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
+import { cacheSnsdViewerWork, fetchSnsdViewerContent, getCachedSnsdViewerWork, getSnsdReadProgress, markSnsdWorkRead, readApiError, saveSnsdReadProgress, snsdApiUrl, SnsdWork } from "@/lib/snsd-api";
 import styles from "./SnsdViewer.module.css";
 
 type ReaderBookmark = {
@@ -68,7 +68,7 @@ export default function SnsdViewer() {
       const cachedWork = getCachedSnsdViewerWork(id);
       const [workResponse, contentResponse] = await Promise.all([
         cachedWork ? Promise.resolve(null) : fetch(snsdApiUrl(`/api/works/${id}`), { signal: controller.signal }),
-        fetch(snsdApiUrl(`/api/works/${id}/content`), { signal: controller.signal, cache: "force-cache" }),
+        fetchSnsdViewerContent(id, controller.signal),
       ]);
 
       let loadedWork: SnsdWork | undefined = cachedWork ?? undefined;
@@ -103,10 +103,18 @@ export default function SnsdViewer() {
   useEffect(() => {
     if (!content || !id) return;
     const key = `snsd-reader-position-${id}`;
-    const saved = Number(window.localStorage.getItem(key));
+    const savedProgress = getSnsdReadProgress(id);
+    const saved = savedProgress?.scrollY ?? Number(window.localStorage.getItem(key));
     if (saved > 0) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved)));
     let saveTimer = 0;
-    const save = () => window.localStorage.setItem(key, String(window.scrollY));
+    const save = () => {
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      window.localStorage.setItem(key, String(window.scrollY));
+      saveSnsdReadProgress(id, {
+        scrollY: window.scrollY,
+        progress: window.scrollY / maxScroll,
+      });
+    };
     const scheduleSave = () => {
       window.clearTimeout(saveTimer);
       saveTimer = window.setTimeout(save, 250);
