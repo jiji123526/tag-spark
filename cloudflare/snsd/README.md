@@ -30,6 +30,8 @@ npx wrangler dev --config cloudflare/snsd/wrangler.jsonc
 
 Set `ALLOWED_ORIGIN` in `wrangler.jsonc` to the deployed TagSpark origin. Multiple origins may be comma-separated. Set the frontend's `VITE_SNSD_API_URL` to the deployed Worker URL.
 
+The Worker uses the root project's `iconv-lite` dependency for CP949 and UTF-16 TXT uploads. The Wrangler alias in `wrangler.jsonc` points to that installed dependency, so run `npm install` from the repository root before deploying.
+
 ## Recalculate existing chapter counts
 
 새 파서를 기존 작품에도 적용하려면 유지보수 토큰을 한 번 설정한 뒤 백필 API를 호출합니다.
