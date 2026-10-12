@@ -293,6 +293,29 @@
   cursor: pointer;
 }
 .pairingTag:hover { color: var(--snsd-text); }
+.recommendation {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--snsd-primary);
+  border-radius: 0 8px 8px 0;
+  background: var(--snsd-subtle);
+}
+.recommendationLabel {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--snsd-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.recommendation p {
+  margin: 0;
+  color: var(--snsd-text);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .readProgress { width: 100%; margin-top: 8px; }
 .readProgressHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--snsd-muted); font-size: 12px; }
 .readProgressHeader button { padding: 0; border: 0; background: transparent; color: var(--snsd-primary); font: inherit; font-weight: 600; cursor: pointer; }

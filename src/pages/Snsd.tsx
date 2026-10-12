@@ -625,6 +625,12 @@ export default function Snsd() {
                   <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
+                  {work.reason && (
+                    <div className={styles.recommendation}>
+                      <span className={styles.recommendationLabel}>추천 이유</span>
+                      <p>{work.reason}</p>
+                    </div>
+                  )}
                   {progress && progressPercent > 0 && (
                     <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>
                       <div className={styles.readProgressHeader}>
@@ -645,8 +651,8 @@ export default function Snsd() {
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
-                {(work.reason || work.preview_comment) && (
-                  <button className={styles.reason} type="button" onPointerEnter={() => scheduleCommentPrefetch(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
+                {work.preview_comment && (
+                  <button className={styles.reason} type="button" onPointerEnter={() => scheduleCommentPrefetch(work)} onPointerDown={() => prefetchComments(work)} onFocus={() => prefetchComments(work)} onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.preview_comment}</span></button>
                 )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
