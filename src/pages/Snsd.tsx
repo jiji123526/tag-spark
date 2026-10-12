@@ -812,24 +812,23 @@ export default function Snsd() {
           <div className={`${styles.modalBox} ${styles.helpModal}`} role="dialog" aria-modal="true" aria-labelledby="snsd-help-title">
             <div className={styles.modalHeader}><h2 id="snsd-help-title">SNSDFF 사용법</h2><button type="button" onClick={() => setHelpOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.helpContent}>
-              <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 설명은 선택입니다.</span></p>
-              <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
-              <p><strong>목차</strong><span>뷰어 제목 옆 아래 화살표를 누르면 TXT에서 자동으로 감지한 장·화 목록을 볼 수 있습니다. 파일 형식이 일정하지 않으면 목차가 일부만 표시되거나 감지되지 않을 수 있습니다.</span></p>
-              <p><strong>저장과 기록</strong><span>카드 북마크와 최근 읽은 작품은 보관함에서 확인할 수 있습니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
-              <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
-              <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
-              <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. 파일 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
-              <p><strong>파일 다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 파일 다운로드로 받은 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
+              <p><strong>작품 올리기</strong><span>제목, 작가, 씨피와 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
+              <p><strong>작품 읽기</strong><span>작품 카드를 누르면 본문이 열립니다. 돋보기로 본문을 검색하고, 씨피 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
+              <p><strong>목차</strong><span>뷰어 제목 옆의 아래 화살표를 누르세요. TXT에서 찾은 장·화로 이동할 수 있습니다. 파일에 목차가 없거나 형식이 다르면 목록이 없을 수 있습니다.</span></p>
+              <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
+              <p><strong>이어 읽기</strong><span>읽던 작품 카드에서 ‘이어 읽기’를 누르면 마지막으로 읽던 위치에서 시작합니다.</span></p>
+              <p><strong>뷰어 설정</strong><span>글자 크기를 바꾸고, 본문에서 현재 위치를 여러 곳 북마크할 수 있습니다.</span></p>
+              <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
+              <p><strong>파일 다운로드</strong><span>작품 카드의 점 메뉴에서 TXT 파일을 기기에 저장하세요.</span></p>
+              <p><strong>오프라인 저장</strong><span>작품 카드의 점 메뉴에서 ‘오프라인 저장’을 누르세요. 인터넷이 없어도 보관함의 오프라인 저장 목록에서 읽을 수 있습니다.</span></p>
               <div className={styles.helpHowTo}>
                 <strong>홈 화면에 추가</strong>
-                <span className={styles.helpHowToIntro}>먼저 작품을 카드의 점 메뉴에서 ‘오프라인 저장’하세요. 그다음 홈 화면에 SNSDFF 바로가기를 추가하면, 인터넷이 없을 때도 SNSDFF를 열어 저장한 작품을 읽기 쉽습니다. 앱을 따로 다운로드하는 기능은 아닙니다.</span>
+                <span className={styles.helpHowToIntro}>오프라인 저장한 작품을 인터넷 없이 읽고 싶다면 SNSDFF를 홈 화면에 추가하세요. 앱을 따로 설치하는 것이 아니라 바로가기를 만드는 기능입니다.</span>
                 <ol className={styles.helpSteps}>
-                  <li><strong>iPhone · Safari</strong><span>Safari에서 SNSDFF를 열고 하단의 공유 버튼(상자에서 위로 향한 화살표)을 누르세요.</span></li>
-                  <li><span>‘홈 화면에 추가’ → 오른쪽 위 ‘추가’를 누르세요.</span></li>
-                  <li><strong>Android · Chrome</strong><span>Chrome에서 SNSDFF를 열고 오른쪽 위 ⋮ 메뉴를 누르세요.</span></li>
-                  <li><span>‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
+                  <li><strong>iPhone</strong><span>Safari에서 SNSDFF를 열고 공유 버튼 → ‘홈 화면에 추가’ → ‘추가’를 누르세요.</span></li>
+                  <li><strong>Android</strong><span>Chrome에서 SNSDFF를 열고 ⋮ 메뉴 → ‘홈 화면에 추가’ 또는 ‘앱 설치’ → ‘추가’를 누르세요.</span></li>
                 </ol>
-                <span className={styles.helpHowToNote}>홈 화면의 SNSDFF 아이콘으로 열면, 미리 오프라인 저장한 작품을 네트워크 없이 읽을 수 있습니다.</span>
+                <span className={styles.helpHowToNote}>작품을 먼저 오프라인 저장해야 인터넷 없이 읽을 수 있습니다.</span>
               </div>
             </div>
           </div>

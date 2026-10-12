@@ -31,7 +31,12 @@ type SearchRange = {
 };
 
 function detectReaderChapters(paragraphs: string[]) {
-  const candidates: Array<ReaderChapter & { numbered: boolean }> = [];
+  type ChapterCandidate = ReaderChapter & {
+    format: "generic" | "title" | "explicit" | "special";
+    sequenceNumber?: number;
+    seriesKey?: string;
+  };
+  const candidates: ChapterCandidate[] = [];
 
   paragraphs.forEach((paragraph, paragraphIndex) => {
     const lines = paragraph
@@ -47,26 +52,57 @@ function detectReaderChapters(paragraphs: string[]) {
       const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
       const explicit = /(?:^|[\s#])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
         || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
-        || /(?:完|완결)/.test(line)
         || /#\s*\d{1,3}\b/.test(line);
-      const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.test(line);
-      const titleNumber = /^[^0-9].{0,58}\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.test(line);
+      const genericMatch = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.exec(line);
+      const titleMatch = /^[^0-9].{0,58}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.exec(line);
+      const explicitNumber = explicit ? /(?:\d{1,3})(?:[-–]\d{1,3})?/.exec(line)?.[0] : undefined;
+      const getSequenceNumber = (value?: string) => {
+        if (!value) return undefined;
+        const parts = value.split(/[-–]/).map(Number);
+        return parts[0] * 100 + (parts[1] ?? 0);
+      };
 
-      if (special || explicit || numeric || titleNumber) {
+      if (special || explicit || genericMatch || titleMatch) {
+        const format = special ? "special" : explicit ? "explicit" : titleMatch ? "title" : "generic";
+        const matchedNumber = titleMatch?.[1]
+          ? `${titleMatch[1]}${titleMatch[2] ? `-${titleMatch[2]}` : ""}`
+          : explicitNumber ?? genericMatch?.[0].match(/^\d{1,3}(?:[-–]\d{1,3})?/)?.[0];
+        const titlePrefix = titleMatch?.[0]
+          .replace(/\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLocaleLowerCase("ko");
         candidates.push({
           id: `chapter-${paragraphIndex}`,
           label: line,
           paragraph: paragraphIndex,
-          numbered: numeric,
+          format,
+          sequenceNumber: getSequenceNumber(matchedNumber),
+          seriesKey: format === "title"
+            ? titlePrefix
+            : format === "explicit"
+              ? "explicit"
+              : format,
         });
         break;
       }
     }
   });
 
-  const numberedCount = candidates.filter(candidate => candidate.numbered).length;
-  const structuredSeries = candidates.filter(candidate => !candidate.numbered).length >= 2;
-  const filtered = candidates.filter(candidate => !candidate.numbered || (!structuredSeries && numberedCount >= 2));
+  const hasChronologicalNeighbor = (candidate: ChapterCandidate) => {
+    if (candidate.sequenceNumber === undefined) return false;
+    return candidates.some(other => other !== candidate
+      && other.format === candidate.format
+      && other.seriesKey === candidate.seriesKey
+      && other.sequenceNumber !== undefined
+      && Math.abs(other.sequenceNumber - candidate.sequenceNumber) === 1);
+  };
+  const hasStrongSeries = candidates.some(candidate => (candidate.format === "title" || candidate.format === "explicit") && hasChronologicalNeighbor(candidate));
+  const filtered = candidates.filter(candidate => {
+    if (candidate.format === "special") return true;
+    if (hasStrongSeries && candidate.format === "generic") return false;
+    return hasChronologicalNeighbor(candidate);
+  });
   const seenParagraphs = new Set<number>();
   return filtered
     .filter(candidate => {
