@@ -294,25 +294,12 @@
 }
 .pairingTag:hover { color: var(--snsd-text); }
 .recommendation {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-left: 3px solid var(--snsd-primary);
-  border-radius: 0 8px 8px 0;
-  background: var(--snsd-subtle);
-}
-.recommendationLabel {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--snsd-primary);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.4;
-}
-.recommendation p {
   margin: 0;
-  color: var(--snsd-text);
-  font-size: 14px;
-  line-height: 1.55;
+  color: #62626a;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.025em;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }

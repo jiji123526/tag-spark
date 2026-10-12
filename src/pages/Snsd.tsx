@@ -626,10 +626,7 @@ export default function Snsd() {
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
                   {work.reason && (
-                    <div className={styles.recommendation}>
-                      <span className={styles.recommendationLabel}>추천 이유</span>
-                      <p>{work.reason}</p>
-                    </div>
+                    <p className={styles.recommendation}>{work.reason}</p>
                   )}
                   {progress && progressPercent > 0 && (
                     <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>
