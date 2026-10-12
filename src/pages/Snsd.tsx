@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getSnsdUserId,
   readApiError,
@@ -49,7 +49,7 @@ function pairingTags(value: string) {
 export default function Snsd() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [works, setWorks] = useState<SnsdWork[]>([]);
-  const [sort, setSort] = useState<"top" | "new">("top");
+  const [sort, setSort] = useState<"top" | "new" | "bookmarked">("top");
   const [composeOpen, setComposeOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
@@ -76,7 +76,8 @@ export default function Snsd() {
   const loadWorks = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(snsdApiUrl(`/api/works?sort=${sort}`));
+      const apiSort = sort === "new" ? "new" : "top";
+      const response = await fetch(snsdApiUrl(`/api/works?sort=${apiSort}`));
       if (!response.ok) throw new Error(await readApiError(response));
       setWorks(await response.json());
       setError("");
@@ -88,6 +89,11 @@ export default function Snsd() {
   }, [sort]);
 
   useEffect(() => { void loadWorks(); }, [loadWorks]);
+
+  const visibleWorks = useMemo(
+    () => sort === "bookmarked" ? works.filter(work => bookmarked.has(work.id)) : works,
+    [bookmarked, sort, works],
+  );
 
   const chooseFile = (nextFile?: File) => {
     if (!nextFile) return;
@@ -232,12 +238,17 @@ export default function Snsd() {
         <nav className={styles.sortBar} aria-label="작품 정렬">
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">개추순</button>
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
+          <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
         </nav>
 
         <section className={styles.list}>
           {loading && <div className={styles.empty}>불러오는 중…</div>}
-          {!loading && works.length === 0 && <div className={styles.empty}>🥺<br />추천이 없습니다... 하나 하고 가세요</div>}
-          {works.map(work => (
+          {!loading && visibleWorks.length === 0 && (
+            <div className={styles.empty}>
+              {sort === "bookmarked" ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</> : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
+            </div>
+          )}
+          {visibleWorks.map(work => (
             <article className={styles.card} key={work.id}>
               <div className={styles.cardBody}>
                 <div className={styles.postHeader}>
