@@ -143,7 +143,8 @@ export default function Snsd() {
   const [offlineSaved, setOfflineSaved] = useState<Set<number>>(new Set());
   const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
   const [offlineGuideOpen, setOfflineGuideOpen] = useState(false);
-  const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive" | "offline">("new");
+  const [sort, setSort] = useState<"top" | "new" | "library">("new");
+  const [libraryView, setLibraryView] = useState<"bookmarked" | "archive" | "offline">("bookmarked");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -267,7 +268,7 @@ export default function Snsd() {
 
   useEffect(() => {
     setVisibleWorkLimit(40);
-  }, [searchOpen, searchQuery, sort]);
+  }, [libraryView, searchOpen, searchQuery, sort]);
 
   const visibleWorks = useMemo(() => {
     if (searchOpen) {
@@ -276,9 +277,9 @@ export default function Snsd() {
       return works.filter(work => [work.title, work.author, work.pairing]
         .some(value => value.toLocaleLowerCase("ko").includes(query)));
     }
-    if (sort === "bookmarked") return works.filter(work => bookmarked.has(work.id));
-    if (sort === "offline") return works.filter(work => offlineSaved.has(work.id));
-    if (sort === "archive") {
+    if (sort === "library" && libraryView === "bookmarked") return works.filter(work => bookmarked.has(work.id));
+    if (sort === "library" && libraryView === "offline") return works.filter(work => offlineSaved.has(work.id));
+    if (sort === "library" && libraryView === "archive") {
       return works
         .filter(work => readProgress[String(work.id)] || readHistory[String(work.id)])
         .sort((a, b) => (readProgress[String(b.id)]?.lastReadAt ?? readHistory[String(b.id)] ?? 0)
@@ -289,7 +290,7 @@ export default function Snsd() {
       return sorted.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
     }
     return sorted.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
-  }, [bookmarked, offlineSaved, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
+  }, [bookmarked, libraryView, offlineSaved, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
     setSearchOpen(false);
@@ -673,21 +674,26 @@ export default function Snsd() {
         {!searchOpen && <nav className={styles.sortBar} aria-label="작품 정렬">
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
-          <button className={sort === "bookmarked" ? styles.active : ""} onClick={() => setSort("bookmarked")} type="button">북마크</button>
-          <button className={sort === "archive" ? styles.active : ""} onClick={() => setSort("archive")} type="button">최근 읽은</button>
-          <button className={sort === "offline" ? styles.active : ""} onClick={() => setSort("offline")} type="button">오프라인</button>
+          <button className={sort === "library" ? styles.active : ""} onClick={() => setSort("library")} type="button">보관함</button>
         </nav>}
+        {!searchOpen && sort === "library" && (
+          <div className={styles.libraryBar} aria-label="보관함 종류">
+            <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
+            <button className={libraryView === "archive" ? styles.libraryActive : ""} onClick={() => setLibraryView("archive")} type="button">최근 읽은</button>
+            <button className={libraryView === "offline" ? styles.libraryActive : ""} onClick={() => setLibraryView("offline")} type="button">오프라인 저장</button>
+          </div>
+        )}
 
         <section className={styles.list}>
           {!loading && visibleWorks.length === 0 && (
             <div className={styles.empty}>
               {searchOpen
                 ? "검색 결과가 없습니다."
-                : sort === "bookmarked"
+                : sort === "library" && libraryView === "bookmarked"
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
-                  : sort === "archive"
+                  : sort === "library" && libraryView === "archive"
                     ? <>최근 읽은 작품이 없습니다.<br />작품을 열면 여기에 저장됩니다.</>
-                    : sort === "offline"
+                    : sort === "library" && libraryView === "offline"
                       ? <>오프라인 저장한 작품이 없습니다.<br />카드의 점 메뉴에서 작품을 저장해보세요.</>
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
             </div>
@@ -726,7 +732,7 @@ export default function Snsd() {
                         <button type="button" disabled={offlineBusy.has(work.id)} onClick={() => { setOpenMenu(null); void toggleOfflineSaved(work); }}>
                           {offlineBusy.has(work.id) ? "저장 중…" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"}
                         </button>
-                        <a href={downloadUrl(work.id)} download={downloadFilename(work)} onClick={() => setOpenMenu(null)}><DownloadIcon />다운로드</a>
+                        <a href={downloadUrl(work.id)} download={downloadFilename(work)} onClick={() => setOpenMenu(null)}><DownloadIcon />파일 다운로드</a>
                         {Boolean(work.is_owner) && <button type="button" onClick={() => beginEdit(work)}>수정</button>}
                         {Boolean(work.is_owner) && <button className={styles.deleteMenuItem} type="button" onClick={() => void deleteWork(work)}>삭제</button>}
                       </div>
@@ -808,11 +814,11 @@ export default function Snsd() {
             <div className={styles.helpContent}>
               <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 추천 이유는 선택입니다.</span></p>
               <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
-              <p><strong>저장과 기록</strong><span>카드 북마크는 북마크 탭에, 읽은 작품은 최근 읽은 탭에 저장됩니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
+              <p><strong>저장과 기록</strong><span>카드 북마크와 최근 읽은 작품은 보관함에서 확인할 수 있습니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
               <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
-              <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
-              <p><strong>다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 다운로드한 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
+              <p><strong>오프라인 저장</strong><span>카드의 점 메뉴에서 오프라인 저장을 누르면 작품을 SNSDFF 안에 저장합니다. 파일 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
+              <p><strong>파일 다운로드</strong><span>카드의 점 메뉴에서 TXT 파일을 받을 수 있습니다. 파일 다운로드로 받은 파일과 SNSDFF 오프라인 저장본은 서로 다릅니다.</span></p>
               <div className={styles.helpHowTo}>
                 <strong>홈 화면에 추가</strong>
                 <span className={styles.helpHowToIntro}>앱을 따로 다운로드하지 않고, SNSDFF를 바로 여는 아이콘을 홈 화면에 만드는 기능입니다.</span>

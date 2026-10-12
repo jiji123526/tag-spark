@@ -220,6 +220,36 @@
 
 .sortBar button.active { color: var(--snsd-text); font-weight: 600; }
 .sortBar button.active::after { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--snsd-text); content: ""; }
+.libraryBar {
+  position: sticky;
+  top: 100px;
+  z-index: 89;
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--snsd-surface);
+  border-bottom: 1px solid var(--snsd-border);
+}
+.libraryBar::-webkit-scrollbar { display: none; }
+.libraryBar button {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--snsd-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--snsd-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.libraryBar button.libraryActive {
+  border-color: var(--snsd-text);
+  background: var(--snsd-text);
+  color: var(--snsd-action-text);
+  font-weight: 600;
+}
 .list { display: flex; min-height: 160px; flex-direction: column; }
 .empty { padding: 72px 16px; color: var(--snsd-muted); text-align: center; }
 .loadMoreButton { margin: 20px 0 32px; padding: 10px 16px; border: 1px solid var(--snsd-border); border-radius: 8px; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; cursor: pointer; }
