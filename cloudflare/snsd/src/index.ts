@@ -68,6 +68,7 @@ async function listWorks(request: Request, env: Env, url: URL) {
       w.file_size, w.created_at,
       COUNT(DISTINCT l.voter) AS score,
       COUNT(DISTINCT c.id) AS comment_count,
+      (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment,
       CASE WHEN w.created_by = ? THEN 1 ELSE 0 END AS is_owner
     FROM works w
     LEFT JOIN likes l ON l.work_id = w.id
@@ -87,8 +88,8 @@ async function createWork(request: Request, env: Env) {
   const createdBy = cleanText(form.get("createdBy"), 100);
   const file = form.get("file");
 
-  if (!title || !author || !pairing || !reason || !createdBy || !(file instanceof File)) {
-    return json(request, env, { error: "모든 항목을 입력해주세요." }, 400);
+  if (!title || !author || !pairing || !createdBy || !(file instanceof File)) {
+    return json(request, env, { error: "모든 필수 항목을 입력해주세요." }, 400);
   }
   if (!file.name.toLowerCase().endsWith(".txt") || (file.type && !file.type.startsWith("text/plain"))) {
     return json(request, env, { error: "TXT 파일만 업로드할 수 있습니다." }, 400);
@@ -130,7 +131,8 @@ async function getWork(request: Request, env: Env, workId: number) {
     SELECT w.id, w.title, w.author, w.pairing, w.reason, w.original_filename,
       w.file_size, w.created_at,
       COUNT(DISTINCT l.voter) AS score,
-      COUNT(DISTINCT c.id) AS comment_count
+      COUNT(DISTINCT c.id) AS comment_count,
+      (SELECT preview.content FROM comments preview WHERE preview.work_id = w.id ORDER BY preview.created_at ASC, preview.id ASC LIMIT 1) AS preview_comment
     FROM works w
     LEFT JOIN likes l ON l.work_id = w.id
     LEFT JOIN comments c ON c.work_id = w.id
@@ -194,8 +196,8 @@ async function updateWork(request: Request, env: Env, workId: number) {
   const pairing = body.pairing?.trim().slice(0, 80) ?? "";
   const reason = body.reason?.trim().slice(0, 1000) ?? "";
   const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
-  if (!title || !author || !pairing || !reason || !createdBy) {
-    return json(request, env, { error: "모든 항목을 입력해주세요." }, 400);
+  if (!title || !author || !pairing || !createdBy) {
+    return json(request, env, { error: "모든 필수 항목을 입력해주세요." }, 400);
   }
   const existing = await env.tagspark_snsd.prepare("SELECT created_by FROM works WHERE id = ?").bind(workId).first<{ created_by: string }>();
   if (!existing) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);

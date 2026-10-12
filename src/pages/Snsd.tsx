@@ -147,8 +147,8 @@ export default function Snsd() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!title.trim() || !author.trim() || !pairing.trim() || !reason.trim() || !file) {
-      setError("모든 항목을 입력해주세요.");
+    if (!title.trim() || !author.trim() || !pairing.trim() || !file) {
+      setError("모든 필수 항목을 입력해주세요.");
       return;
     }
     setSubmitting(true);
@@ -213,7 +213,9 @@ export default function Snsd() {
     const created = await response.json();
     setComments(current => ({ ...current, [workId]: [...(current[workId] ?? []), created] }));
     setCommentText(current => ({ ...current, [workId]: "" }));
-    setWorks(current => current.map(work => work.id === workId ? { ...work, comment_count: work.comment_count + 1 } : work));
+    setWorks(current => current.map(work => work.id === workId
+      ? { ...work, comment_count: work.comment_count + 1, preview_comment: work.preview_comment || created.content }
+      : work));
   };
 
   const toggleBookmark = (workId: number) => {
@@ -243,8 +245,8 @@ export default function Snsd() {
   };
 
   const saveEdit = async () => {
-    if (!editing || !editDraft.title.trim() || !editDraft.author.trim() || !editDraft.pairing.trim() || !editDraft.reason.trim()) {
-      setError("모든 항목을 입력해주세요.");
+    if (!editing || !editDraft.title.trim() || !editDraft.author.trim() || !editDraft.pairing.trim()) {
+      setError("모든 필수 항목을 입력해주세요.");
       return;
     }
     setSavingEdit(true);
@@ -327,7 +329,7 @@ export default function Snsd() {
                 <span>{file ? `${(file.size / 1024).toFixed(1)}KB` : "또는 눌러서 파일 선택 · 최대 5MB"}</span>
               </div>
               <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="씨피 (여러 개면 쉼표로 구분)" maxLength={80} />
-              <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="추천 이유" rows={3} maxLength={1000} />
+              <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="추천 이유 (선택)" rows={3} maxLength={1000} />
               {error && <p className={styles.error} role="alert">{error}</p>}
               <button className={styles.submitButton} disabled={submitting} type="submit">{submitting ? "업로드 중…" : "제출"}</button>
             </form>
@@ -401,7 +403,9 @@ export default function Snsd() {
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
-                <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason}</span></button>
+                {(work.reason || work.preview_comment) && (
+                  <button className={styles.reason} type="button" onClick={() => void toggleComments(work.id)}><img src={AVATAR_URL} alt="" width="24" height="24" /><span>{work.reason || work.preview_comment}</span></button>
+                )}
                 {openComments === work.id && (
                   <div className={styles.comments} data-card-action>
                     {(comments[work.id] ?? []).map(comment => (
@@ -428,7 +432,7 @@ export default function Snsd() {
               <label>제목<input value={editDraft.title} onChange={event => setEditDraft(current => ({ ...current, title: event.target.value }))} maxLength={120} /></label>
               <label>작가<input value={editDraft.author} onChange={event => setEditDraft(current => ({ ...current, author: event.target.value }))} maxLength={80} /></label>
               <label>씨피<input value={editDraft.pairing} onChange={event => setEditDraft(current => ({ ...current, pairing: event.target.value }))} maxLength={80} /></label>
-              <label>추천 이유<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
+              <label>추천 이유 (선택)<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
             </div>
             <div className={styles.modalFooter}><button type="button" className={styles.cancelButton} onClick={() => setEditing(null)}>취소</button><button type="button" className={styles.confirmButton} disabled={savingEdit} onClick={() => void saveEdit()}>{savingEdit ? "저장 중…" : "수정하기"}</button></div>
           </div>

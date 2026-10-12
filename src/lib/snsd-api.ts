@@ -9,6 +9,7 @@ export type SnsdWork = {
   created_at: string;
   score: number;
   comment_count: number;
+  preview_comment?: string | null;
   is_owner?: number | boolean;
 };
 
