@@ -4,8 +4,11 @@ import {
   getSnsdReadHistory,
   getSnsdReadProgressMap,
   cacheSnsdViewerWork,
+  fetchSnsdViewerContent,
+  hasCachedSnsdViewerContent,
   prefetchSnsdViewer,
   readApiError,
+  removeCachedSnsdViewerContent,
   SNSD_READ_HISTORY_KEY,
   SNSD_READ_PROGRESS_PREFIX,
   snsdApiUrl,
@@ -25,6 +28,8 @@ const ShareIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12
 const MoreIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.125 12a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm-6.25 0a1.875 1.875 0 1 1-3.751 0 1.875 1.875 0 0 1 3.751 0ZM5.75 13.875a1.875 1.875 0 1 1 0-3.75 1.875 1.875 0 0 1 0 3.75Z" fill="currentColor" /></svg>;
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const DownloadIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M11 3a1 1 0 1 1 2 0v10.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V3Zm-7 13a1 1 0 0 1 1 1v2h14v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1Z" fill="currentColor" /></svg>;
+
+const OfflineIcon = ({ saved = false }: { saved?: boolean }) => <svg aria-hidden="true" viewBox="0 0 24 24"><path d={saved ? "M12 3a9 9 0 1 0 8.485 6h-2.09A7 7 0 1 1 12 5V3Zm0 0 4 4h-3v6h-2V7H8l4-4Z" : "M12 3a9 9 0 1 0 8.485 6h-2.09A7 7 0 1 1 12 5V3Zm0 0 4 4h-3v6h-2V7H8l4-4Z"} fill="currentColor" /></svg>;
 
 function parseSnsdTimestamp(value: string) {
   const trimmed = value.trim();
@@ -89,6 +94,8 @@ export default function Snsd() {
   const commentPrefetchTimersRef = useRef<Map<number, number>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>([]);
   const [visibleWorkLimit, setVisibleWorkLimit] = useState(40);
+  const [offlineSaved, setOfflineSaved] = useState<Set<number>>(new Set());
+  const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
   const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("new");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -128,7 +135,10 @@ export default function Snsd() {
       const viewer = encodeURIComponent(getSnsdUserId());
       const response = await fetch(snsdApiUrl(`/api/works?viewer=${viewer}`));
       if (!response.ok) throw new Error(await readApiError(response));
-      setWorks(await response.json());
+      const loadedWorks = await response.json() as SnsdWork[];
+      setWorks(loadedWorks);
+      void Promise.all(loadedWorks.map(async work => [work.id, await hasCachedSnsdViewerContent(work.id)] as const))
+        .then(cachedIds => setOfflineSaved(new Set(cachedIds.filter(([, cached]) => cached).map(([workId]) => workId))));
       setError("");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "목록을 불러오지 못했습니다.");
@@ -356,6 +366,35 @@ export default function Snsd() {
     });
   };
 
+  const toggleOfflineSaved = async (work: SnsdWork) => {
+    setOfflineBusy(current => new Set(current).add(work.id));
+    try {
+      if (offlineSaved.has(work.id)) {
+        await removeCachedSnsdViewerContent(work.id);
+        setOfflineSaved(current => {
+          const next = new Set(current);
+          next.delete(work.id);
+          return next;
+        });
+        setToast("오프라인 저장본을 삭제했습니다.");
+      } else {
+        const response = await fetchSnsdViewerContent(work.id);
+        if (!response.ok) throw new Error(await readApiError(response));
+        setOfflineSaved(current => new Set(current).add(work.id));
+        setToast("오프라인에서 읽을 수 있도록 저장했습니다.");
+      }
+    } catch {
+      setError("오프라인 저장에 실패했습니다. 네트워크를 확인해주세요.");
+    } finally {
+      setOfflineBusy(current => {
+        const next = new Set(current);
+        next.delete(work.id);
+        return next;
+      });
+      window.setTimeout(() => setToast(""), 2600);
+    }
+  };
+
   const shareWork = async (workId: number) => {
     const url = `${window.location.origin}/snsd/view/${workId}`;
     await navigator.clipboard.writeText(url);
@@ -577,6 +616,7 @@ export default function Snsd() {
                   </div>
                   <div className={styles.actionsRight}>
                     <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
+                    <button className={`${styles.iconButton} ${offlineSaved.has(work.id) ? styles.offlineSaved : ""}`} type="button" disabled={offlineBusy.has(work.id)} onClick={() => void toggleOfflineSaved(work)} aria-label={offlineBusy.has(work.id) ? "오프라인 저장 중" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"} title={offlineBusy.has(work.id) ? "저장 중…" : offlineSaved.has(work.id) ? "오프라인에서 제거" : "오프라인 저장"}><OfflineIcon saved={offlineSaved.has(work.id)} /></button>
                     <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
@@ -612,8 +652,10 @@ export default function Snsd() {
             <div className={styles.helpContent}>
               <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 추천 이유는 선택입니다.</span></p>
               <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
-              <p><strong>저장과 기록</strong><span>카드 북마크는 북마크 탭에, 읽은 작품은 최근 순서대로 기록 탭에 저장됩니다.</span></p>
+              <p><strong>저장과 기록</strong><span>카드 북마크는 북마크 탭에, 읽은 작품은 최근 읽은 탭에 저장됩니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
+              <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
+              <p><strong>오프라인 저장</strong><span>카드의 오프라인 아이콘을 누르면 작품을 SNSDFF 안에 저장합니다. TXT 다운로드와는 별개이며, 저장한 작품은 네트워크가 없어도 읽을 수 있습니다.</span></p>
               <p><strong>다운로드</strong><span>카드 우측 다운로드 아이콘 또는 작성자 점 메뉴에서 TXT 파일을 받을 수 있습니다.</span></p>
             </div>
           </div>

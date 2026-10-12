@@ -141,10 +141,14 @@ export function prefetchSnsdViewer(work: SnsdWork) {
   return request;
 }
 
-async function getCachedSnsdViewerContent(workId: string | number) {
-  if (!("caches" in window)) return null;
-  const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
-  return cache.match(snsdApiUrl(`/api/works/${workId}/content`));
+export async function getCachedSnsdViewerContent(workId: string | number) {
+  try {
+    if (!("caches" in window)) return null;
+    const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
+    return cache.match(snsdApiUrl(`/api/works/${workId}/content`));
+  } catch {
+    return null;
+  }
 }
 
 async function fetchAndCacheSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
@@ -170,6 +174,16 @@ async function fetchAndCacheSnsdViewerContent(workId: string | number, signal?: 
 
 export function fetchSnsdViewerContent(workId: string | number, signal?: AbortSignal) {
   return fetchAndCacheSnsdViewerContent(workId, signal);
+}
+
+export async function removeCachedSnsdViewerContent(workId: string | number) {
+  if (!("caches" in window)) return false;
+  const cache = await window.caches.open(SNSD_CONTENT_CACHE_NAME);
+  return cache.delete(snsdApiUrl(`/api/works/${workId}/content`));
+}
+
+export async function hasCachedSnsdViewerContent(workId: string | number) {
+  return Boolean(await getCachedSnsdViewerContent(workId));
 }
 
 export async function readApiError(response: Response) {

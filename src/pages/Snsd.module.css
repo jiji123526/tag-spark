@@ -316,8 +316,10 @@
 .iconButton { gap: 6px; margin-left: 0; font-size: 14px; font-weight: 600; }
 .actionsRight .iconButton:last-child { margin-right: -5px; }
 .voteButton:hover, .commentButton:hover, .iconButton:hover { background: rgba(118, 118, 127, 0.08); color: var(--snsd-text); }
+.iconButton:disabled { cursor: wait; opacity: .45; }
 .voteButton.voted { color: #f33d4d; }
 .bookmarked { color: var(--snsd-text); }
+.offlineSaved { color: var(--snsd-primary); }
 .reason {
   display: flex;
   align-items: flex-start;
