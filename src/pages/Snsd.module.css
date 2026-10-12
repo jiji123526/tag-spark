@@ -54,6 +54,9 @@
 }
 
 .header h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+.titleGroup { display: flex; align-items: center; gap: 8px; }
+.helpButton { padding: 3px 7px; border: 1px solid var(--snsd-border); border-radius: 999px; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 11px; line-height: 1.4; cursor: pointer; }
+.helpButton:hover { border-color: var(--snsd-muted); color: var(--snsd-text); }
 .searchButton {
   display: inline-flex;
   align-items: center;
@@ -344,6 +347,7 @@
 .toastVisible { opacity: 1; }
 .modalOverlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: var(--snsd-overlay); }
 .modalBox { width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; border: 1px solid var(--snsd-border); border-radius: 12px; background: var(--snsd-elevated); box-shadow: 0 12px 24px var(--snsd-shadow); }
+.helpModal { max-width: 390px; }
 .modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--snsd-border); }
 .modalHeader h2 { margin: 0; font-size: 18px; font-weight: 600; }
 .modalHeader button { padding: 4px; border: 0; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 20px; cursor: pointer; }
@@ -351,6 +355,10 @@
 .modalBody label { display: block; color: var(--snsd-muted); font-size: 13px; font-weight: 600; }
 .modalBody input, .modalBody textarea { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-field); color: var(--snsd-text); font: inherit; font-size: 14px; resize: vertical; }
 .modalBody input:focus, .modalBody textarea:focus { outline: 0; border-color: var(--snsd-primary); }
+.helpContent { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+.helpContent p { display: flex; flex-direction: column; gap: 3px; margin: 0; }
+.helpContent strong { color: var(--snsd-text); font-size: 14px; font-weight: 600; }
+.helpContent span { color: var(--snsd-muted); font-size: 13px; line-height: 1.55; }
 .modalFooter { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--snsd-border); }
 .cancelButton, .confirmButton { padding: 8px 16px; border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; }
 .cancelButton { border: 1px solid var(--snsd-border); background: transparent; color: var(--snsd-text); }

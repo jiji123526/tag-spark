@@ -66,6 +66,7 @@ export default function Snsd() {
   const [sort, setSort] = useState<"top" | "new" | "bookmarked" | "archive">("top");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [helpOpen, setHelpOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(() => window.localStorage.getItem(COMPOSE_COLLAPSED_KEY) !== "true");
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
@@ -127,6 +128,15 @@ export default function Snsd() {
   useEffect(() => {
     if (searchOpen) requestAnimationFrame(() => searchInputRef.current?.focus());
   }, [searchOpen]);
+
+  useEffect(() => {
+    if (!helpOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setHelpOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [helpOpen]);
 
   const visibleWorks = useMemo(() => {
     if (searchOpen) {
@@ -328,7 +338,7 @@ export default function Snsd() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1>SNSDFF</h1>
+        <div className={styles.titleGroup}><h1>SNSDFF</h1><button className={styles.helpButton} type="button" onClick={() => setHelpOpen(true)}>사용법</button></div>
         <button className={styles.searchButton} type="button" aria-label="작품 검색" aria-expanded={searchOpen} onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><SearchIcon /></button>
       </header>
       <main className={styles.main}>
@@ -471,6 +481,20 @@ export default function Snsd() {
         </section>
       </main>
       {openMenu !== null && <button className={styles.menuBackdrop} type="button" aria-label="메뉴 닫기" onClick={() => setOpenMenu(null)} />}
+      {helpOpen && (
+        <div className={styles.modalOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setHelpOpen(false); }}>
+          <div className={`${styles.modalBox} ${styles.helpModal}`} role="dialog" aria-modal="true" aria-labelledby="snsd-help-title">
+            <div className={styles.modalHeader}><h2 id="snsd-help-title">SNSDFF 사용법</h2><button type="button" onClick={() => setHelpOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.helpContent}>
+              <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 추천 이유는 선택입니다.</span></p>
+              <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
+              <p><strong>저장과 기록</strong><span>카드 북마크는 북마크 탭에, 읽은 작품은 최근 순서대로 기록 탭에 저장됩니다.</span></p>
+              <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
+              <p><strong>다운로드</strong><span>카드 우측 다운로드 아이콘 또는 작성자 점 메뉴에서 TXT 파일을 받을 수 있습니다.</span></p>
+            </div>
+          </div>
+        </div>
+      )}
       {editing && (
         <div className={styles.modalOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setEditing(null); }}>
           <div className={styles.modalBox} role="dialog" aria-modal="true" aria-labelledby="edit-work-title">
