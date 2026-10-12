@@ -40,33 +40,40 @@ function detectReaderChapters(paragraphs: string[]) {
       .filter(Boolean);
     if (lines.length > 2) return;
 
-    const line = lines[0] ?? "";
-    if (!line || line.length > 80 || /^[-=_*·•\s]{3,}$/.test(line)) return;
-    if (/^step\s*\d+/i.test(line)) return;
+    for (const line of lines) {
+      if (!line || line.length > 80 || /^[-=_*·•\s]{3,}$/.test(line)) continue;
+      if (/^step\s*\d+/i.test(line)) continue;
 
-    const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
-    const explicit = /(?:^|[\s#])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
-      || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
-      || /(?:完|완결)/.test(line)
-      || /#\s*\d{1,3}\b/.test(line);
-    const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.test(line);
-    const titleNumber = /^[^0-9].{0,58}\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.test(line);
+      const special = /^(?:[.·\s]*)?(?:prologue|epilogue|프롤로그|에필로그|외전|번외)(?:\s*(?:\([^)]*\)|완|完|완결|두번째))?[.·\s]*$/i.test(line);
+      const explicit = /(?:^|[\s#])(?:ep(?:isode)?|chapter)\s*\d+/i.test(line)
+        || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
+        || /(?:完|완결)/.test(line)
+        || /#\s*\d{1,3}\b/.test(line);
+      const numeric = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.test(line);
+      const titleNumber = /^[^0-9].{0,58}\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:完|완결))?)?$/.test(line);
 
-    if (special || explicit || numeric || titleNumber) {
-      candidates.push({
-        id: `chapter-${paragraphIndex}`,
-        label: line,
-        paragraph: paragraphIndex,
-        numbered: numeric,
-      });
+      if (special || explicit || numeric || titleNumber) {
+        candidates.push({
+          id: `chapter-${paragraphIndex}`,
+          label: line,
+          paragraph: paragraphIndex,
+          numbered: numeric,
+        });
+        break;
+      }
     }
   });
 
   const numberedCount = candidates.filter(candidate => candidate.numbered).length;
   const structuredSeries = candidates.filter(candidate => !candidate.numbered).length >= 2;
-  return candidates
-    .filter(candidate => !candidate.numbered || (!structuredSeries && numberedCount >= 2))
-    .filter((candidate, index, all) => index === all.findIndex(other => other.paragraph === candidate.paragraph))
+  const filtered = candidates.filter(candidate => !candidate.numbered || (!structuredSeries && numberedCount >= 2));
+  const seenParagraphs = new Set<number>();
+  return filtered
+    .filter(candidate => {
+      if (seenParagraphs.has(candidate.paragraph)) return false;
+      seenParagraphs.add(candidate.paragraph);
+      return true;
+    })
     .map(candidate => ({ id: candidate.id, label: candidate.label, paragraph: candidate.paragraph }));
 }
 
@@ -85,20 +92,20 @@ export default function SnsdViewer() {
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
+  const [chapters, setChapters] = useState<ReaderChapter[] | null>(null);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
-  const chapters = useMemo(() => detectReaderChapters(paragraphs), [paragraphs]);
+  const normalizedParagraphs = useMemo(() => paragraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [paragraphs]);
   const bookmarkKey = `snsd-reader-bookmarks-${id}`;
   const searchRanges = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("ko");
     let globalIndex = 0;
 
-    return paragraphs.map(paragraph => {
+    return normalizedParagraphs.map(normalizedParagraph => {
       if (!query) return [] as SearchRange[];
-      const normalizedParagraph = paragraph.toLocaleLowerCase("ko");
       const ranges: SearchRange[] = [];
       let start = normalizedParagraph.indexOf(query);
       while (start !== -1) {
@@ -108,8 +115,12 @@ export default function SnsdViewer() {
       }
       return ranges;
     });
-  }, [paragraphs, searchQuery]);
+  }, [normalizedParagraphs, searchQuery]);
   const searchMatchCount = searchRanges.reduce((count, ranges) => count + ranges.length, 0);
+
+  useEffect(() => {
+    setChapters(null);
+  }, [content]);
 
   useEffect(() => {
     if (!id) return;
@@ -169,6 +180,11 @@ export default function SnsdViewer() {
     const saved = savedProgress?.scrollY ?? Number(window.localStorage.getItem(key));
     if (saved > 0) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved)));
     let saveTimer = 0;
+    let idleSaveId: number | null = null;
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
     const save = () => {
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       window.localStorage.setItem(key, String(window.scrollY));
@@ -179,12 +195,19 @@ export default function SnsdViewer() {
     };
     const scheduleSave = () => {
       window.clearTimeout(saveTimer);
-      saveTimer = window.setTimeout(save, 250);
+      saveTimer = window.setTimeout(() => {
+        if (idleWindow.requestIdleCallback) {
+          idleSaveId = idleWindow.requestIdleCallback(save, { timeout: 1000 });
+        } else {
+          save();
+        }
+      }, 500);
     };
     window.addEventListener("scroll", scheduleSave, { passive: true });
     window.addEventListener("pagehide", save);
     return () => {
       window.clearTimeout(saveTimer);
+      if (idleSaveId !== null) idleWindow.cancelIdleCallback?.(idleSaveId);
       save();
       window.removeEventListener("scroll", scheduleSave);
       window.removeEventListener("pagehide", save);
@@ -356,6 +379,13 @@ export default function SnsdViewer() {
     requestAnimationFrame(() => paragraphRefs.current[chapter.paragraph]?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
+  const openChapterList = () => {
+    if (chapters === null) setChapters(detectReaderChapters(paragraphs));
+    setChaptersOpen(true);
+    setSearchOpen(false);
+    setFontSizeOpen(false);
+  };
+
   const returnToList = () => {
     const openedFromList = new URLSearchParams(window.location.search).get("from") === "list";
     if (openedFromList) {
@@ -375,7 +405,7 @@ export default function SnsdViewer() {
         <div className={styles.workMeta}>
           <div className={styles.workTitleRow}>
             <strong>{work?.title ?? "불러오는 중…"}</strong>
-            {work && <button className={styles.chapterToggle} type="button" onClick={() => { setChaptersOpen(true); setSearchOpen(false); setFontSizeOpen(false); }} aria-label="목차 열기" aria-expanded={chaptersOpen}><ChevronDownIcon /></button>}
+            {work && <button className={styles.chapterToggle} type="button" onClick={openChapterList} aria-label="목차 열기" aria-expanded={chaptersOpen}><ChevronDownIcon /></button>}
           </div>
           {work && <span>{work.author} · {work.pairing}</span>}
         </div>
@@ -453,10 +483,11 @@ export default function SnsdViewer() {
       {chaptersOpen && (
         <div className={styles.bookmarkOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
           <section className={styles.bookmarkSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
-            <div className={styles.bookmarkSheetHeader}><h2 id="chapter-title">목차 {chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.bookmarkSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : chapters.length}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.bookmarkList}>
-              {chapters.length === 0 && <p className={styles.emptyBookmarks}>감지된 목차가 없습니다.</p>}
-              {chapters.map((chapter, index) => (
+              {chapters === null && <p className={styles.emptyBookmarks}>목차를 준비 중입니다…</p>}
+              {chapters?.length === 0 && <p className={styles.emptyBookmarks}>감지된 목차가 없습니다.</p>}
+              {chapters?.map((chapter, index) => (
                 <div className={styles.bookmarkItem} key={chapter.id}>
                   <button className={styles.bookmarkLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
                 </div>

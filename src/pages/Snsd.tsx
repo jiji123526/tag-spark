@@ -814,6 +814,7 @@ export default function Snsd() {
             <div className={styles.helpContent}>
               <p><strong>작품 추천</strong><span>제목·작가·TXT 파일·씨피를 입력해 올려주세요. 설명은 선택입니다.</span></p>
               <p><strong>읽기와 검색</strong><span>카드를 누르면 뷰어가 열립니다. 돋보기나 씨피 태그로 작품을 검색할 수 있어요.</span></p>
+              <p><strong>목차</strong><span>뷰어 제목 옆 아래 화살표를 누르면 TXT에서 자동으로 감지한 장·화 목록을 볼 수 있습니다. 파일 형식이 일정하지 않으면 목차가 일부만 표시되거나 감지되지 않을 수 있습니다.</span></p>
               <p><strong>저장과 기록</strong><span>카드 북마크와 최근 읽은 작품은 보관함에서 확인할 수 있습니다. 읽기 진행률과 마지막 위치도 함께 기억합니다.</span></p>
               <p><strong>뷰어</strong><span>글자 크기를 조절하고 한 작품 안에 여러 읽기 위치를 북마크할 수 있습니다.</span></p>
               <p><strong>이어 읽기</strong><span>진행률이 있는 작품 카드의 이어 읽기를 누르면 마지막으로 읽던 위치에서 다시 시작합니다.</span></p>
