@@ -191,6 +191,18 @@ export default function SnsdViewer() {
   }, [searchOpen]);
 
   useEffect(() => {
+    if (!searchOpen && !fontSizeOpen) return;
+    const dismissPopovers = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("[data-viewer-popover]")) return;
+      setSearchOpen(false);
+      setFontSizeOpen(false);
+    };
+    document.addEventListener("pointerdown", dismissPopovers);
+    return () => document.removeEventListener("pointerdown", dismissPopovers);
+  }, [fontSizeOpen, searchOpen]);
+
+  useEffect(() => {
     setActiveSearchMatch(current => Math.min(current, Math.max(0, searchMatchCount - 1)));
   }, [searchMatchCount]);
 
@@ -311,7 +323,7 @@ export default function SnsdViewer() {
           {work && <span>{work.author} · {work.pairing}</span>}
         </div>
         <div className={styles.headerActions}>
-          <div className={styles.controlWrapper}>
+          <div className={styles.controlWrapper} data-viewer-popover>
             <button className={styles.iconButton} type="button" onClick={() => { setSearchOpen(current => !current); setFontSizeOpen(false); }} aria-label="본문 검색" aria-expanded={searchOpen}><SearchIcon /></button>
             {searchOpen && (
               <div className={`${styles.popover} ${styles.searchPopover}`} role="search">
@@ -341,7 +353,7 @@ export default function SnsdViewer() {
               </div>
             )}
           </div>
-          <div className={styles.controlWrapper}>
+          <div className={styles.controlWrapper} data-viewer-popover>
             <button className={styles.iconButton} type="button" onClick={() => { setFontSizeOpen(current => !current); setSearchOpen(false); }} aria-label="글자 크기 조절" aria-expanded={fontSizeOpen}><TextSizeIcon /></button>
             {fontSizeOpen && (
               <div className={`${styles.popover} ${styles.fontPopover}`} role="dialog" aria-label="글자 크기 조절">
