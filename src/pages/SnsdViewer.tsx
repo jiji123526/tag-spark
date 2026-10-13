@@ -44,13 +44,13 @@ export default function SnsdViewer() {
   const readerArticleRef = useRef<HTMLElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
+  const normalizedParagraphs = useMemo(() => paragraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [paragraphs]);
   const searchRanges = useMemo(() => {
     const query = submittedSearchQuery.trim().toLocaleLowerCase("ko");
-    if (!query) return [] as SearchRange[][];
     let globalIndex = 0;
 
-    return paragraphs.map(paragraph => {
-      const normalizedParagraph = paragraph.toLocaleLowerCase("ko");
+    return normalizedParagraphs.map(normalizedParagraph => {
+      if (!query) return [] as SearchRange[];
       const ranges: SearchRange[] = [];
       let start = normalizedParagraph.indexOf(query);
       while (start !== -1) {
@@ -60,7 +60,7 @@ export default function SnsdViewer() {
       }
       return ranges;
     });
-  }, [paragraphs, submittedSearchQuery]);
+  }, [normalizedParagraphs, submittedSearchQuery]);
   const searchMatchCount = searchRanges.reduce((count, ranges) => count + ranges.length, 0);
   const searchPending = searchQuery.trim().toLocaleLowerCase("ko") !== submittedSearchQuery.trim().toLocaleLowerCase("ko");
 
