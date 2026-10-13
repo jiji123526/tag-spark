@@ -169,6 +169,7 @@ export default function Snsd() {
   const viewerPrefetchTimersRef = useRef<Map<number, number>>(new Map());
   const [works, setWorks] = useState<SnsdWork[]>(readCachedWorks);
   const hasWorksRef = useRef(works.length > 0);
+  const voteRequestsRef = useRef(new Set<number>());
   const [visibleWorkLimit, setVisibleWorkLimit] = useState(40);
   const [offlineSaved, setOfflineSaved] = useState<Set<number>>(new Set());
   const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
@@ -443,20 +444,45 @@ export default function Snsd() {
   };
 
   const toggleVote = async (workId: number) => {
-    const response = await fetch(snsdApiUrl(`/api/works/${workId}/vote`), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ voter: getSnsdUserId() }),
-    });
-    if (!response.ok) { setError(await readApiError(response)); return; }
-    const result = await response.json();
-    setWorks(current => current.map(work => work.id === workId ? { ...work, score: result.score } : work));
-    setVoted(current => {
+    if (voteRequestsRef.current.has(workId)) return;
+    voteRequestsRef.current.add(workId);
+
+    const wasVoted = voted.has(workId);
+    const liked = !wasVoted;
+    const scoreDelta = liked ? 1 : -1;
+    const updateVoted = (nextLiked: boolean) => setVoted(current => {
       const next = new Set(current);
-      result.voted ? next.add(workId) : next.delete(workId);
+      nextLiked ? next.add(workId) : next.delete(workId);
       window.localStorage.setItem("snsd-voted-ids", JSON.stringify([...next]));
       return next;
     });
+    const updateScore = (delta: number) => setWorks(current => current.map(work =>
+      work.id === workId ? { ...work, score: Math.max(0, work.score + delta) } : work,
+    ));
+
+    updateVoted(liked);
+    updateScore(scoreDelta);
+    try {
+      const response = await fetch(snsdApiUrl(`/api/works/${workId}/vote`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voter: getSnsdUserId(), liked }),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const result = await response.json() as { voted: boolean; changed?: boolean; score?: number };
+      if (result.voted !== liked) throw new Error("좋아요 상태를 확인하지 못했습니다. 다시 시도해주세요.");
+      if (typeof result.score === "number") {
+        setWorks(current => current.map(work => work.id === workId ? { ...work, score: result.score! } : work));
+      } else if (result.changed === false) {
+        updateScore(-scoreDelta);
+      }
+    } catch (requestError) {
+      updateVoted(wasVoted);
+      updateScore(-scoreDelta);
+      setError(requestError instanceof Error ? requestError.message : "좋아요를 반영하지 못했습니다.");
+    } finally {
+      voteRequestsRef.current.delete(workId);
+    }
   };
 
   const toggleComments = async (workId: number) => {

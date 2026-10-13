@@ -350,19 +350,16 @@ async function deleteWorkChapter(request: Request, env: Env, workId: number, cha
 }
 
 async function toggleVote(request: Request, env: Env, workId: number) {
-  const body = await request.json<{ voter?: string }>();
+  const body = await request.json<{ voter?: string; liked?: boolean }>();
   const voter = body.voter?.trim().slice(0, 100);
   if (!voter) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
+  if (typeof body.liked !== "boolean") return json(request, env, { error: "좋아요 상태가 필요합니다." }, 400);
   const work = await env.tagspark_snsd.prepare("SELECT id FROM works WHERE id = ?").bind(workId).first();
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
-  const existing = await env.tagspark_snsd.prepare("SELECT 1 AS found FROM likes WHERE work_id = ? AND voter = ?").bind(workId, voter).first();
-  if (existing) {
-    await env.tagspark_snsd.prepare("DELETE FROM likes WHERE work_id = ? AND voter = ?").bind(workId, voter).run();
-  } else {
-    await env.tagspark_snsd.prepare("INSERT INTO likes (work_id, voter) VALUES (?, ?)").bind(workId, voter).run();
-  }
-  const count = await env.tagspark_snsd.prepare("SELECT COUNT(*) AS score FROM likes WHERE work_id = ?").bind(workId).first<{ score: number }>();
-  return json(request, env, { voted: !existing, score: Number(count?.score ?? 0) });
+  const mutation = body.liked
+    ? await env.tagspark_snsd.prepare("INSERT OR IGNORE INTO likes (work_id, voter) VALUES (?, ?)").bind(workId, voter).run()
+    : await env.tagspark_snsd.prepare("DELETE FROM likes WHERE work_id = ? AND voter = ?").bind(workId, voter).run();
+  return json(request, env, { voted: body.liked, changed: mutation.meta.changes > 0 });
 }
 
 async function listComments(request: Request, env: Env, workId: number) {
