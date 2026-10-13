@@ -34,7 +34,7 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
         || /(?:^|[\s])제?\s*\d+\s*(?:장|화|부|편|회)/.test(line)
         || /(?:^|[\s])(?:ep|ch)\.?\s*\d{1,3}\b/i.test(line);
       const genericMatch = /^(?:\d{1,3}(?:[-–]\d{1,3})?)[.]?(?:\s+.{1,60})?$/.exec(line);
-      const titleMatch = /^[^0-9].{0,78}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:완|완결|끝|完|번외|외전))?)?$/.exec(line);
+      const titleMatch = /^[^0-9].{0,78}\s+(\d{1,3})(?:[-–](\d{1,3}))?(?:\s*[.．)]?(?:\s*(?:완|완결|끝|完|번외|외전))?)?(?:\s*[（(](?:완|완결|끝|完|번외|외전)[）)])?$/.exec(line);
       const explicitNumber = explicitMatch ? /(?:\d{1,3})(?:[-–]\d{1,3})?/.exec(line)?.[0] : undefined;
       const getSequenceNumber = (value?: string) => {
         if (!value) return undefined;
@@ -61,6 +61,7 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
             ?? explicitNumber
             ?? genericMatch?.[0].match(/^\d{1,3}(?:[-–]\d{1,3})?/)?.[0];
         const titlePrefix = titleMatch?.[0]
+          .replace(/\s*[（(](?:완|완결|끝|完|번외|외전)[）)]$/, "")
           .replace(/\s+\d{1,3}(?:[-–]\d{1,3})?(?:\s*[.．)]?(?:\s*(?:완|완결|끝|完|번외|외전))?)?$/, "")
           .replace(/\s+/g, " ")
           .trim()
