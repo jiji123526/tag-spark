@@ -6,6 +6,8 @@
     { "source": "/snsd/view/:id", "destination": "/api/snsd-share?id=:id" },
     { "source": "/snsd/share/:id", "destination": "/api/snsd-share?id=:id" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/snsd/view/:id", "destination": "/snsd.html" },
+    { "source": "/snsd", "destination": "/snsd.html" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
