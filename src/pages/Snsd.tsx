@@ -185,6 +185,7 @@ export default function Snsd() {
   const [pairing, setPairing] = useState("");
   const [reason, setReason] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [draggedFileIndex, setDraggedFileIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(() => works.length === 0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -381,6 +382,16 @@ export default function Snsd() {
     nextFiles.sort((a, b) => a.name.localeCompare(b.name, "ko", { numeric: true, sensitivity: "base" }));
     setFiles(nextFiles);
     setError("");
+  };
+
+  const moveFile = (from: number, to: number) => {
+    if (to < 0 || to >= files.length || from === to) return;
+    setFiles(current => {
+      const reordered = [...current];
+      const [moved] = reordered.splice(from, 1);
+      reordered.splice(to, 0, moved);
+      return reordered;
+    });
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
@@ -726,8 +737,33 @@ export default function Snsd() {
               >
                 <input ref={fileInputRef} className={styles.fileInput} type="file" accept=".txt,text/plain" multiple onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFiles(event.target.files)} />
                 <strong>{files.length ? `${files.length}개 파일 선택됨` : "TXT 파일을 끌어다 놓으세요"}</strong>
-                <span>{files.length ? `${files.map(item => item.name).join(" · ")} · 파일명순으로 합쳐져요 · ${(files.reduce((total, item) => total + item.size, 0) / 1024).toFixed(1)}KB` : "또는 눌러서 여러 파일 선택 · 최대 합계 5MB"}</span>
+                <span>{files.length ? `총 ${(files.reduce((total, item) => total + item.size, 0) / 1024).toFixed(1)}KB · 아래에서 순서를 바꿀 수 있어요` : "TXT 여러 개 선택 가능 · 파일명순으로 자동 병합 · 합계 5MB 이하"}</span>
               </div>
+              {files.length > 1 && (
+                <div className={styles.fileOrder}>
+                  <span className={styles.fileOrderHint}>병합 순서 · 드래그하거나 화살표로 조정</span>
+                  <ol>
+                    {files.map((item, index) => (
+                      <li
+                        key={`${item.name}-${item.lastModified}-${index}`}
+                        draggable
+                        onDragStart={() => setDraggedFileIndex(index)}
+                        onDragOver={event => event.preventDefault()}
+                        onDrop={event => { event.preventDefault(); if (draggedFileIndex !== null) moveFile(draggedFileIndex, index); setDraggedFileIndex(null); }}
+                        onDragEnd={() => setDraggedFileIndex(null)}
+                        className={draggedFileIndex === index ? styles.fileOrderDragging : ""}
+                      >
+                        <span className={styles.fileOrderNumber}>{index + 1}</span>
+                        <span className={styles.fileOrderName} title={item.name}>{item.name}</span>
+                        <span className={styles.fileOrderActions}>
+                          <button type="button" aria-label={`${item.name} 위로`} disabled={index === 0} onClick={() => moveFile(index, index - 1)}>↑</button>
+                          <button type="button" aria-label={`${item.name} 아래로`} disabled={index === files.length - 1} onClick={() => moveFile(index, index + 1)}>↓</button>
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
               <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="커플링 (여러 개면 쉼표로 구분)" maxLength={80} />
               <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="설명 (선택)" rows={3} maxLength={1000} />
               {error && <p className={styles.error} role="alert">{error}</p>}

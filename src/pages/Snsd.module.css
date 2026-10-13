@@ -174,6 +174,18 @@
 .dropzone span { margin-top: 5px; color: var(--snsd-muted); font-size: 12px; }
 .dropzoneActive { border-color: var(--snsd-primary); background: rgba(52, 120, 255, 0.06); }
 .dropzoneSelected { border-style: solid; }
+.fileOrder { margin-top: -4px; }
+.fileOrderHint { display: block; margin-bottom: 5px; color: var(--snsd-muted); font-size: 12px; }
+.fileOrder ol { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.fileOrder li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 6px 8px; border-radius: 7px; background: var(--snsd-subtle); cursor: grab; }
+.fileOrder li:active { cursor: grabbing; }
+.fileOrderDragging { opacity: .45; }
+.fileOrderNumber { flex: 0 0 20px; color: var(--snsd-muted); font-size: 12px; text-align: center; }
+.fileOrderName { flex: 1; min-width: 0; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.fileOrderActions { display: flex; gap: 2px; }
+.fileOrderActions button { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--snsd-muted); font: inherit; cursor: pointer; }
+.fileOrderActions button:disabled { opacity: .3; cursor: default; }
+.fileOrderActions button:not(:disabled):hover { background: var(--snsd-field); color: var(--snsd-text); }
 .submitButton, .commentForm button {
   align-self: flex-end;
   border: 0;
