@@ -47,6 +47,8 @@
 .emptyChapters { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 28px 0 36px; color: var(--viewer-muted); font-size: 14px; text-align: center; }
 .emptyChapters p { margin: 0; color: var(--viewer-text); }
 .emptyChapters button { margin-top: 6px; padding: 8px 12px; border: 1px solid var(--viewer-border); border-radius: 8px; background: transparent; color: var(--viewer-text); font: inherit; font-size: 13px; cursor: pointer; }
+.chapterAddMore { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; padding: 12px 0; border-top: 1px solid var(--viewer-border); color: var(--viewer-muted); font-size: 12px; }
+.chapterAddMore button { padding: 8px 10px; border: 1px solid var(--viewer-border); border-radius: 7px; background: transparent; color: var(--viewer-text); font: inherit; cursor: pointer; }
 .chapterPartTitle { margin: 18px 0 0; padding: 10px 0 8px; color: var(--viewer-muted); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .chapterItem { display: flex; align-items: center; border-top: 1px solid var(--viewer-border); }
 .chapterLocation { display: grid; min-width: 0; flex: 1; grid-template-columns: 28px minmax(0, 1fr); gap: 5px; padding: 15px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; text-align: left; cursor: pointer; }
