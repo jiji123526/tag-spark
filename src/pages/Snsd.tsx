@@ -184,7 +184,7 @@ export default function Snsd() {
   const [author, setAuthor] = useState("");
   const [pairing, setPairing] = useState("");
   const [reason, setReason] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(() => works.length === 0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -366,26 +366,32 @@ export default function Snsd() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const chooseFile = (nextFile?: File) => {
-    if (!nextFile) return;
-    const validationError = validateTextFile(nextFile);
+  const chooseFiles = (selected?: FileList | File[]) => {
+    if (!selected?.length) return;
+    const nextFiles = Array.from(selected);
+    const validationError = nextFiles.map(validateTextFile).find(Boolean);
     if (validationError) {
       setError(validationError);
       return;
     }
-    setFile(nextFile);
+    if (nextFiles.reduce((total, item) => total + item.size, 0) > MAX_FILE_SIZE) {
+      setError("선택한 파일의 합계는 최대 5MB까지 가능합니다.");
+      return;
+    }
+    nextFiles.sort((a, b) => a.name.localeCompare(b.name, "ko", { numeric: true, sensitivity: "base" }));
+    setFiles(nextFiles);
     setError("");
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setDragging(false);
-    chooseFile(event.dataTransfer.files[0]);
+    chooseFiles(event.dataTransfer.files);
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!title.trim() || !author.trim() || !pairing.trim() || !file) {
+    if (!title.trim() || !author.trim() || !pairing.trim() || files.length === 0) {
       setError("모든 필수 항목을 입력해주세요.");
       return;
     }
@@ -397,11 +403,23 @@ export default function Snsd() {
     body.set("pairing", pairing.trim());
     body.set("reason", reason.trim());
     body.set("createdBy", getSnsdUserId());
-    body.set("file", file);
     try {
+      const parts = await Promise.all(files.map(async item => {
+        const bytes = await item.arrayBuffer();
+        let content: string;
+        try {
+          content = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        } catch {
+          content = new TextDecoder("euc-kr").decode(bytes);
+        }
+        return content.replace(/^\uFEFF/, "").trim();
+      }));
+      const combined = parts.map((part, index) => `${part}${index < parts.length - 1 ? "\n\n" : ""}`).join("");
+      if (new Blob([combined]).size > MAX_FILE_SIZE) throw new Error("인코딩 변환 후 파일이 5MB를 초과합니다.");
+      body.set("file", new File([combined], "combined.txt", { type: "text/plain;charset=utf-8" }));
       const response = await fetch(snsdApiUrl("/api/works"), { method: "POST", body });
       if (!response.ok) throw new Error(await readApiError(response));
-      setTitle(""); setAuthor(""); setPairing(""); setReason(""); setFile(null);
+      setTitle(""); setAuthor(""); setPairing(""); setReason(""); setFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
       window.localStorage.setItem(COMPOSE_COLLAPSED_KEY, "true");
       setComposeOpen(false);
@@ -696,7 +714,7 @@ export default function Snsd() {
               <input value={title} onChange={event => setTitle(event.target.value)} placeholder="제목" maxLength={120} />
               <input value={author} onChange={event => setAuthor(event.target.value)} placeholder="작가" maxLength={80} />
               <div
-                className={`${styles.dropzone} ${dragging ? styles.dropzoneActive : ""} ${file ? styles.dropzoneSelected : ""}`}
+                className={`${styles.dropzone} ${dragging ? styles.dropzoneActive : ""} ${files.length ? styles.dropzoneSelected : ""}`}
                 onDragEnter={event => { event.preventDefault(); setDragging(true); }}
                 onDragOver={event => event.preventDefault()}
                 onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragging(false); }}
@@ -706,9 +724,9 @@ export default function Snsd() {
                 tabIndex={0}
                 onKeyDown={event => { if (event.key === "Enter" || event.key === " ") fileInputRef.current?.click(); }}
               >
-                <input ref={fileInputRef} className={styles.fileInput} type="file" accept=".txt,text/plain" onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFile(event.target.files?.[0])} />
-                <strong>{file ? file.name : "TXT 파일을 끌어다 놓으세요"}</strong>
-                <span>{file ? `${(file.size / 1024).toFixed(1)}KB` : "또는 눌러서 파일 선택 · 최대 5MB"}</span>
+                <input ref={fileInputRef} className={styles.fileInput} type="file" accept=".txt,text/plain" multiple onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFiles(event.target.files)} />
+                <strong>{files.length ? `${files.length}개 파일 선택됨` : "TXT 파일을 끌어다 놓으세요"}</strong>
+                <span>{files.length ? `${files.map(item => item.name).join(" · ")} · 파일명순으로 합쳐져요 · ${(files.reduce((total, item) => total + item.size, 0) / 1024).toFixed(1)}KB` : "또는 눌러서 여러 파일 선택 · 최대 합계 5MB"}</span>
               </div>
               <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="커플링 (여러 개면 쉼표로 구분)" maxLength={80} />
               <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="설명 (선택)" rows={3} maxLength={1000} />
