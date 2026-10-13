@@ -929,7 +929,7 @@ export default function Snsd() {
               </section>
               <section className={styles.helpSection}>
                 <h3>뷰어</h3>
-                <p><strong>목차</strong><span>뷰어 오른쪽 위의 햄버거 버튼을 누르세요. 오른쪽에서 목차가 열리고, TXT에서 찾은 장·화로 이동할 수 있습니다. 파일에 목차가 없거나 형식이 다르면 목록이 없을 수 있습니다.</span></p>
+                <p><strong>목차</strong><span>뷰어 오른쪽 위의 햄버거 버튼을 누르세요. 오른쪽에서 목차가 열리고, TXT에서 찾은 장·화로 이동할 수 있습니다. 아래 ‘목차 수정하기’를 누르면 기존 목차 제목을 고칠 수 있고 수정 내용은 공용 목차에 반영됩니다. 목차가 없으면 ‘목차 추가하기’로 본문에서 제목을 선택해 추가하세요.</span></p>
                 <p><strong>이어 읽기</strong><span>읽던 작품 카드에서 ‘이어 읽기’를 누르면 마지막으로 읽던 위치에서 시작합니다.</span></p>
                 <p><strong>검색과 글자 크기</strong><span>뷰어 오른쪽 위에서 본문을 검색하거나 글자 크기를 바꿀 수 있습니다.</span></p>
               </section>

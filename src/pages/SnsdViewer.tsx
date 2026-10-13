@@ -34,10 +34,11 @@ export default function SnsdViewer() {
   const [manualChapters, setManualChapters] = useState<SnsdManualChapter[]>([]);
   const [manualChaptersLoaded, setManualChaptersLoaded] = useState(false);
   const [chapterEditMode, setChapterEditMode] = useState(false);
+  const [chapterManagementMode, setChapterManagementMode] = useState(false);
   const [chapterSelection, setChapterSelection] = useState<{ paragraph: number; charOffset: number; anchorText: string; title: string } | null>(null);
   const [chapterSaving, setChapterSaving] = useState(false);
   const [chapterMessage, setChapterMessage] = useState("");
-  const [editingChapterId, setEditingChapterId] = useState<number | null>(null);
+  const [editingChapterId, setEditingChapterId] = useState<number | string | null>(null);
   const [editingChapterTitle, setEditingChapterTitle] = useState("");
   const [currentParagraph, setCurrentParagraph] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -454,6 +455,31 @@ export default function SnsdViewer() {
     }
   };
 
+  const saveDisplayedChapterTitle = async (chapter: SnsdChapter) => {
+    if (chapter.manualChapterId) {
+      await saveChapterTitle(chapter.manualChapterId);
+      return;
+    }
+    if (!id || !editingChapterTitle.trim() || chapterSaving) return;
+    setChapterSaving(true);
+    try {
+      const anchorText = (paragraphs[chapter.paragraph] ?? "").slice(chapter.charOffset ?? 0).trim().slice(0, 120);
+      const created = await createSnsdManualChapter(id, {
+        title: editingChapterTitle.trim(),
+        paragraph_index: chapter.paragraph,
+        char_offset: chapter.charOffset ?? 0,
+        anchor_text: anchorText,
+      });
+      setManualChapters(current => [...current, created]);
+      setEditingChapterId(null);
+      setChapterMessage("공용 목차를 수정했어요.");
+    } catch (requestError) {
+      setChapterMessage(requestError instanceof Error ? requestError.message : "목차를 수정하지 못했습니다.");
+    } finally {
+      setChapterSaving(false);
+    }
+  };
+
   const removeChapter = async (chapterId: number) => {
     if (!id || !window.confirm("이 공용 목차 항목을 삭제할까요?")) return;
     try {
@@ -565,6 +591,7 @@ export default function SnsdViewer() {
                 <div className={styles.emptyChapters}>
                   <p>감지된 목차가 없습니다.</p>
                   <span>본문에서 제목을 선택해 공용 목차에 추가할 수 있어요.</span>
+                  <button type="button" onClick={startChapterEditMode}>목차 추가하기</button>
                 </div>
               )}
               {displayedChapters.map((chapter, index) => (
@@ -573,10 +600,10 @@ export default function SnsdViewer() {
                     <h3 className={styles.chapterPartTitle}>파트 {chapter.part}</h3>
                   )}
                   <div className={styles.chapterItem}>
-                    {editingChapterId === chapter.manualChapterId ? (
+                    {editingChapterId === chapter.id ? (
                       <div className={styles.chapterInlineEdit}>
                         <input value={editingChapterTitle} maxLength={120} onChange={event => setEditingChapterTitle(event.target.value)} aria-label="목차 제목" />
-                        <button type="button" onClick={() => chapter.manualChapterId && saveChapterTitle(chapter.manualChapterId)}>저장</button>
+                        <button type="button" onClick={() => void saveDisplayedChapterTitle(chapter)} disabled={chapterSaving}>저장</button>
                         <button type="button" onClick={() => setEditingChapterId(null)}>취소</button>
                       </div>
                     ) : (
@@ -587,10 +614,10 @@ export default function SnsdViewer() {
                       aria-label={`${chapter.label}${chapter.paragraph < currentParagraph ? ", 읽음" : ""}`}
                     ><strong>{index + 1}</strong><span>{chapter.label}</span></button>
                     )}
-                    {chapter.manualChapterId && chapter.canManage && editingChapterId !== chapter.manualChapterId && (
+                    {chapterManagementMode && editingChapterId !== chapter.id && (
                       <div className={styles.chapterManageButtons}>
-                        <button type="button" onClick={() => { setEditingChapterId(chapter.manualChapterId ?? null); setEditingChapterTitle(chapter.label); }}>수정</button>
-                        <button type="button" onClick={() => removeChapter(chapter.manualChapterId!)}>삭제</button>
+                        <button type="button" onClick={() => { setEditingChapterId(chapter.id); setEditingChapterTitle(chapter.label); }}>수정</button>
+                        {chapter.manualChapterId && chapter.canManage && <button type="button" onClick={() => removeChapter(chapter.manualChapterId!)}>삭제</button>}
                       </div>
                     )}
                   </div>
@@ -598,7 +625,7 @@ export default function SnsdViewer() {
               ))}
             </div>
             <div className={styles.chapterFooter}>
-              <button type="button" onClick={startChapterEditMode}>목차 수정하기</button>
+              <button type="button" onClick={() => { setChapterManagementMode(mode => !mode); setEditingChapterId(null); setChapterMessage(""); }}>{chapterManagementMode ? "수정 완료" : "목차 수정하기"}</button>
             </div>
           </section>
         </div>
