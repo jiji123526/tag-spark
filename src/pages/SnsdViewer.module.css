@@ -40,7 +40,7 @@
 .chapterOverlay { position: fixed; inset: 0; z-index: 30; display: flex; align-items: stretch; justify-content: flex-end; background: rgba(0,0,0,.42); animation: chapterBackdropIn .18s ease-out; }
 .chapterSheet { display: flex; flex-direction: column; width: min(430px, 100%); height: 100%; overflow: hidden; border-left: 1px solid var(--viewer-border); background: var(--viewer-surface); box-shadow: -12px 0 36px rgba(0,0,0,.18); animation: chapterSlideIn .24s ease-out; }
 .chapterSheetHeader { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 12px; }
-.chapterSheetHeader h2 { margin: 0; font-size: 17px; }
+.chapterSheetHeader h2 { margin: 0; font-size: 17px; font-weight: 600; }
 .chapterSheetHeader button { padding: 2px 4px; border: 0; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
 .chapterList { min-height: 0; flex: 1; overflow-y: auto; padding: 0 20px 24px; }
 .emptyChapters { margin: 28px 0 36px; color: var(--viewer-muted); font-size: 14px; text-align: center; }

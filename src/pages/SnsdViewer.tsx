@@ -395,7 +395,7 @@ export default function SnsdViewer() {
       {chaptersOpen && (
         <div className={styles.chapterOverlay} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setChaptersOpen(false); }}>
           <section className={styles.chapterSheet} role="dialog" aria-modal="true" aria-labelledby="chapter-title">
-            <div className={styles.chapterSheetHeader}><h2 id="chapter-title">목차 {chapters === null ? "" : `${chapters.length}${chapterPartCount > 1 ? ` · ${chapterPartCount}파트` : ""}`}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
+            <div className={styles.chapterSheetHeader}><h2 id="chapter-title">{work?.title || "작품"}{chapters === null ? "" : ` · ${chapters.length}${chapterPartCount > 1 ? ` · ${chapterPartCount}파트` : ""}`}</h2><button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button></div>
             <div className={styles.chapterList}>
               {chapters === null && <p className={styles.emptyChapters}>목차를 준비 중입니다…</p>}
               {chapters?.length === 0 && <p className={styles.emptyChapters}>감지된 목차가 없습니다.</p>}
