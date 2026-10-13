@@ -198,12 +198,12 @@ export default function SnsdViewer() {
     const dismissPopovers = (event: PointerEvent) => {
       const target = event.target as HTMLElement | null;
       if (target?.closest("[data-viewer-popover]")) return;
-      setSearchOpen(false);
+      if (!(searchOpen && submittedSearchQuery.trim())) setSearchOpen(false);
       setFontSizeOpen(false);
     };
     document.addEventListener("pointerdown", dismissPopovers);
     return () => document.removeEventListener("pointerdown", dismissPopovers);
-  }, [fontSizeOpen, searchOpen]);
+  }, [fontSizeOpen, searchOpen, submittedSearchQuery]);
 
   useEffect(() => {
     setActiveSearchMatch(current => Math.min(current, Math.max(0, searchMatchCount - 1)));
