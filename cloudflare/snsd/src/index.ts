@@ -66,7 +66,7 @@ function downloadFilename(work: { title: string; author: string; pairing: string
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, maxLength);
-  const pairing = safePart(work.pairing, 60) || "씨피 미상";
+  const pairing = safePart(work.pairing, 60) || "커플링 미상";
   const title = safePart(work.title.replace(/\.txt$/i, ""), 120) || "제목 없음";
   const author = safePart(work.author, 80) || "작가 미상";
   return `[${pairing}] ${title} w.${author}.txt`;
@@ -238,6 +238,89 @@ async function getContent(request: Request, env: Env, workId: number) {
   return new Response(object.body, { headers });
 }
 
+async function listWorkChapters(request: Request, env: Env, workId: number) {
+  const viewer = new URL(request.url).searchParams.get("viewer")?.trim().slice(0, 100) ?? "";
+  const work = await env.tagspark_snsd.prepare("SELECT created_by FROM works WHERE id = ?").bind(workId).first<{ created_by: string }>();
+  if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
+  const result = await env.tagspark_snsd.prepare(`
+    SELECT id, work_id, title, paragraph_index, char_offset, anchor_text, created_at,
+      CASE WHEN created_by = ? THEN 1 ELSE 0 END AS is_owner,
+      CASE WHEN created_by = ? OR ? = ? THEN 1 ELSE 0 END AS can_manage
+    FROM work_chapters
+    WHERE work_id = ?
+    ORDER BY paragraph_index, char_offset, id
+  `).bind(viewer, viewer, work.created_by, viewer, workId).all();
+  return json(request, env, result.results);
+}
+
+async function createWorkChapter(request: Request, env: Env, workId: number) {
+  const body = await request.json<{ title?: string; paragraphIndex?: number; charOffset?: number; anchorText?: string; createdBy?: string }>();
+  const title = body.title?.trim().slice(0, 120) ?? "";
+  const paragraphIndex = body.paragraphIndex;
+  const charOffset = body.charOffset;
+  const anchorText = body.anchorText?.trim().slice(0, 160) ?? "";
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!title || !createdBy || !Number.isInteger(paragraphIndex) || paragraphIndex! < 0 || !Number.isInteger(charOffset) || charOffset! < 0) {
+    return json(request, env, { error: "목차 제목과 위치 정보가 필요합니다." }, 400);
+  }
+  const work = await env.tagspark_snsd.prepare("SELECT id FROM works WHERE id = ?").bind(workId).first();
+  if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
+  const duplicate = await env.tagspark_snsd.prepare("SELECT id FROM work_chapters WHERE work_id = ? AND paragraph_index = ? AND char_offset = ?")
+    .bind(workId, paragraphIndex, charOffset).first();
+  if (duplicate) return json(request, env, { error: "이미 이 위치에 목차가 있습니다." }, 409);
+  let result;
+  try {
+    result = await env.tagspark_snsd.prepare(`
+      INSERT INTO work_chapters (work_id, title, paragraph_index, char_offset, anchor_text, created_by)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(workId, title, paragraphIndex, charOffset, anchorText, createdBy).run();
+  } catch {
+    return json(request, env, { error: "이미 이 위치에 목차가 있습니다." }, 409);
+  }
+  const chapter = await env.tagspark_snsd.prepare(`
+    SELECT id, work_id, title, paragraph_index, char_offset, anchor_text, created_at,
+      1 AS is_owner, 1 AS can_manage
+    FROM work_chapters WHERE id = ?
+  `).bind(result.meta.last_row_id).first();
+  return json(request, env, chapter, 201);
+}
+
+async function updateWorkChapter(request: Request, env: Env, workId: number, chapterId: number) {
+  const body = await request.json<{ title?: string; createdBy?: string }>();
+  const title = body.title?.trim().slice(0, 120) ?? "";
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!title || !createdBy) return json(request, env, { error: "목차 제목을 입력해주세요." }, 400);
+  const chapter = await env.tagspark_snsd.prepare(`
+    SELECT c.id, w.created_by AS work_creator FROM work_chapters c
+    JOIN works w ON w.id = c.work_id
+    WHERE c.id = ? AND c.work_id = ?
+  `).bind(chapterId, workId).first<{ id: number; work_creator: string }>();
+  if (!chapter) return json(request, env, { error: "목차를 찾을 수 없습니다." }, 404);
+  if (chapter.work_creator !== createdBy) {
+    const ownChapter = await env.tagspark_snsd.prepare("SELECT id FROM work_chapters WHERE id = ? AND created_by = ?").bind(chapterId, createdBy).first();
+    if (!ownChapter) return json(request, env, { error: "목차 작성자 또는 작품 작성자만 수정할 수 있습니다." }, 403);
+  }
+  await env.tagspark_snsd.prepare("UPDATE work_chapters SET title = ? WHERE id = ? AND work_id = ?").bind(title, chapterId, workId).run();
+  return json(request, env, { success: true });
+}
+
+async function deleteWorkChapter(request: Request, env: Env, workId: number, chapterId: number) {
+  const body = await request.json<{ createdBy?: string }>();
+  const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
+  if (!createdBy) return json(request, env, { error: "사용자 식별자가 필요합니다." }, 400);
+  const chapter = await env.tagspark_snsd.prepare(`
+    SELECT c.id, c.created_by AS chapter_creator, w.created_by AS work_creator
+    FROM work_chapters c JOIN works w ON w.id = c.work_id
+    WHERE c.id = ? AND c.work_id = ?
+  `).bind(chapterId, workId).first<{ id: number; chapter_creator: string; work_creator: string }>();
+  if (!chapter) return json(request, env, { error: "목차를 찾을 수 없습니다." }, 404);
+  if (chapter.chapter_creator !== createdBy && chapter.work_creator !== createdBy) {
+    return json(request, env, { error: "목차 작성자 또는 작품 작성자만 삭제할 수 있습니다." }, 403);
+  }
+  await env.tagspark_snsd.prepare("DELETE FROM work_chapters WHERE id = ? AND work_id = ?").bind(chapterId, workId).run();
+  return json(request, env, { success: true });
+}
+
 async function toggleVote(request: Request, env: Env, workId: number) {
   const body = await request.json<{ voter?: string }>();
   const voter = body.voter?.trim().slice(0, 100);
@@ -359,6 +442,11 @@ export default {
       if (parts.length === 3 && request.method === "PUT") return updateWork(request, env, workId);
       if (parts.length === 3 && request.method === "DELETE") return deleteWork(request, env, workId);
       if (parts[3] === "content" && request.method === "GET") return getContent(request, env, workId);
+      if (parts[3] === "chapters" && parts.length === 4 && request.method === "GET") return listWorkChapters(request, env, workId);
+      if (parts[3] === "chapters" && parts.length === 4 && request.method === "POST") return createWorkChapter(request, env, workId);
+      const chapterId = parseId(parts[4] ?? "");
+      if (parts[3] === "chapters" && chapterId && request.method === "PUT") return updateWorkChapter(request, env, workId, chapterId);
+      if (parts[3] === "chapters" && chapterId && request.method === "DELETE") return deleteWorkChapter(request, env, workId, chapterId);
       if (parts[3] === "vote" && request.method === "POST") return toggleVote(request, env, workId);
       if (parts[3] === "comments" && request.method === "GET") return listComments(request, env, workId);
       if (parts[3] === "comments" && request.method === "POST") return createComment(request, env, workId);

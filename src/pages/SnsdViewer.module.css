@@ -40,15 +40,31 @@
 .chapterOverlay { position: fixed; inset: 0; z-index: 30; display: flex; align-items: stretch; justify-content: flex-end; background: rgba(0,0,0,.42); animation: chapterBackdropIn .18s ease-out; }
 .chapterSheet { display: flex; flex-direction: column; width: min(430px, 100%); height: 100%; overflow: hidden; border-left: 1px solid var(--viewer-border); background: var(--viewer-surface); box-shadow: -12px 0 36px rgba(0,0,0,.18); animation: chapterSlideIn .24s ease-out; }
 .chapterSheetHeader { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 12px; }
-.chapterSheetHeader h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.chapterSheetHeader h2 { min-width: 0; flex: 1; overflow: hidden; margin: 0; font-size: 17px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .chapterSheetHeader button { padding: 2px 4px; border: 0; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
+.chapterHeaderActions { display: flex; align-items: center; gap: 10px; }
+.chapterSheetHeader .chapterEditButton { padding: 6px 9px; border: 1px solid var(--viewer-border); border-radius: 7px; color: var(--viewer-text); font-size: 12px; }
 .chapterList { min-height: 0; flex: 1; overflow-y: auto; padding: 0 20px 24px; }
-.emptyChapters { margin: 28px 0 36px; color: var(--viewer-muted); font-size: 14px; text-align: center; }
+.emptyChapters { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 28px 0 36px; color: var(--viewer-muted); font-size: 14px; text-align: center; }
+.emptyChapters p { margin: 0; color: var(--viewer-text); }
+.emptyChapters button { margin-top: 6px; padding: 8px 12px; border: 1px solid var(--viewer-border); border-radius: 8px; background: transparent; color: var(--viewer-text); font: inherit; font-size: 13px; cursor: pointer; }
 .chapterPartTitle { margin: 18px 0 0; padding: 10px 0 8px; color: var(--viewer-muted); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .chapterItem { display: flex; align-items: center; border-top: 1px solid var(--viewer-border); }
 .chapterLocation { display: grid; min-width: 0; flex: 1; grid-template-columns: 28px minmax(0, 1fr); gap: 5px; padding: 15px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; text-align: left; cursor: pointer; }
 .chapterLocation strong { color: var(--viewer-muted); font-size: 12px; }
 .chapterLocation span { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.chapterManageButtons { display: flex; flex: 0 0 auto; gap: 4px; }
+.chapterManageButtons button, .chapterInlineEdit button { padding: 6px 8px; border: 1px solid var(--viewer-border); border-radius: 6px; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 11px; cursor: pointer; }
+.chapterInlineEdit { display: flex; min-width: 0; flex: 1; gap: 5px; padding: 8px 0; }
+.chapterInlineEdit input { min-width: 0; flex: 1; padding: 7px 8px; border: 1px solid var(--viewer-border); border-radius: 6px; background: var(--viewer-surface); color: var(--viewer-text); font: inherit; font-size: 13px; }
+.chapterEditBar { position: fixed; z-index: 25; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; display: flex; width: min(680px, calc(100% - 24px)); min-height: 52px; align-items: center; gap: 8px; box-sizing: border-box; margin: 0 auto; padding: 8px 10px; border: 1px solid var(--viewer-border); border-radius: 12px; background: var(--viewer-surface); box-shadow: 0 6px 28px rgba(0,0,0,.18); color: var(--viewer-text); }
+.chapterEditBar input { min-width: 0; flex: 1; padding: 8px 9px; border: 1px solid var(--viewer-border); border-radius: 7px; background: var(--viewer-surface); color: var(--viewer-text); font: inherit; font-size: 13px; }
+.chapterEditHint { min-width: 0; flex: 1; color: var(--viewer-muted); font-size: 13px; }
+.chapterEditMessage { position: absolute; bottom: calc(100% + 8px); left: 10px; max-width: calc(100% - 20px); padding: 6px 9px; border: 1px solid var(--viewer-border); border-radius: 7px; background: var(--viewer-surface); color: var(--viewer-muted); font-size: 12px; box-shadow: 0 3px 12px rgba(0,0,0,.12); }
+.chapterAddButton, .chapterDoneButton { padding: 8px 10px; border: 0; border-radius: 7px; background: var(--viewer-text); color: var(--viewer-surface); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.chapterAddButton:disabled { opacity: .45; cursor: default; }
+.chapterCancelButton { padding: 7px 4px; border: 0; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.chapterDoneButton { margin-left: auto; border: 1px solid var(--viewer-border); background: transparent; color: var(--viewer-text); }
 .chapterRead { color: var(--viewer-muted); opacity: .48; }
 .chapterRead strong { color: inherit; }
 @keyframes chapterBackdropIn { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,.42); } }

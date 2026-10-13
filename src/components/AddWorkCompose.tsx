@@ -199,7 +199,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 {filteredTags.map(t => (
                   <button key={t.id} className={styles.tagSuggestionItem} onClick={() => handleAddTagFromSuggestion(t.id)}>
                     <span>{t.name}</span>
-                    <span className={styles.tagCategory}>{t.category}</span>
+                    <span className={styles.tagCategory}>{t.category === "씨피고정" ? "커플링 고정" : t.category}</span>
                   </button>
                 ))}
               </div>
@@ -233,7 +233,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                   <p><b>인외:</b> 인어, 외계인, 뱀파이어, 저승사자</p>
                   <p><b>사제:</b> 선생님, 제자, 교수, 학생</p>
                   <p><b>세계관/기타:</b> 피스틸버스, 하나하키</p>
-                  <p><b>씨피 고정:</b> 작가에 의해 씨피 고정(왼른 구분)이 명시된 경우에만 체크해주세요.</p>
+                  <p><b>커플링 고정:</b> 작가가 커플링 방향(왼른 구분)을 명시한 경우에만 체크해주세요.</p>
                 </div>
               )}
               {["설정", "관계", "분위기", "장르", "세계관", "분량", "완결여부", "씨피고정"].map(category => {
@@ -241,7 +241,7 @@ export default function AddWorkCompose({ open, onOpenChange }: AddWorkComposePro
                 if (categoryTags.length === 0) return null;
                 return (
                   <div key={category} className={styles.tagReferenceGroup}>
-                    <span className={styles.tagReferenceLabel}>{category}</span>
+                    <span className={styles.tagReferenceLabel}>{category === "씨피고정" ? "커플링 고정" : category}</span>
                     <div className={styles.tagReferenceChips}>
                       {categoryTags.map(t => (
                         <span

@@ -23,6 +23,19 @@ export type SnsdComment = {
   is_owner?: number | boolean;
 };
 
+export type SnsdManualChapter = {
+  id: number;
+  work_id: number;
+  title: string;
+  paragraph_index: number;
+  char_offset: number;
+  anchor_text: string;
+  created_by?: string;
+  created_at: string;
+  is_owner?: number | boolean;
+  can_manage?: number | boolean;
+};
+
 export type SnsdReadProgress = {
   lastReadAt: number;
   progress: number;
@@ -43,6 +56,46 @@ const viewerContentRequests = new Map<number, {
 
 export function snsdApiUrl(path: string) {
   return `${SNSD_API_URL}${path}`;
+}
+
+export async function fetchSnsdManualChapters(workId: string | number, signal?: AbortSignal) {
+  const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters?viewer=${encodeURIComponent(getSnsdUserId())}`), { signal });
+  if (!response.ok) throw new Error(await readApiError(response));
+  return response.json() as Promise<SnsdManualChapter[]>;
+}
+
+export async function createSnsdManualChapter(workId: string | number, chapter: Pick<SnsdManualChapter, "title" | "paragraph_index" | "char_offset" | "anchor_text">) {
+  const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: chapter.title,
+      paragraphIndex: chapter.paragraph_index,
+      charOffset: chapter.char_offset,
+      anchorText: chapter.anchor_text,
+      createdBy: getSnsdUserId(),
+    }),
+  });
+  if (!response.ok) throw new Error(await readApiError(response));
+  return response.json() as Promise<SnsdManualChapter>;
+}
+
+export async function updateSnsdManualChapter(workId: string | number, chapterId: number, title: string): Promise<void> {
+  const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters/${chapterId}`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, createdBy: getSnsdUserId() }),
+  });
+  if (!response.ok) throw new Error(await readApiError(response));
+}
+
+export async function deleteSnsdManualChapter(workId: string | number, chapterId: number) {
+  const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters/${chapterId}`), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ createdBy: getSnsdUserId() }),
+  });
+  if (!response.ok) throw new Error(await readApiError(response));
 }
 
 export function getSnsdUserId() {

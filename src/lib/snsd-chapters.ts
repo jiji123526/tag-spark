@@ -3,6 +3,9 @@ export type SnsdChapter = {
   label: string;
   paragraph: number;
   part?: number;
+  charOffset?: number;
+  manualChapterId?: number;
+  canManage?: boolean;
 };
 
 type ChapterCandidate = SnsdChapter & {

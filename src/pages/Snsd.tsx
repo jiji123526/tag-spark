@@ -96,7 +96,7 @@ function pairingTags(value: string) {
 
 function downloadFilename(work: SnsdWork) {
   const safePart = (value: string) => value.replace(/[\\/:*?"<>|\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim();
-  const pairing = safePart(work.pairing) || "씨피 미상";
+  const pairing = safePart(work.pairing) || "커플링 미상";
   const title = safePart(work.title.replace(/\.txt$/i, "")) || "제목 없음";
   const author = safePart(work.author) || "작가 미상";
   return `[${pairing}] ${title} w.${author}.txt`;
@@ -671,8 +671,8 @@ export default function Snsd() {
               value={searchQuery}
               onChange={event => setSearchQuery(event.target.value)}
               onKeyDown={event => { if (event.key === "Escape") closeSearch(); }}
-              placeholder="제목, 작가, 씨피 검색"
-              aria-label="제목, 작가, 씨피 검색"
+              placeholder="제목, 작가, 커플링 검색"
+              aria-label="제목, 작가, 커플링 검색"
             />
             <button type="button" onClick={closeSearch} aria-label="검색 닫기">×</button>
           </div>
@@ -710,7 +710,7 @@ export default function Snsd() {
                 <strong>{file ? file.name : "TXT 파일을 끌어다 놓으세요"}</strong>
                 <span>{file ? `${(file.size / 1024).toFixed(1)}KB` : "또는 눌러서 파일 선택 · 최대 5MB"}</span>
               </div>
-              <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="씨피 (여러 개면 쉼표로 구분)" maxLength={80} />
+              <input value={pairing} onChange={event => setPairing(event.target.value)} placeholder="커플링 (여러 개면 쉼표로 구분)" maxLength={80} />
               <textarea value={reason} onChange={event => setReason(event.target.value)} placeholder="설명 (선택)" rows={3} maxLength={1000} />
               {error && <p className={styles.error} role="alert">{error}</p>}
               <button className={styles.submitButton} disabled={submitting} type="submit">{submitting ? "업로드 중…" : "제출"}</button>
@@ -787,7 +787,7 @@ export default function Snsd() {
                   {work.reason && (
                     <p className={styles.recommendation}>{work.reason}</p>
                   )}
-                  <div className={styles.pairingTags} aria-label={`씨피: ${work.pairing}`}>
+                  <div className={styles.pairingTags} aria-label={`커플링: ${work.pairing}`}>
                     {pairingTags(work.pairing).map((tag, index) => <button className={styles.pairingTag} type="button" onClick={() => searchPairing(tag)} key={`${tag}-${index}`}>#{tag}</button>)}
                   </div>
                   {progress && progressPercent > 0 && (
@@ -857,8 +857,8 @@ export default function Snsd() {
             <div className={styles.helpContent}>
               <section className={styles.helpSection}>
                 <h3>대시보드</h3>
-                <p><strong>작품 올리기</strong><span>제목, 작가, 씨피와 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
-                <p><strong>작품 읽기</strong><span>작품 카드를 누르면 뷰어가 열립니다. 씨피 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
+                <p><strong>작품 올리기</strong><span>제목, 작가, 커플링과 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
+                <p><strong>작품 읽기</strong><span>작품 카드를 누르면 뷰어가 열립니다. 커플링 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
                 <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
                 <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
                 <p><strong>파일 다운로드</strong><span>작품 카드의 점 메뉴에서 TXT 파일을 기기에 저장하세요.</span></p>
@@ -890,7 +890,7 @@ export default function Snsd() {
             <div className={styles.modalBody}>
               <label>제목<input value={editDraft.title} onChange={event => setEditDraft(current => ({ ...current, title: event.target.value }))} maxLength={120} /></label>
               <label>작가<input value={editDraft.author} onChange={event => setEditDraft(current => ({ ...current, author: event.target.value }))} maxLength={80} /></label>
-              <label>씨피<input value={editDraft.pairing} onChange={event => setEditDraft(current => ({ ...current, pairing: event.target.value }))} maxLength={80} /></label>
+              <label>커플링<input value={editDraft.pairing} onChange={event => setEditDraft(current => ({ ...current, pairing: event.target.value }))} maxLength={80} /></label>
               <label>설명 (선택)<textarea value={editDraft.reason} onChange={event => setEditDraft(current => ({ ...current, reason: event.target.value }))} rows={3} maxLength={1000} /></label>
             </div>
             <div className={styles.modalFooter}><button type="button" className={styles.cancelButton} onClick={() => setEditing(null)}>취소</button><button type="button" className={styles.confirmButton} disabled={savingEdit} onClick={() => void saveEdit()}>{savingEdit ? "저장 중…" : "수정하기"}</button></div>

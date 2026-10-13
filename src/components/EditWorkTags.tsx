@@ -296,7 +296,7 @@ export default function EditWorkTags({ open, onOpenChange, onSaved }: EditWorkTa
                     if (categoryTags.length === 0) return null;
                     return (
                       <section key={category} className={composeStyles.tagReferenceGroup}>
-                        <span className={composeStyles.tagReferenceLabel}>{category}</span>
+                        <span className={composeStyles.tagReferenceLabel}>{category === "씨피고정" ? "커플링 고정" : category}</span>
                         <div className={composeStyles.tagReferenceChips}>
                           {categoryTags.map((tag) => {
                             const selected = selectedTagIds.includes(tag.id);
