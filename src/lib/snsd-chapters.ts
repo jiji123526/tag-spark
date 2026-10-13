@@ -120,9 +120,14 @@ export function detectSnsdChapters(paragraphs: string[]): SnsdChapter[] {
     if (hasStrongSeries && candidate.format === "generic") return false;
     return hasChronologicalNeighbor(candidate);
   });
+  const seenSequenceNumbers = new Set<number>();
   const seenParagraphs = new Set<number>();
   const chapters = filtered
     .filter(candidate => {
+      if (candidate.sequenceNumber !== undefined) {
+        if (seenSequenceNumbers.has(candidate.sequenceNumber)) return false;
+        seenSequenceNumbers.add(candidate.sequenceNumber);
+      }
       if (seenParagraphs.has(candidate.paragraph)) return false;
       seenParagraphs.add(candidate.paragraph);
       return true;
