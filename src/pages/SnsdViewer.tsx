@@ -58,6 +58,13 @@ export default function SnsdViewer() {
   }, [content]);
 
   useEffect(() => {
+    if (!id || !window.location.pathname.startsWith("/snsd/read/")) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set("v", "2");
+    window.history.replaceState(window.history.state, "", `/snsd/view/${id}?${params.toString()}`);
+  }, [id]);
+
+  useEffect(() => {
     if (!id) return;
     const controller = new AbortController();
     const loadViewer = async () => {

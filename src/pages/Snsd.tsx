@@ -569,8 +569,8 @@ export default function Snsd() {
     }
   };
 
-  const shareWork = async (workId: number) => {
-    const url = `${window.location.origin}/snsd/view/${workId}`;
+  const shareWork = async (work: SnsdWork) => {
+    const url = `${window.location.origin}/snsd/view/${work.id}?v=2`;
     await navigator.clipboard.writeText(url);
     setToast("링크가 복사되었습니다!");
     window.setTimeout(() => setToast(""), 2200);
@@ -811,7 +811,7 @@ export default function Snsd() {
                   </div>
                   <div className={styles.actionsRight}>
                     <button className={`${styles.iconButton} ${bookmarked.has(work.id) ? styles.bookmarked : ""}`} type="button" onClick={() => toggleBookmark(work.id)} aria-label="북마크"><BookmarkIcon filled={bookmarked.has(work.id)} /></button>
-                    <button className={styles.iconButton} type="button" onClick={() => void shareWork(work.id)} aria-label="공유"><ShareIcon /></button>
+                    <button className={styles.iconButton} type="button" onClick={() => void shareWork(work)} aria-label="공유"><ShareIcon /></button>
                   </div>
                 </div>
                 {work.preview_comment && (
