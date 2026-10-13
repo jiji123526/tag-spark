@@ -305,8 +305,7 @@
 
 .workTitle:hover { text-decoration: underline; text-underline-offset: 3px; }
 .pairingTags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
-.pairingTag,
-.lengthTag {
+.pairingTag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -322,8 +321,6 @@
   font-weight: 500;
   line-height: 18px;
   white-space: nowrap;
-}
-.pairingTag {
   cursor: pointer;
 }
 .pairingTag:hover { color: var(--snsd-text); }
