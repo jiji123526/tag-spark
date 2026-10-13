@@ -8,10 +8,6 @@ const MenuIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m20.7 19.3-4.2-4.2a7.5 7.5 0 1 0-1.4 1.4l4.2 4.2a1 1 0 0 0 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" fill="currentColor" /></svg>;
 const TextSizeIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.25A1.25 1.25 0 0 1 5.25 4h7.5A1.25 1.25 0 0 1 14 5.25v1a.75.75 0 0 1-1.5 0v-.75H10.5v12h1.25a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5H8.5v-12H6.25v.75a.75.75 0 0 1-1.5 0v-1ZM15.5 11.25A1.25 1.25 0 0 1 16.75 10h3A1.25 1.25 0 0 1 21 11.25v.75a.75.75 0 0 1-1.5 0v-.5h-.5v5.25h.5a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.5V11.5h-.5v.5a.75.75 0 0 1-1.5 0v-.75Z" fill="currentColor" /></svg>;
 
-const READER_CHUNK_SIZE = 80;
-const VIRTUALIZE_TEXT_LENGTH = 400_000;
-const VIRTUALIZE_PARAGRAPH_COUNT = 1_200;
-
 type SearchRange = {
   start: number;
   end: number;
@@ -44,26 +40,10 @@ export default function SnsdViewer() {
   const [chapterSaving, setChapterSaving] = useState(false);
   const [chapterMessage, setChapterMessage] = useState("");
   const [currentParagraph, setCurrentParagraph] = useState(0);
-  const [readerWidth, setReaderWidth] = useState(Math.max(280, window.innerWidth - 40));
   const searchInputRef = useRef<HTMLInputElement>(null);
   const readerArticleRef = useRef<HTMLElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
-  const useChunkedRendering = content.length >= VIRTUALIZE_TEXT_LENGTH || paragraphs.length >= VIRTUALIZE_PARAGRAPH_COUNT;
-  const readerChunks = useMemo(() => {
-    if (!useChunkedRendering) return [];
-    const chunks: Array<{ start: number; paragraphs: string[]; estimatedHeight: number }> = [];
-    const lineHeight = fontSize * 1.95;
-    for (let start = 0; start < paragraphs.length; start += READER_CHUNK_SIZE) {
-      const chunkParagraphs = paragraphs.slice(start, start + READER_CHUNK_SIZE);
-      const estimatedHeight = chunkParagraphs.reduce((height, paragraph, index) => {
-        const lines = Math.max(1, Math.ceil((paragraph.length * fontSize) / Math.max(1, readerWidth)));
-        return height + lines * lineHeight + (start + index > 0 ? lineHeight : 0);
-      }, 0);
-      chunks.push({ start, paragraphs: chunkParagraphs, estimatedHeight });
-    }
-    return chunks;
-  }, [fontSize, paragraphs, readerWidth, useChunkedRendering]);
   const searchRanges = useMemo(() => {
     const query = submittedSearchQuery.trim().toLocaleLowerCase("ko");
     if (!query) return [] as SearchRange[][];
@@ -118,8 +98,8 @@ export default function SnsdViewer() {
       const startParagraph = getParagraph(range.startContainer);
       const endParagraph = getParagraph(range.endContainer);
       if (!startParagraph || startParagraph !== endParagraph) return;
-      const paragraphIndex = Number(startParagraph.dataset.paragraphIndex);
-      if (!Number.isInteger(paragraphIndex) || paragraphIndex < 0) return;
+      const paragraphIndex = Array.from(readerArticleRef.current.children).indexOf(startParagraph);
+      if (paragraphIndex < 0) return;
       const rawText = range.toString();
       const anchorText = rawText.replace(/\s+/g, " ").trim().slice(0, 120);
       if (!anchorText) return;
@@ -262,16 +242,6 @@ export default function SnsdViewer() {
   }, [content, id]);
 
   useEffect(() => {
-    const article = readerArticleRef.current;
-    if (!article || typeof ResizeObserver === "undefined") return;
-    const updateWidth = () => setReaderWidth(article.clientWidth || Math.max(280, window.innerWidth - 40));
-    updateWidth();
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(article);
-    return () => observer.disconnect();
-  }, [content]);
-
-  useEffect(() => {
     if (!chaptersOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
@@ -385,15 +355,6 @@ export default function SnsdViewer() {
     if (cursor < paragraph.length) nodes.push(paragraph.slice(cursor));
     return nodes;
   };
-
-  const renderParagraphElement = (paragraph: string, paragraphIndex: number) => (
-    <p
-      className={styles.paragraph}
-      data-paragraph-index={paragraphIndex}
-      ref={element => { paragraphRefs.current[paragraphIndex] = element; }}
-      key={paragraphIndex}
-    >{renderParagraph(paragraph, paragraphIndex)}</p>
-  );
 
   const goToChapter = (chapter: SnsdChapter) => {
     setCurrentParagraph(chapter.paragraph);
@@ -638,13 +599,7 @@ export default function SnsdViewer() {
       <main className={styles.reader}>
         {error && <p className={styles.error} role="alert">{error}</p>}
         {!error && <article ref={readerArticleRef} style={{ fontSize }}>
-          {content && (useChunkedRendering
-            ? readerChunks.map(chunk => (
-              <div className={styles.readerChunk} style={{ containIntrinsicSize: `auto ${Math.ceil(chunk.estimatedHeight)}px` }} key={chunk.start}>
-                {chunk.paragraphs.map((paragraph, localIndex) => renderParagraphElement(paragraph, chunk.start + localIndex))}
-              </div>
-            ))
-            : paragraphs.map(renderParagraphElement))}
+          {content && paragraphs.map((paragraph, index) => <p className={styles.paragraph} ref={element => { paragraphRefs.current[index] = element; }} key={index}>{renderParagraph(paragraph, index)}</p>)}
         </article>}
       </main>
       {chaptersOpen && (
