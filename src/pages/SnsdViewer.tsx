@@ -565,7 +565,6 @@ export default function SnsdViewer() {
                 <div className={styles.emptyChapters}>
                   <p>감지된 목차가 없습니다.</p>
                   <span>본문에서 제목을 선택해 공용 목차에 추가할 수 있어요.</span>
-                  <button type="button" onClick={startChapterEditMode}>목차 추가하기</button>
                 </div>
               )}
               {displayedChapters.map((chapter, index) => (
@@ -597,12 +596,9 @@ export default function SnsdViewer() {
                   </div>
                 </div>
               ))}
-              {manualChapters.some(chapter => Boolean(chapter.is_owner)) && (
-                <div className={styles.chapterAddMore}>
-                  <span>내가 추가한 목차</span>
-                  <button type="button" onClick={startChapterEditMode}>목차 더 추가하기</button>
-                </div>
-              )}
+            </div>
+            <div className={styles.chapterFooter}>
+              <button type="button" onClick={startChapterEditMode}>목차 수정하기</button>
             </div>
           </section>
         </div>
