@@ -449,8 +449,10 @@ export default function SnsdViewer() {
       });
       setManualChapters(current => [...current, chapter]);
       setChapterSelection(null);
+      setChapterEditMode(false);
+      setChaptersOpen(true);
       window.getSelection()?.removeAllRanges();
-      setChapterMessage("공용 목차에 추가했어요.");
+      setChapterMessage("");
     } catch (requestError) {
       setChapterMessage(requestError instanceof Error ? requestError.message : "목차를 추가하지 못했습니다.");
     } finally {
@@ -641,9 +643,11 @@ export default function SnsdViewer() {
                   </div>
                 </div>
               ))}
+              {chapterManagementMode && (
+                <button className={styles.chapterAddAtEnd} type="button" onClick={startChapterEditMode}>＋ 장 추가</button>
+              )}
             </div>
             <div className={styles.chapterFooter}>
-              <button type="button" onClick={startChapterEditMode}>장 추가</button>
               <button type="button" onClick={() => { setChapterManagementMode(mode => !mode); setChapterMessage(""); }}>{chapterManagementMode ? "수정 완료" : "목차 수정하기"}</button>
             </div>
           </section>

@@ -55,6 +55,8 @@
 .chapterLocation { display: grid; min-width: 0; flex: 1; grid-template-columns: 28px minmax(0, 1fr); gap: 5px; padding: 15px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; text-align: left; cursor: pointer; }
 .chapterLocation strong { color: var(--viewer-muted); font-size: 12px; }
 .chapterLocation span { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.chapterAddAtEnd { display: block; width: 100%; margin-top: 12px; padding: 11px 12px; border: 1px dashed var(--viewer-border); border-radius: 8px; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 13px; text-align: center; cursor: pointer; }
+.chapterAddAtEnd:hover { background: var(--viewer-header); color: var(--viewer-text); }
 .chapterManageButtons { display: flex; flex: 0 0 auto; gap: 4px; }
 .chapterManageButtons button, .chapterInlineEdit button { padding: 6px 8px; border: 1px solid var(--viewer-border); border-radius: 6px; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 11px; cursor: pointer; }
 .chapterInlineEdit { display: flex; min-width: 0; flex: 1; gap: 5px; padding: 8px 0; }
