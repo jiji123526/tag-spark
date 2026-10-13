@@ -26,6 +26,7 @@ export default function SnsdViewer() {
   const [headerHidden, setHeaderHidden] = useState(() => window.scrollY > 40);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState("");
   const [activeSearchMatch, setActiveSearchMatch] = useState(0);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function SnsdViewer() {
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
   const normalizedParagraphs = useMemo(() => paragraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [paragraphs]);
   const searchRanges = useMemo(() => {
-    const query = searchQuery.trim().toLocaleLowerCase("ko");
+    const query = submittedSearchQuery.trim().toLocaleLowerCase("ko");
     let globalIndex = 0;
 
     return normalizedParagraphs.map(normalizedParagraph => {
@@ -50,8 +51,9 @@ export default function SnsdViewer() {
       }
       return ranges;
     });
-  }, [normalizedParagraphs, searchQuery]);
+  }, [normalizedParagraphs, submittedSearchQuery]);
   const searchMatchCount = searchRanges.reduce((count, ranges) => count + ranges.length, 0);
+  const searchPending = searchQuery.trim().toLocaleLowerCase("ko") !== submittedSearchQuery.trim().toLocaleLowerCase("ko");
 
   useEffect(() => {
     setChapters(null);
@@ -184,6 +186,7 @@ export default function SnsdViewer() {
       if (event.key === "Escape") {
         setSearchOpen(false);
         setSearchQuery("");
+        setSubmittedSearchQuery("");
       }
     };
     window.addEventListener("keydown", closeOnEscape);
@@ -242,6 +245,16 @@ export default function SnsdViewer() {
   const moveSearchMatch = (direction: 1 | -1) => {
     if (!searchMatchCount) return;
     setActiveSearchMatch(current => (current + direction + searchMatchCount) % searchMatchCount);
+  };
+
+  const submitSearch = (direction: 1 | -1 = 1) => {
+    const nextQuery = searchQuery.trim();
+    if (nextQuery.toLocaleLowerCase("ko") !== submittedSearchQuery.trim().toLocaleLowerCase("ko")) {
+      setActiveSearchMatch(0);
+      setSubmittedSearchQuery(nextQuery);
+      return;
+    }
+    moveSearchMatch(direction);
   };
 
   const scrollToTop = () => {
@@ -331,20 +344,21 @@ export default function SnsdViewer() {
                   <input
                     ref={searchInputRef}
                     value={searchQuery}
-                    onChange={event => { setSearchQuery(event.target.value); setActiveSearchMatch(0); }}
+                    onChange={event => setSearchQuery(event.target.value)}
+                    onBlur={() => { if (searchPending) submitSearch(); }}
                     onKeyDown={event => {
                       if (event.key === "Enter") {
                         event.preventDefault();
-                        moveSearchMatch(event.shiftKey ? -1 : 1);
+                        submitSearch(event.shiftKey ? -1 : 1);
                       }
                     }}
                     placeholder="본문 검색"
                     aria-label="본문 검색"
                   />
-                  <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(""); }} aria-label="검색 닫기">×</button>
+                  <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(""); setSubmittedSearchQuery(""); }} aria-label="검색 닫기">×</button>
                 </div>
                 <div className={styles.searchFooter}>
-                  <span>{searchQuery.trim() ? (searchMatchCount ? `${activeSearchMatch + 1} / ${searchMatchCount}` : "검색 결과 없음") : "검색어를 입력하세요"}</span>
+                  <span>{searchQuery.trim() ? (searchPending ? "Enter로 검색" : searchMatchCount ? `${activeSearchMatch + 1} / ${searchMatchCount}` : "검색 결과 없음") : "검색어를 입력하세요"}</span>
                   <div className={styles.searchNavigation}>
                     <button type="button" onClick={() => moveSearchMatch(-1)} disabled={!searchMatchCount} aria-label="이전 검색 결과">↑</button>
                     <button type="button" onClick={() => moveSearchMatch(1)} disabled={!searchMatchCount} aria-label="다음 검색 결과">↓</button>
