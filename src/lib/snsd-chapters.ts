@@ -6,6 +6,8 @@ export type SnsdChapter = {
   charOffset?: number;
   manualChapterId?: number;
   canManage?: boolean;
+  replacesParagraphIndex?: number | null;
+  replacesCharOffset?: number | null;
 };
 
 type ChapterCandidate = SnsdChapter & {

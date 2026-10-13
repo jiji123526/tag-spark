@@ -244,6 +244,7 @@ async function listWorkChapters(request: Request, env: Env, workId: number) {
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
   const result = await env.tagspark_snsd.prepare(`
     SELECT id, work_id, title, paragraph_index, char_offset, anchor_text, created_at,
+      replaces_paragraph_index, replaces_char_offset,
       CASE WHEN created_by = ? THEN 1 ELSE 0 END AS is_owner,
       CASE WHEN created_by = ? OR ? = ? THEN 1 ELSE 0 END AS can_manage
     FROM work_chapters
@@ -254,14 +255,20 @@ async function listWorkChapters(request: Request, env: Env, workId: number) {
 }
 
 async function createWorkChapter(request: Request, env: Env, workId: number) {
-  const body = await request.json<{ title?: string; paragraphIndex?: number; charOffset?: number; anchorText?: string; createdBy?: string }>();
+  const body = await request.json<{ title?: string; paragraphIndex?: number; charOffset?: number; anchorText?: string; replacesParagraphIndex?: number; replacesCharOffset?: number; createdBy?: string }>();
   const title = body.title?.trim().slice(0, 120) ?? "";
   const paragraphIndex = body.paragraphIndex;
   const charOffset = body.charOffset;
   const anchorText = body.anchorText?.trim().slice(0, 160) ?? "";
+  const replacesParagraphIndex = body.replacesParagraphIndex;
+  const replacesCharOffset = body.replacesCharOffset;
   const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
   if (!title || !createdBy || !Number.isInteger(paragraphIndex) || paragraphIndex! < 0 || !Number.isInteger(charOffset) || charOffset! < 0) {
     return json(request, env, { error: "목차 제목과 위치 정보가 필요합니다." }, 400);
+  }
+  if ((replacesParagraphIndex === undefined) !== (replacesCharOffset === undefined)
+    || (replacesParagraphIndex !== undefined && (!Number.isInteger(replacesParagraphIndex) || replacesParagraphIndex < 0 || !Number.isInteger(replacesCharOffset) || replacesCharOffset! < 0))) {
+    return json(request, env, { error: "수정할 기존 목차 위치가 올바르지 않습니다." }, 400);
   }
   const work = await env.tagspark_snsd.prepare("SELECT id FROM works WHERE id = ?").bind(workId).first();
   if (!work) return json(request, env, { error: "작품을 찾을 수 없습니다." }, 404);
@@ -271,14 +278,15 @@ async function createWorkChapter(request: Request, env: Env, workId: number) {
   let result;
   try {
     result = await env.tagspark_snsd.prepare(`
-      INSERT INTO work_chapters (work_id, title, paragraph_index, char_offset, anchor_text, created_by)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(workId, title, paragraphIndex, charOffset, anchorText, createdBy).run();
+      INSERT INTO work_chapters (work_id, title, paragraph_index, char_offset, anchor_text, created_by, replaces_paragraph_index, replaces_char_offset)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(workId, title, paragraphIndex, charOffset, anchorText, createdBy, replacesParagraphIndex ?? null, replacesCharOffset ?? null).run();
   } catch {
     return json(request, env, { error: "이미 이 위치에 목차가 있습니다." }, 409);
   }
   const chapter = await env.tagspark_snsd.prepare(`
     SELECT id, work_id, title, paragraph_index, char_offset, anchor_text, created_at,
+      replaces_paragraph_index, replaces_char_offset,
       1 AS is_owner, 1 AS can_manage
     FROM work_chapters WHERE id = ?
   `).bind(result.meta.last_row_id).first();
@@ -286,7 +294,7 @@ async function createWorkChapter(request: Request, env: Env, workId: number) {
 }
 
 async function updateWorkChapter(request: Request, env: Env, workId: number, chapterId: number) {
-  const body = await request.json<{ title?: string; createdBy?: string }>();
+  const body = await request.json<{ title?: string; paragraphIndex?: number; charOffset?: number; anchorText?: string; replacesParagraphIndex?: number | null; replacesCharOffset?: number | null; createdBy?: string }>();
   const title = body.title?.trim().slice(0, 120) ?? "";
   const createdBy = body.createdBy?.trim().slice(0, 100) ?? "";
   if (!title || !createdBy) return json(request, env, { error: "목차 제목을 입력해주세요." }, 400);
@@ -300,7 +308,27 @@ async function updateWorkChapter(request: Request, env: Env, workId: number, cha
     const ownChapter = await env.tagspark_snsd.prepare("SELECT id FROM work_chapters WHERE id = ? AND created_by = ?").bind(chapterId, createdBy).first();
     if (!ownChapter) return json(request, env, { error: "목차 작성자 또는 작품 작성자만 수정할 수 있습니다." }, 403);
   }
-  await env.tagspark_snsd.prepare("UPDATE work_chapters SET title = ? WHERE id = ? AND work_id = ?").bind(title, chapterId, workId).run();
+  const paragraphIndex = body.paragraphIndex;
+  const charOffset = body.charOffset;
+  const anchorText = body.anchorText?.trim().slice(0, 160) ?? "";
+  const replacesParagraphIndex = body.replacesParagraphIndex ?? null;
+  const replacesCharOffset = body.replacesCharOffset ?? null;
+  if (!Number.isInteger(paragraphIndex) || paragraphIndex! < 0 || !Number.isInteger(charOffset) || charOffset! < 0) {
+    return json(request, env, { error: "새 목차 위치가 올바르지 않습니다." }, 400);
+  }
+  if ((replacesParagraphIndex === null) !== (replacesCharOffset === null)
+    || (replacesParagraphIndex !== null && (!Number.isInteger(replacesParagraphIndex) || replacesParagraphIndex < 0 || !Number.isInteger(replacesCharOffset) || replacesCharOffset! < 0))) {
+    return json(request, env, { error: "기존 목차 위치가 올바르지 않습니다." }, 400);
+  }
+  const duplicate = await env.tagspark_snsd.prepare("SELECT id FROM work_chapters WHERE work_id = ? AND paragraph_index = ? AND char_offset = ? AND id <> ?")
+    .bind(workId, paragraphIndex, charOffset, chapterId).first();
+  if (duplicate) return json(request, env, { error: "이미 이 위치에 목차가 있습니다." }, 409);
+  try {
+    await env.tagspark_snsd.prepare("UPDATE work_chapters SET title = ?, paragraph_index = ?, char_offset = ?, anchor_text = ?, replaces_paragraph_index = ?, replaces_char_offset = ? WHERE id = ? AND work_id = ?")
+      .bind(title, paragraphIndex, charOffset, anchorText, replacesParagraphIndex, replacesCharOffset, chapterId, workId).run();
+  } catch {
+    return json(request, env, { error: "이미 이 위치에 목차가 있습니다." }, 409);
+  }
   return json(request, env, { success: true });
 }
 

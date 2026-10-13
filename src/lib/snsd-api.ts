@@ -34,6 +34,8 @@ export type SnsdManualChapter = {
   created_at: string;
   is_owner?: number | boolean;
   can_manage?: number | boolean;
+  replaces_paragraph_index?: number | null;
+  replaces_char_offset?: number | null;
 };
 
 export type SnsdReadProgress = {
@@ -64,7 +66,7 @@ export async function fetchSnsdManualChapters(workId: string | number, signal?: 
   return response.json() as Promise<SnsdManualChapter[]>;
 }
 
-export async function createSnsdManualChapter(workId: string | number, chapter: Pick<SnsdManualChapter, "title" | "paragraph_index" | "char_offset" | "anchor_text">) {
+export async function createSnsdManualChapter(workId: string | number, chapter: Pick<SnsdManualChapter, "title" | "paragraph_index" | "char_offset" | "anchor_text"> & Partial<Pick<SnsdManualChapter, "replaces_paragraph_index" | "replaces_char_offset">>) {
   const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -73,6 +75,8 @@ export async function createSnsdManualChapter(workId: string | number, chapter: 
       paragraphIndex: chapter.paragraph_index,
       charOffset: chapter.char_offset,
       anchorText: chapter.anchor_text,
+      replacesParagraphIndex: chapter.replaces_paragraph_index,
+      replacesCharOffset: chapter.replaces_char_offset,
       createdBy: getSnsdUserId(),
     }),
   });
@@ -80,11 +84,19 @@ export async function createSnsdManualChapter(workId: string | number, chapter: 
   return response.json() as Promise<SnsdManualChapter>;
 }
 
-export async function updateSnsdManualChapter(workId: string | number, chapterId: number, title: string): Promise<void> {
+export async function updateSnsdManualChapter(workId: string | number, chapterId: number, chapter: Pick<SnsdManualChapter, "title" | "paragraph_index" | "char_offset" | "anchor_text"> & Partial<Pick<SnsdManualChapter, "replaces_paragraph_index" | "replaces_char_offset">>): Promise<void> {
   const response = await fetch(snsdApiUrl(`/api/works/${workId}/chapters/${chapterId}`), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, createdBy: getSnsdUserId() }),
+    body: JSON.stringify({
+      title: chapter.title,
+      paragraphIndex: chapter.paragraph_index,
+      charOffset: chapter.char_offset,
+      anchorText: chapter.anchor_text,
+      replacesParagraphIndex: chapter.replaces_paragraph_index,
+      replacesCharOffset: chapter.replaces_char_offset,
+      createdBy: getSnsdUserId(),
+    }),
   });
   if (!response.ok) throw new Error(await readApiError(response));
 }
