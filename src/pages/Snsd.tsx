@@ -911,7 +911,7 @@ export default function Snsd() {
             <div className={styles.helpContent}>
               <section className={styles.helpSection}>
                 <h3>대시보드</h3>
-                <p><strong>작품 올리기</strong><span>제목, 작가, 커플링과 TXT 파일을 입력한 뒤 제출하세요. 설명은 선택입니다.</span></p>
+                <p><strong>작품 올리기</strong><span>TXT 파일은 여러 개를 한 번에 선택하거나 끌어놓아 합칠 수 있어요. 처음에는 파일명순으로 정렬되며, 목록을 드래그하거나 화살표로 순서를 바꾼 뒤 제출하세요. 합계 5MB까지 가능하고 설명은 선택입니다.</span></p>
                 <p><strong>작품 읽기</strong><span>작품 카드를 누르면 뷰어가 열립니다. 커플링 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
                 <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
                 <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
