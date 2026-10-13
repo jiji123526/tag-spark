@@ -570,7 +570,7 @@ export default function Snsd() {
   };
 
   const shareWork = async (workId: number) => {
-    const url = `${window.location.origin}/snsd/view/${workId}`;
+    const url = `${window.location.origin}/snsd/share/${workId}`;
     await navigator.clipboard.writeText(url);
     setToast("링크가 복사되었습니다!");
     window.setTimeout(() => setToast(""), 2200);
