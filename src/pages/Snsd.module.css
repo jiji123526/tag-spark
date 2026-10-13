@@ -305,34 +305,28 @@
 
 .workTitle:hover { text-decoration: underline; text-underline-offset: 3px; }
 .pairingTags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
-.pairingTag {
+.pairingTag,
+.lengthTag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 32px;
   min-height: 20px;
   padding: 1px 7px;
-  border-radius: 999px;
   border: 0;
+  border-radius: 999px;
   background: var(--snsd-field);
-  color: #62626a;
+  color: var(--snsd-muted);
+  font: inherit;
   font-size: 11px;
   font-weight: 500;
   line-height: 18px;
   white-space: nowrap;
+}
+.pairingTag {
   cursor: pointer;
 }
 .pairingTag:hover { color: var(--snsd-text); }
-.lengthTag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--snsd-field);
-  color: var(--snsd-muted);
-  font-size: 13px;
-}
 .recommendation {
   margin: 0;
   color: #62626a;
