@@ -30,6 +30,7 @@ export default function SnsdViewer() {
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [chapters, setChapters] = useState<SnsdChapter[] | null>(null);
+  const [currentParagraph, setCurrentParagraph] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
@@ -241,12 +242,19 @@ export default function SnsdViewer() {
   };
 
   const goToChapter = (chapter: SnsdChapter) => {
+    setCurrentParagraph(chapter.paragraph);
     setChaptersOpen(false);
     requestAnimationFrame(() => paragraphRefs.current[chapter.paragraph]?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   const openChapterList = () => {
     if (chapters === null) setChapters(detectSnsdChapters(paragraphs));
+    const readingLine = window.innerHeight * 0.28;
+    let visibleParagraph = 0;
+    paragraphRefs.current.forEach((element, index) => {
+      if (element && element.getBoundingClientRect().top <= readingLine) visibleParagraph = index;
+    });
+    setCurrentParagraph(visibleParagraph);
     setChaptersOpen(true);
     setSearchOpen(false);
     setFontSizeOpen(false);
@@ -353,7 +361,12 @@ export default function SnsdViewer() {
                     <h3 className={styles.chapterPartTitle}>파트 {chapter.part}</h3>
                   )}
                   <div className={styles.chapterItem}>
-                    <button className={styles.chapterLocation} type="button" onClick={() => goToChapter(chapter)}><strong>{index + 1}</strong><span>{chapter.label}</span></button>
+                    <button
+                      className={`${styles.chapterLocation} ${chapter.paragraph < currentParagraph ? styles.chapterRead : ""}`}
+                      type="button"
+                      onClick={() => goToChapter(chapter)}
+                      aria-label={`${chapter.label}${chapter.paragraph < currentParagraph ? ", 읽음" : ""}`}
+                    ><strong>{index + 1}</strong><span>{chapter.label}</span></button>
                   </div>
                 </div>
               ))}

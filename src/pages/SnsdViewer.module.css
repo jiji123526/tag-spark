@@ -49,6 +49,8 @@
 .chapterLocation { display: grid; min-width: 0; flex: 1; grid-template-columns: 42px minmax(0, 1fr); gap: 8px; padding: 15px 0; border: 0; background: transparent; color: var(--viewer-text); font: inherit; text-align: left; cursor: pointer; }
 .chapterLocation strong { color: var(--viewer-muted); font-size: 12px; }
 .chapterLocation span { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.chapterRead { color: var(--viewer-muted); opacity: .48; }
+.chapterRead strong { color: inherit; }
 @keyframes chapterBackdropIn { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,.42); } }
 @keyframes chapterSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @media (max-width: 600px) { .header { padding: 8px 12px; } .reader { padding: 34px 20px 100px; } .chapterSheet { width: min(430px, 76vw); } }
