@@ -576,8 +576,8 @@ export default function Snsd() {
     window.setTimeout(() => setToast(""), 2200);
   };
 
-  const openWork = (work: SnsdWork) => {
-    const url = `/snsd/read/${work.id}?from=list`;
+  const openWork = (work: SnsdWork, restart = false) => {
+    const url = `/snsd/read/${work.id}?from=list${restart ? "&restart=1" : ""}`;
     const viewerWindow = window.open("", "_blank");
 
     if (!viewerWindow) {
@@ -798,7 +798,7 @@ export default function Snsd() {
                     <div className={styles.readProgress} aria-label={`읽기 진행률 ${progressPercent}%`}>
                       <div className={styles.readProgressHeader}>
                         <span>{progressPercent >= 98 ? "완독" : `${progressPercent}% 읽음`}</span>
-                        <button type="button" onClick={() => openWork(work)}>{progressPercent >= 98 ? "다시 읽기" : "이어 읽기"}</button>
+                        <button type="button" onClick={() => openWork(work, progressPercent >= 98)}>{progressPercent >= 98 ? "다시 읽기" : "이어 읽기"}</button>
                       </div>
                       <div className={styles.readProgressTrack}><span style={{ width: `${progressPercent}%` }} /></div>
                     </div>

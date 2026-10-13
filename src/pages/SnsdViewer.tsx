@@ -118,9 +118,20 @@ export default function SnsdViewer() {
   useEffect(() => {
     if (!content || !id) return;
     const key = `snsd-reader-position-${id}`;
-    const savedProgress = getSnsdReadProgress(id);
-    const saved = savedProgress?.scrollY ?? Number(window.localStorage.getItem(key));
-    if (saved > 0) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved)));
+    const params = new URLSearchParams(window.location.search);
+    const restart = params.get("restart") === "1";
+    const savedProgress = restart ? null : getSnsdReadProgress(id);
+    const saved = restart ? 0 : savedProgress?.scrollY ?? Number(window.localStorage.getItem(key));
+    if (restart) {
+      window.localStorage.setItem(key, "0");
+      saveSnsdReadProgress(id, { scrollY: 0, progress: 0 });
+      params.delete("restart");
+      const query = params.toString();
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, 0)));
+    } else if (saved > 0) {
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved)));
+    }
     let saveTimer = 0;
     let idleSaveId: number | null = null;
     const idleWindow = window as Window & {
