@@ -32,8 +32,10 @@
 .fontAdjuster output { min-width: 38px; color: var(--viewer-text); font-size: 13px; text-align: center; }
 .reader { box-sizing: border-box; width: 100%; max-width: 916px; margin: 0 auto; padding: clamp(34px, 5vw, 64px) 48px 120px; }
 .reader article { line-height: 1.95; letter-spacing: -.01em; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
-.paragraph { margin: 0; content-visibility: auto; contain-intrinsic-size: auto 3.9em; }
+.paragraph { margin: 0; }
 .paragraph + .paragraph { margin-top: 1.95em; }
+.readerChunk { content-visibility: auto; contain-intrinsic-size: auto 1200px; }
+.readerChunk + .readerChunk .paragraph:first-child { margin-top: 1.95em; }
 .searchMatch { border-radius: 3px; background: rgba(255, 202, 58, .45); color: inherit; }
 .searchMatchActive { background: var(--viewer-text); color: var(--viewer-surface); }
 .error { color: #f33d4d; text-align: center; }
