@@ -33,7 +33,10 @@ export default function SnsdViewer() {
   const [currentParagraph, setCurrentParagraph] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
-  const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
+  const paragraphs = useMemo(() => {
+    const trimmedContent = content.trim();
+    return trimmedContent ? trimmedContent.split(/\r?\n\s*\r?\n/) : [];
+  }, [content]);
   const normalizedParagraphs = useMemo(() => paragraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [paragraphs]);
   const searchRanges = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("ko");
