@@ -570,14 +570,14 @@ export default function Snsd() {
   };
 
   const shareWork = async (workId: number) => {
-    const url = `${window.location.origin}/snsd/share/${workId}`;
+    const url = `${window.location.origin}/snsd/view/${workId}`;
     await navigator.clipboard.writeText(url);
     setToast("링크가 복사되었습니다!");
     window.setTimeout(() => setToast(""), 2200);
   };
 
   const openWork = (work: SnsdWork) => {
-    const url = `/snsd/view/${work.id}?from=list`;
+    const url = `/snsd/read/${work.id}?from=list`;
     const viewerWindow = window.open("", "_blank");
 
     if (!viewerWindow) {
@@ -784,7 +784,7 @@ export default function Snsd() {
                   </div>
                 </div>
                 <div className={styles.postContent}>
-                  <a className={styles.workTitle} href={`/snsd/view/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openWork(work); }}>{work.title}</a>
+                  <a className={styles.workTitle} href={`/snsd/read/${work.id}?from=list`} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openWork(work); }}>{work.title}</a>
                   {work.reason && (
                     <p className={styles.recommendation}>{work.reason}</p>
                   )}

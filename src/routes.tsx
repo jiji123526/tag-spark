@@ -36,7 +36,7 @@ const AppRoutes = () => {
 
   useEffect(() => {
     const normalizedPath = pathname.replace(/\/+$/, "").toLowerCase() || "/";
-    document.title = normalizedPath.startsWith("/snsd/view/")
+    document.title = normalizedPath.startsWith("/snsd/view/") || normalizedPath.startsWith("/snsd/read/")
       ? "작품 읽기 · SNSDFF"
       : PAGE_TITLES[normalizedPath] ?? "404";
   }, [pathname]);
@@ -55,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/tag-comparison" element={<TagComparison />} />
       <Route path="/snsd" element={<Snsd />} />
       <Route path="/snsd/view/:id" element={<SnsdViewer />} />
+      <Route path="/snsd/read/:id" element={<SnsdViewer />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
