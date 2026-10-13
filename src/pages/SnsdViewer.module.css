@@ -43,7 +43,6 @@
 .chapterSheetHeader h2 { min-width: 0; flex: 1; overflow: hidden; margin: 0; font-size: 17px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .chapterSheetHeader button { padding: 2px 4px; border: 0; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
 .chapterHeaderActions { display: flex; align-items: center; gap: 10px; }
-.chapterSheetHeader .chapterEditButton { padding: 6px 9px; border: 1px solid var(--viewer-border); border-radius: 7px; color: var(--viewer-text); font-size: 12px; }
 .chapterList { min-height: 0; flex: 1; overflow-y: auto; padding: 0 20px 24px; }
 .emptyChapters { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 28px 0 36px; color: var(--viewer-muted); font-size: 14px; text-align: center; }
 .emptyChapters p { margin: 0; color: var(--viewer-text); }

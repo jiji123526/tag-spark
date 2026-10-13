@@ -556,13 +556,18 @@ export default function SnsdViewer() {
             <div className={styles.chapterSheetHeader}>
               <h2 id="chapter-title">{work?.title || "작품"}{chapters === null ? "" : ` · ${displayedChapters.length}${chapterPartCount > 1 ? ` · ${chapterPartCount}파트` : ""}`}</h2>
               <div className={styles.chapterHeaderActions}>
-                <button className={styles.chapterEditButton} type="button" onClick={startChapterEditMode}>목차 수정</button>
                 <button type="button" onClick={() => setChaptersOpen(false)} aria-label="닫기">×</button>
               </div>
             </div>
             <div className={styles.chapterList}>
               {(chapters === null || (chapters.length === 0 && !manualChaptersLoaded)) && <p className={styles.emptyChapters}>목차를 준비 중입니다…</p>}
-              {chapters?.length === 0 && manualChaptersLoaded && manualChapters.length === 0 && <div className={styles.emptyChapters}><p>감지된 목차가 없습니다.</p><span>본문에서 제목을 선택해 공용 목차에 추가할 수 있어요.</span><button type="button" onClick={startChapterEditMode}>목차 추가하기</button></div>}
+              {chapters?.length === 0 && manualChaptersLoaded && (
+                <div className={styles.emptyChapters}>
+                  <p>{manualChapters.length ? "직접 추가한 공용 목차예요." : "감지된 목차가 없습니다."}</p>
+                  <span>본문에서 제목을 선택해 공용 목차에 추가할 수 있어요.</span>
+                  <button type="button" onClick={startChapterEditMode}>{manualChapters.length ? "목차 더 추가하기" : "목차 추가하기"}</button>
+                </div>
+              )}
               {displayedChapters.map((chapter, index) => (
                 <div key={chapter.id}>
                   {chapterPartCount > 1 && chapter.part && (index === 0 || chapter.part !== displayedChapters[index - 1]?.part) && (
