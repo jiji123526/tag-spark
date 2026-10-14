@@ -368,6 +368,14 @@ export default function Snsd() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const searchAuthor = (author: string) => {
+    const query = author.trim();
+    if (!query) return;
+    setSearchQuery(query);
+    setSearchOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const chooseFiles = (selected?: FileList | File[]) => {
     if (!selected?.length) return;
     const nextFiles = Array.from(selected);
@@ -844,10 +852,12 @@ export default function Snsd() {
             >
               <div className={styles.cardBody}>
                 <div className={styles.postHeader}>
-                  <div className={styles.postHeaderLeft}>
+                  <button className={styles.authorButton} type="button" onClick={() => searchAuthor(work.author)} aria-label={`${work.author} 작가의 작품 검색`}>
+                    <div className={styles.postHeaderLeft}>
                     <div className={styles.postAvatar}><img src={AVATAR_URL} alt="" width="32" height="32" /></div>
                     <div className={styles.postHeaderInfo}><strong>{work.author}</strong><span>{relativeDate(work.created_at)} · 독서합시다</span></div>
-                  </div>
+                    </div>
+                  </button>
                   <div className={styles.moreWrapper}>
                     <button className={styles.moreButton} type="button" aria-label="더보기" aria-expanded={openMenu === work.id} onClick={() => setOpenMenu(current => current === work.id ? null : work.id)}><MoreIcon /></button>
                     {openMenu === work.id && (
