@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { cacheSnsdViewerWork, createSnsdManualChapter, deleteSnsdManualChapter, fetchSnsdManualChapters, fetchSnsdViewerContent, getCachedSnsdViewerWork, getSnsdReadProgress, markSnsdWorkRead, readApiError, saveSnsdReadProgress, snsdApiUrl, SnsdManualChapter, SnsdWork, updateSnsdManualChapter } from "@/lib/snsd-api";
+import { cacheSnsdViewerWork, createSnsdManualChapter, deleteSnsdManualChapter, fetchSnsdManualChapters, fetchSnsdViewerContent, getCachedSnsdViewerWork, getSnsdReadProgress, markSnsdWorkRead, readApiError, saveSnsdReadProgress, SNSD_VIEWER_WORK_CACHE_PREFIX, snsdApiUrl, SnsdManualChapter, SnsdWork, updateSnsdManualChapter } from "@/lib/snsd-api";
 import { detectSnsdChapters, SnsdChapter } from "@/lib/snsd-chapters";
 import styles from "./SnsdViewer.module.css";
 
@@ -38,6 +38,7 @@ export default function SnsdViewer() {
   const [chapterManagementMode, setChapterManagementMode] = useState(false);
   const [chapterSelection, setChapterSelection] = useState<{ paragraph: number; charOffset: number; anchorText: string; title: string } | null>(null);
   const [chapterSaving, setChapterSaving] = useState(false);
+  const [chaptersAddedInSession, setChaptersAddedInSession] = useState(0);
   const [chapterMessage, setChapterMessage] = useState("");
   const [currentParagraph, setCurrentParagraph] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -67,6 +68,17 @@ export default function SnsdViewer() {
   useEffect(() => {
     setChapters(null);
   }, [content]);
+
+  useEffect(() => {
+    if (!id) return;
+    const syncUpdatedWork = (event: StorageEvent) => {
+      if (event.key !== `${SNSD_VIEWER_WORK_CACHE_PREFIX}${id}`) return;
+      const updatedWork = getCachedSnsdViewerWork(id);
+      if (updatedWork) setWork(updatedWork);
+    };
+    window.addEventListener("storage", syncUpdatedWork);
+    return () => window.removeEventListener("storage", syncUpdatedWork);
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -423,6 +435,7 @@ export default function SnsdViewer() {
 
   const startChapterEditMode = () => {
     setChapterBeingEdited(null);
+    setChaptersAddedInSession(0);
     setChaptersOpen(false);
     setChapterEditMode(true);
     setChapterMessage("");
@@ -448,9 +461,8 @@ export default function SnsdViewer() {
         anchor_text: chapterSelection.anchorText,
       });
       setManualChapters(current => [...current, chapter]);
+      setChaptersAddedInSession(count => count + 1);
       setChapterSelection(null);
-      setChapterEditMode(false);
-      setChaptersOpen(true);
       window.getSelection()?.removeAllRanges();
       setChapterMessage("");
     } catch (requestError) {
@@ -661,9 +673,9 @@ export default function SnsdViewer() {
               <button className={styles.chapterAddButton} type="button" onClick={() => chapterBeingEdited ? void saveChapterTitle(chapterBeingEdited) : void addSelectedChapter()} disabled={chapterSaving || !chapterSelection.title.trim()}>{chapterSaving ? "저장 중…" : chapterBeingEdited ? "수정 완료" : "목차에 추가"}</button>
               <button className={styles.chapterCancelButton} type="button" onClick={() => { setChapterSelection(null); setChapterMessage(""); window.getSelection()?.removeAllRanges(); }}>다시 선택</button>
             </>
-          ) : <span className={styles.chapterEditHint}>{chapterBeingEdited ? "본문에서 새 위치와 제목을 드래그해 선택하세요." : "본문에서 목차로 만들 제목을 선택하세요."}</span>}
+          ) : <span className={styles.chapterEditHint}>{chapterBeingEdited ? "본문에서 새 위치와 제목을 드래그해 선택하세요." : chaptersAddedInSession > 0 ? `${chaptersAddedInSession}개 추가됨 · 다음 제목을 선택하거나 완료를 누르세요.` : "본문에서 목차로 만들 제목을 선택하세요. 여러 장을 차례로 추가할 수 있어요."}</span>}
           {chapterMessage && <span className={styles.chapterEditMessage} role="status">{chapterMessage}</span>}
-          <button className={styles.chapterDoneButton} type="button" onClick={() => { setChapterEditMode(false); setChapterSelection(null); setChapterBeingEdited(null); setChapterMessage(""); window.getSelection()?.removeAllRanges(); if (chapterBeingEdited) setChaptersOpen(true); }}>{chapterBeingEdited ? "취소" : "완료"}</button>
+          <button className={styles.chapterDoneButton} type="button" onClick={() => { setChapterEditMode(false); setChapterSelection(null); setChapterBeingEdited(null); setChapterMessage(""); window.getSelection()?.removeAllRanges(); setChaptersOpen(true); }}>{chapterBeingEdited ? "취소" : "완료"}</button>
         </div>
       )}
     </div>

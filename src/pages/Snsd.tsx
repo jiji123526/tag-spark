@@ -683,7 +683,7 @@ export default function Snsd() {
     setSavingEdit(false);
     if (!response.ok) { setError(await readApiError(response)); return; }
     const updatedWork = { ...editing, ...editDraft };
-    if (offlineSaved.has(editing.id)) cacheSnsdViewerWork(updatedWork);
+    cacheSnsdViewerWork(updatedWork);
     setWorks(current => current.map(work => work.id === editing.id ? updatedWork : work));
     setEditing(null);
     setError("");

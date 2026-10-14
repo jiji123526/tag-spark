@@ -49,7 +49,7 @@ export const SNSD_API_URL = configuredBaseUrl?.replace(/\/$/, "") ?? "http://loc
 export const SNSD_READ_HISTORY_KEY = "snsd-read-history";
 export const SNSD_READ_PROGRESS_PREFIX = "snsd-read-progress-";
 const SNSD_CONTENT_CACHE_NAME = "snsd-content-v3";
-const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
+export const SNSD_VIEWER_WORK_CACHE_PREFIX = "snsd-viewer-work-";
 const SNSD_VIEWER_WORK_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const viewerContentRequests = new Map<number, {
   request: Promise<Response>;
