@@ -175,7 +175,7 @@ export default function Snsd() {
   const [offlineBusy, setOfflineBusy] = useState<Set<number>>(new Set());
   const [offlineGuideOpen, setOfflineGuideOpen] = useState(false);
   const [sort, setSort] = useState<"top" | "new" | "library">("new");
-  const [libraryView, setLibraryView] = useState<"bookmarked" | "archive" | "offline">("archive");
+  const [libraryView, setLibraryView] = useState<"archive" | "in-progress" | "bookmarked" | "offline">("archive");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -323,6 +323,15 @@ export default function Snsd() {
       if (!query) return works;
       return works.filter(work => [work.title, work.author, work.pairing]
         .some(value => value.toLocaleLowerCase("ko").includes(query)));
+    }
+    if (sort === "library" && libraryView === "in-progress") {
+      return works
+        .filter(work => {
+          const progress = readProgress[String(work.id)]?.progress ?? 0;
+          return progress > 0 && progress < 0.98;
+        })
+        .sort((a, b) => (readProgress[String(b.id)]?.lastReadAt ?? 0)
+          - (readProgress[String(a.id)]?.lastReadAt ?? 0));
     }
     if (sort === "library" && libraryView === "bookmarked") return works.filter(work => bookmarked.has(work.id));
     if (sort === "library" && libraryView === "offline") return works.filter(work => offlineSaved.has(work.id));
@@ -815,6 +824,7 @@ export default function Snsd() {
         {!searchOpen && sort === "library" && (
           <div className={styles.libraryBar} aria-label="보관함 종류">
             <button className={libraryView === "archive" ? styles.libraryActive : ""} onClick={() => setLibraryView("archive")} type="button">최근 읽은</button>
+            <button className={libraryView === "in-progress" ? styles.libraryActive : ""} onClick={() => setLibraryView("in-progress")} type="button">읽는 중</button>
             <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
             <button className={libraryView === "offline" ? styles.libraryActive : ""} onClick={() => setLibraryView("offline")} type="button">오프라인 저장</button>
           </div>
@@ -829,6 +839,8 @@ export default function Snsd() {
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
                   : sort === "library" && libraryView === "archive"
                     ? <>최근 읽은 작품이 없습니다.<br />작품을 열면 여기에 저장됩니다.</>
+                    : sort === "library" && libraryView === "in-progress"
+                      ? <>읽는 중인 작품이 없습니다.<br />작품을 읽기 시작하면 여기에 표시됩니다.</>
                     : sort === "library" && libraryView === "offline"
                       ? <>오프라인 저장한 작품이 없습니다.<br />카드의 점 메뉴에서 작품을 저장해보세요.</>
                   : <>🥺<br />추천이 없습니다... 하나 하고 가세요</>}
@@ -949,7 +961,7 @@ export default function Snsd() {
                 <h3>대시보드</h3>
                 <p><strong>작품 올리기</strong><span>TXT 파일은 여러 개를 한 번에 선택하거나 끌어놓아 합칠 수 있어요. 처음에는 파일명순으로 정렬되며, 목록을 드래그하거나 화살표로 순서를 바꾼 뒤 제출하세요. 합계 5MB까지 가능하고 설명은 선택입니다.</span></p>
                 <p><strong>작품 읽기</strong><span>작품 카드를 누르면 뷰어가 열립니다. 커플링 태그를 누르면 같은 태그의 작품을 볼 수 있습니다.</span></p>
-                <p><strong>보관함</strong><span>북마크한 작품, 최근 읽은 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
+                <p><strong>보관함</strong><span>최근 읽은 작품, 읽는 중인 작품, 북마크한 작품, 오프라인 저장한 작품을 보관함에서 확인하세요.</span></p>
                 <p><strong>댓글</strong><span>댓글 아이콘이나 댓글 미리보기를 누르면 댓글을 확인하고 작성할 수 있습니다. 내가 쓴 댓글은 점 메뉴에서 수정하거나 삭제할 수 있습니다.</span></p>
                 <p><strong>파일 다운로드</strong><span>작품 카드의 점 메뉴에서 TXT 파일을 기기에 저장하세요.</span></p>
                 <p><strong>오프라인 저장</strong><span>작품 카드의 점 메뉴에서 ‘오프라인 저장’을 누르세요. 인터넷이 없어도 보관함의 오프라인 저장 목록에서 읽을 수 있습니다.</span></p>
