@@ -61,6 +61,41 @@
 .titleGroup { display: flex; align-items: center; gap: 8px; }
 .helpButton { padding: 3px 7px; border: 1px solid var(--snsd-border); border-radius: 999px; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 11px; line-height: 1.4; cursor: pointer; }
 .helpButton:hover { border-color: var(--snsd-muted); color: var(--snsd-text); }
+.searchControl {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  overflow: hidden;
+  border-radius: 999px;
+  transition: width 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.searchControlOpen {
+  width: min(360px, calc(100vw - 140px));
+  min-width: 0;
+  margin-left: 12px;
+  margin-right: 0;
+  padding-left: 12px;
+  border: 1px solid var(--snsd-border);
+  background: var(--snsd-field);
+}
+.searchControl > svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--snsd-muted); }
+.searchControlOpen input {
+  min-width: 0;
+  flex: 1;
+  padding: 0 8px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--snsd-text);
+  font: inherit;
+  font-size: 14px;
+}
+.searchControlOpen input::placeholder { color: var(--snsd-muted); }
+.searchControlOpen .searchButton { margin-right: 0; color: var(--snsd-muted); }
 .searchButton {
   display: inline-flex;
   align-items: center;
@@ -73,6 +108,10 @@
   border-radius: 50%;
   background: transparent;
   color: var(--snsd-text);
+  font: inherit;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
   cursor: pointer;
 }
 .searchButton:hover { background: var(--snsd-field); }
@@ -232,7 +271,6 @@
 
 .sortBar button.active { color: var(--snsd-text); font-weight: 600; }
 .sortBar button.active::after { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--snsd-text); content: ""; }
-.sortBarSearch { top: 108px; }
 .libraryBar {
   position: sticky;
   top: 100px;
@@ -263,7 +301,6 @@
   color: var(--snsd-action-text);
   font-weight: 600;
 }
-.libraryBarSearch { top: 152px; }
 .list { display: flex; min-height: 160px; flex-direction: column; }
 .empty { padding: 72px 16px; color: var(--snsd-muted); text-align: center; }
 .loadMoreButton { margin: 20px 0 32px; padding: 10px 16px; border: 1px solid var(--snsd-border); border-radius: 8px; background: transparent; color: var(--snsd-text); font: inherit; font-size: 14px; cursor: pointer; }

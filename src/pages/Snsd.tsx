@@ -736,12 +736,9 @@ export default function Snsd() {
     <div className={styles.page} data-page="snsd-dashboard">
       <header className={styles.header}>
         <div className={styles.titleGroup}><h1>SNSDFF</h1><button className={styles.helpButton} type="button" onClick={() => setHelpOpen(true)}>사용법</button></div>
-        <button className={styles.searchButton} type="button" aria-label="작품 검색" aria-expanded={searchOpen} onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><SearchIcon /></button>
-      </header>
-      <main className={styles.main}>
-        {searchOpen && (
-          <div className={styles.searchPanel} role="search">
-            <SearchIcon />
+        <div className={`${styles.searchControl} ${searchOpen ? styles.searchControlOpen : ""}`} role={searchOpen ? "search" : undefined}>
+          {searchOpen && <SearchIcon />}
+          {searchOpen && (
             <input
               ref={searchInputRef}
               value={searchQuery}
@@ -750,9 +747,13 @@ export default function Snsd() {
               placeholder="제목, 작가, 커플링 검색"
               aria-label="제목, 작가, 커플링 검색"
             />
-            <button type="button" onClick={closeSearch} aria-label="검색 닫기">×</button>
-          </div>
-        )}
+          )}
+          <button className={styles.searchButton} type="button" aria-label={searchOpen ? "검색 닫기" : "작품 검색"} aria-expanded={searchOpen} onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}>
+            {searchOpen ? "×" : <SearchIcon />}
+          </button>
+        </div>
+      </header>
+      <main className={styles.main}>
         {offlineGuideOpen && (
           <aside className={styles.offlineGuide} role="status">
             <strong>이 작품은 이 브라우저에 저장됐어요.</strong>
@@ -820,13 +821,13 @@ export default function Snsd() {
         </section>}
 
         {!searchOpen && !composeOpen && error && <p className={styles.error} role="alert">{error}</p>}
-        <nav className={`${styles.sortBar} ${searchOpen ? styles.sortBarSearch : ""}`} aria-label="작품 정렬">
+        <nav className={styles.sortBar} aria-label="작품 정렬">
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
           <button className={sort === "library" ? styles.active : ""} onClick={() => setSort("library")} type="button">보관함</button>
         </nav>
         {sort === "library" && (
-          <div className={`${styles.libraryBar} ${searchOpen ? styles.libraryBarSearch : ""}`} aria-label="보관함 종류">
+          <div className={styles.libraryBar} aria-label="보관함 종류">
             <button className={libraryView === "archive" ? styles.libraryActive : ""} onClick={() => setLibraryView("archive")} type="button">최근 읽은</button>
             <button className={libraryView === "in-progress" ? styles.libraryActive : ""} onClick={() => setLibraryView("in-progress")} type="button">읽는 중</button>
             <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
