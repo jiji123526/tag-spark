@@ -318,34 +318,38 @@ export default function Snsd() {
   }, [libraryView, searchOpen, searchQuery, sort]);
 
   const visibleWorks = useMemo(() => {
-    if (searchOpen) {
-      const query = searchQuery.trim().toLocaleLowerCase("ko");
-      if (!query) return works;
-      return works.filter(work => [work.title, work.author, work.pairing]
-        .some(value => value.toLocaleLowerCase("ko").includes(query)));
-    }
+    let filteredWorks: SnsdWork[];
     if (sort === "library" && libraryView === "in-progress") {
-      return works
+      filteredWorks = works
         .filter(work => {
           const progress = readProgress[String(work.id)]?.progress ?? 0;
           return progress > 0 && progress < 0.98;
         })
         .sort((a, b) => (readProgress[String(b.id)]?.lastReadAt ?? 0)
           - (readProgress[String(a.id)]?.lastReadAt ?? 0));
-    }
-    if (sort === "library" && libraryView === "bookmarked") return works.filter(work => bookmarked.has(work.id));
-    if (sort === "library" && libraryView === "offline") return works.filter(work => offlineSaved.has(work.id));
-    if (sort === "library" && libraryView === "archive") {
-      return works
+    } else if (sort === "library" && libraryView === "bookmarked") {
+      filteredWorks = works.filter(work => bookmarked.has(work.id));
+    } else if (sort === "library" && libraryView === "offline") {
+      filteredWorks = works.filter(work => offlineSaved.has(work.id));
+    } else if (sort === "library" && libraryView === "archive") {
+      filteredWorks = works
         .filter(work => readProgress[String(work.id)] || readHistory[String(work.id)])
         .sort((a, b) => (readProgress[String(b.id)]?.lastReadAt ?? readHistory[String(b.id)] ?? 0)
           - (readProgress[String(a.id)]?.lastReadAt ?? readHistory[String(a.id)] ?? 0));
+    } else {
+      filteredWorks = [...works];
+      if (sort === "new") {
+        filteredWorks.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
+      } else {
+        filteredWorks.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
+      }
     }
-    const sorted = [...works];
-    if (sort === "new") {
-      return sorted.sort((a, b) => parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
-    }
-    return sorted.sort((a, b) => b.score - a.score || parseSnsdTimestamp(b.created_at).getTime() - parseSnsdTimestamp(a.created_at).getTime());
+
+    if (!searchOpen) return filteredWorks;
+    const query = searchQuery.trim().toLocaleLowerCase("ko");
+    if (!query) return filteredWorks;
+    return filteredWorks.filter(work => [work.title, work.author, work.pairing]
+      .some(value => value.toLocaleLowerCase("ko").includes(query)));
   }, [bookmarked, libraryView, offlineSaved, readHistory, readProgress, searchOpen, searchQuery, sort, works]);
 
   const closeSearch = () => {
@@ -816,13 +820,13 @@ export default function Snsd() {
         </section>}
 
         {!searchOpen && !composeOpen && error && <p className={styles.error} role="alert">{error}</p>}
-        {!searchOpen && <nav className={styles.sortBar} aria-label="작품 정렬">
+        <nav className={`${styles.sortBar} ${searchOpen ? styles.sortBarSearch : ""}`} aria-label="작품 정렬">
           <button className={sort === "new" ? styles.active : ""} onClick={() => setSort("new")} type="button">최신순</button>
           <button className={sort === "top" ? styles.active : ""} onClick={() => setSort("top")} type="button">추천순</button>
           <button className={sort === "library" ? styles.active : ""} onClick={() => setSort("library")} type="button">보관함</button>
-        </nav>}
-        {!searchOpen && sort === "library" && (
-          <div className={styles.libraryBar} aria-label="보관함 종류">
+        </nav>
+        {sort === "library" && (
+          <div className={`${styles.libraryBar} ${searchOpen ? styles.libraryBarSearch : ""}`} aria-label="보관함 종류">
             <button className={libraryView === "archive" ? styles.libraryActive : ""} onClick={() => setLibraryView("archive")} type="button">최근 읽은</button>
             <button className={libraryView === "in-progress" ? styles.libraryActive : ""} onClick={() => setLibraryView("in-progress")} type="button">읽는 중</button>
             <button className={libraryView === "bookmarked" ? styles.libraryActive : ""} onClick={() => setLibraryView("bookmarked")} type="button">북마크</button>
@@ -833,7 +837,7 @@ export default function Snsd() {
         <section className={styles.list}>
           {!loading && visibleWorks.length === 0 && (
             <div className={styles.empty}>
-              {searchOpen
+              {searchOpen && searchQuery.trim()
                 ? "검색 결과가 없습니다."
                 : sort === "library" && libraryView === "bookmarked"
                   ? <>저장한 작품이 없습니다.<br />작품 카드의 북마크 아이콘을 눌러보세요.</>
