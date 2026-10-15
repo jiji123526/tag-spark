@@ -96,6 +96,8 @@
 }
 .searchControlOpen input::placeholder { color: var(--snsd-muted); }
 .searchControlOpen .searchButton { margin-right: 0; color: var(--snsd-muted); }
+.searchControl:not(.searchControlOpen) .searchButton { margin-right: 0; }
+.searchControl:not(.searchControlOpen) .searchButton svg { transform: translateX(-1px); }
 .searchButton {
   display: inline-flex;
   align-items: center;
@@ -109,13 +111,11 @@
   background: transparent;
   color: var(--snsd-text);
   font: inherit;
-  font-size: 28px;
-  font-weight: 300;
-  line-height: 1;
   cursor: pointer;
 }
 .searchButton:hover { background: var(--snsd-field); }
 .searchButton svg { width: 21px; height: 21px; }
+.searchControlOpen .searchButton svg { width: 20px; height: 20px; }
 .main { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; padding: 0 24px; }
 .searchPanel {
   position: sticky;
