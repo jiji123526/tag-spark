@@ -58,8 +58,8 @@
 }
 
 .header h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-.titleGroup { display: flex; align-items: center; gap: 8px; }
-.helpButton { padding: 3px 7px; border: 1px solid var(--snsd-border); border-radius: 999px; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 11px; line-height: 1.4; cursor: pointer; }
+.titleGroup { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; white-space: nowrap; }
+.helpButton { flex: 0 0 auto; padding: 3px 7px; border: 1px solid var(--snsd-border); border-radius: 999px; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 11px; line-height: 1.4; white-space: nowrap; cursor: pointer; }
 .helpButton:hover { border-color: var(--snsd-muted); color: var(--snsd-text); }
 .searchControl {
   display: flex;
@@ -74,6 +74,7 @@
   transition: width 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 .searchControlOpen {
+  flex: 0 1 360px;
   width: min(360px, calc(100vw - 140px));
   min-width: 0;
   margin-left: 12px;
