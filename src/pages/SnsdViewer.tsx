@@ -113,13 +113,6 @@ function replaceReaderNames(text: string, rules: NameReplacementRule[]) {
     const alias = !isNameWordCharacter(before) ? aliases.find(candidate => text.startsWith(candidate.from, cursor)) : undefined;
     if (alias) {
       const aliasEnd = cursor + alias.from.length;
-      // A name followed by "이의" is commonly the affectionate form "미영이의";
-      // don't parse its 이 as the subject particle (which would produce "애리가의").
-      if (text.startsWith("이의", aliasEnd) && !isNameWordCharacter(text[aliasEnd + 2])) {
-        result += alias.to + "의";
-        cursor = aliasEnd + 2;
-        continue;
-      }
       const particle = particleAt(text, aliasEnd);
       const next = text[aliasEnd] ?? "";
       if (!isNameWordCharacter(next) || particle) {
