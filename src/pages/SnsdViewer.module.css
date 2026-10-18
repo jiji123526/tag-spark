@@ -71,8 +71,37 @@
 .chapterDoneButton { margin-left: auto; border: 1px solid var(--viewer-border); background: transparent; color: var(--viewer-text); }
 .chapterRead { color: var(--viewer-muted); opacity: .48; }
 .chapterRead strong { color: inherit; }
+.nameRenameOverlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 16px; background: rgba(0,0,0,.48); animation: chapterBackdropIn .16s ease-out; }
+.nameRenameDialog { display: flex; width: min(440px, 100%); max-height: min(90dvh, 760px); flex-direction: column; gap: 14px; overflow-y: auto; box-sizing: border-box; padding: 20px; border: 1px solid var(--viewer-border); border-radius: 16px; background: var(--viewer-surface); box-shadow: 0 18px 60px rgba(0,0,0,.24); color: var(--viewer-text); }
+.nameRenameHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.nameRenameHeader h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.nameRenameHeader p { margin: 4px 0 0; color: var(--viewer-muted); font-size: 12px; }
+.nameRenameHeader button { width: 30px; height: 30px; flex: 0 0 auto; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--viewer-muted); font: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
+.nameRenameHeader button:hover { background: var(--viewer-border); color: var(--viewer-text); }
+.nameRenameField { display: flex; flex-direction: column; gap: 6px; color: var(--viewer-muted); font-size: 12px; }
+.nameRenameField input, .nameRenameAliases input { min-width: 0; box-sizing: border-box; padding: 10px 11px; border: 1px solid var(--viewer-border); border-radius: 9px; outline: none; background: var(--viewer-surface); color: var(--viewer-text); font: inherit; font-size: 15px; }
+.nameRenameField input:focus, .nameRenameAliases input:focus { border-color: var(--viewer-muted); box-shadow: 0 0 0 2px var(--viewer-border); }
+.nameRenameToggle { display: flex; align-items: center; gap: 8px; color: var(--viewer-text); font-size: 13px; cursor: pointer; }
+.nameRenameToggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--viewer-text); }
+.nameRenameToggle input:disabled { opacity: .4; }
+.nameRenameAliases { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 8px; }
+.nameRenameAliases label { display: flex; min-width: 0; flex-direction: column; gap: 5px; color: var(--viewer-muted); font-size: 11px; }
+.nameRenameAliases > span:not(.visuallyHidden) { padding-bottom: 10px; color: var(--viewer-muted); }
+.nameRenamePreview, .nameRenameMatches { display: flex; flex-direction: column; gap: 6px; padding: 11px 12px; border-radius: 10px; background: var(--viewer-header); color: var(--viewer-muted); font-size: 12px; }
+.nameRenamePreview strong, .nameRenameMatches strong { color: var(--viewer-text); font-size: 12px; font-weight: 600; }
+.nameRenamePreview > span { overflow-wrap: anywhere; }
+.nameRenameMatches ul { display: flex; flex-direction: column; gap: 5px; margin: 0; padding-left: 17px; }
+.nameRenameMatches li { line-height: 1.5; overflow-wrap: anywhere; }
+.nameRenameError { margin: 0; color: #e5484d; font-size: 12px; line-height: 1.5; }
+.nameRenameFooter { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.nameRenameFooter button { padding: 9px 12px; border: 1px solid var(--viewer-border); border-radius: 8px; background: transparent; color: var(--viewer-text); font: inherit; font-size: 13px; cursor: pointer; }
+.nameRenameFooter .nameRenameDelete { margin-right: auto; border-color: transparent; color: #e5484d; }
+.nameRenameFooter .nameRenameSave { border-color: var(--viewer-text); background: var(--viewer-text); color: var(--viewer-surface); font-weight: 600; }
+.nameRenameFooter .nameRenameSave:disabled { cursor: default; opacity: .45; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 @keyframes chapterBackdropIn { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,.42); } }
 @keyframes chapterSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @media (max-width: 600px) { .header { padding: 8px 12px; } .reader { padding: 34px 20px 100px; } .chapterSheet { width: min(430px, 76vw); } }
+@media (max-width: 480px) { .nameRenameOverlay { align-items: flex-end; padding: 8px; } .nameRenameDialog { width: 100%; max-height: min(86dvh, 760px); gap: 12px; padding: 17px; border-radius: 16px 16px 12px 12px; } }
 @media (max-width: 360px) { .header { grid-template-columns: 60px minmax(0, 1fr) auto; padding-right: 8px; padding-left: 8px; } .headerActions { gap: 0; } .iconButton { width: 31px; } .workMeta span { display: none; } .header strong { font-size: 14px; } }
 @media (prefers-reduced-motion: reduce) { .header { transition: none; } .chapterOverlay, .chapterSheet { animation: none; } }
