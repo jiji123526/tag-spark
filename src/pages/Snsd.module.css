@@ -194,6 +194,12 @@
 
 .form input:focus, .form textarea:focus, .commentForm textarea:focus { box-shadow: inset 0 0 0 1px var(--snsd-primary); }
 .fileInput { display: none; }
+.filePreview { min-width: 0; padding: 10px 11px; border: 1px solid var(--snsd-border); border-radius: 8px; background: var(--snsd-subtle); }
+.filePreviewHeader { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.filePreviewHeader strong { min-width: 0; overflow: hidden; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.filePreviewHeader button { flex: 0 0 auto; padding: 4px 0 4px 6px; border: 0; background: transparent; color: var(--snsd-muted); font: inherit; font-size: 11px; cursor: pointer; }
+.filePreviewHeader button:hover { color: var(--snsd-text); text-decoration: underline; }
+.filePreview pre { max-height: 112px; overflow: auto; margin: 8px 0 0; color: var(--snsd-text); font: inherit; font-size: 12px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 .dropzone {
   display: flex;
   flex-direction: column;

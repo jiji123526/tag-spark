@@ -23,6 +23,31 @@ const AVATAR_URL = "https://d33pksfia2a94m.cloudfront.net/assets/img/avatar/avat
 const COMPOSE_COLLAPSED_KEY = "snsd-compose-collapsed";
 const OFFLINE_GUIDE_SEEN_KEY = "snsd-offline-guide-seen";
 const WORKS_CACHE_KEY_PREFIX = "snsd-works-cache-";
+const TEXT_ENCODINGS = ["utf-8", "utf-16le", "utf-16be", "euc-kr"] as const;
+
+type SelectedTextFile = { file: File; content: string; encodingIndex: number; failed: boolean };
+
+function decodeText(bytes: Uint8Array, encodingIndex: number) {
+  return new TextDecoder(TEXT_ENCODINGS[encodingIndex], { fatal: true }).decode(bytes).replace(/^\uFEFF/, "").trim();
+}
+
+function detectTextEncoding(bytes: Uint8Array) {
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) return 1;
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) return 2;
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    return 0;
+  } catch {
+    let evenNuls = 0;
+    let oddNuls = 0;
+    for (let i = 0; i < bytes.length; i += 1) {
+      if (bytes[i] === 0) i % 2 === 0 ? evenNuls++ : oddNuls++;
+    }
+    if (oddNuls > bytes.length * 0.08 && oddNuls > evenNuls * 3) return 1;
+    if (evenNuls > bytes.length * 0.08 && evenNuls > oddNuls * 3) return 2;
+    return 3;
+  }
+}
 
 function getWorksCacheKey() {
   return `${WORKS_CACHE_KEY_PREFIX}${getSnsdUserId()}`;
@@ -186,7 +211,7 @@ export default function Snsd() {
   const [author, setAuthor] = useState("");
   const [pairing, setPairing] = useState("");
   const [reason, setReason] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<SelectedTextFile[]>([]);
   const [draggedFileIndex, setDraggedFileIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(() => works.length === 0);
   const [submitting, setSubmitting] = useState(false);
@@ -390,7 +415,7 @@ export default function Snsd() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const chooseFiles = (selected?: FileList | File[]) => {
+  const chooseFiles = async (selected?: FileList | File[]) => {
     if (!selected?.length) return;
     const nextFiles = Array.from(selected);
     const validationError = nextFiles.map(validateTextFile).find(Boolean);
@@ -403,8 +428,44 @@ export default function Snsd() {
       return;
     }
     nextFiles.sort((a, b) => a.name.localeCompare(b.name, "ko", { numeric: true, sensitivity: "base" }));
-    setFiles(nextFiles);
-    setError("");
+    try {
+      const decodedFiles = await Promise.all(nextFiles.map(async file => {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const encodingIndex = detectTextEncoding(bytes);
+        try {
+          return { file, encodingIndex, content: decodeText(bytes, encodingIndex), failed: false };
+        } catch {
+          return { file, encodingIndex, content: "", failed: true };
+        }
+      }));
+      setFiles(decodedFiles);
+      setError("");
+    } catch {
+      setError("파일을 읽지 못했어요. TXT 파일인지 확인해주세요.");
+    }
+  };
+
+  const retryFileEncoding = async (fileIndex: number) => {
+    const selectedFile = files[fileIndex];
+    if (!selectedFile) return;
+    try {
+      const bytes = new Uint8Array(await selectedFile.file.arrayBuffer());
+      for (let step = 1; step <= TEXT_ENCODINGS.length; step += 1) {
+        const encodingIndex = (selectedFile.encodingIndex + step) % TEXT_ENCODINGS.length;
+        try {
+          const content = decodeText(bytes, encodingIndex);
+          setFiles(current => current.map((item, index) => index === fileIndex ? { ...item, content, encodingIndex, failed: false } : item));
+          setError("");
+          return;
+        } catch {
+          // Try the next supported text encoding.
+        }
+      }
+      setFiles(current => current.map((item, index) => index === fileIndex ? { ...item, failed: true } : item));
+      setError("다른 방식으로도 읽지 못했어요. 파일이 손상되지 않았는지 확인해주세요.");
+    } catch {
+      setError("다른 방식으로도 읽지 못했어요. 파일이 손상되지 않았는지 확인해주세요.");
+    }
   };
 
   const moveFile = (from: number, to: number) => {
@@ -429,6 +490,10 @@ export default function Snsd() {
       setError("모든 필수 항목을 입력해주세요.");
       return;
     }
+    if (files.some(item => item.failed)) {
+      setError("미리보기를 읽지 못한 파일이 있어요. 다른 인코딩으로 다시 시도해주세요.");
+      return;
+    }
     setSubmitting(true);
     setError("");
     const body = new FormData();
@@ -438,16 +503,7 @@ export default function Snsd() {
     body.set("reason", reason.trim());
     body.set("createdBy", getSnsdUserId());
     try {
-      const parts = await Promise.all(files.map(async item => {
-        const bytes = await item.arrayBuffer();
-        let content: string;
-        try {
-          content = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-        } catch {
-          content = new TextDecoder("euc-kr").decode(bytes);
-        }
-        return content.replace(/^\uFEFF/, "").trim();
-      }));
+      const parts = files.map(item => item.content);
       const combined = parts.map((part, index) => `${part}${index < parts.length - 1 ? "\n\n" : ""}`).join("");
       if (new Blob([combined]).size > MAX_FILE_SIZE) throw new Error("인코딩 변환 후 파일이 5MB를 초과합니다.");
       body.set("file", new File([combined], "combined.txt", { type: "text/plain;charset=utf-8" }));
@@ -786,15 +842,24 @@ export default function Snsd() {
               >
                 <input ref={fileInputRef} className={styles.fileInput} type="file" accept=".txt,text/plain" multiple onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFiles(event.target.files)} />
                 <strong>{files.length ? `${files.length}개 파일 선택됨` : "TXT 파일을 끌어다 놓으세요"}</strong>
-                <span>{files.length ? `총 ${(files.reduce((total, item) => total + item.size, 0) / 1024).toFixed(1)}KB · 아래에서 순서를 바꿀 수 있어요` : "TXT 여러 개 선택 가능 · 파일명순으로 자동 병합 · 합계 5MB 이하"}</span>
+                <span>{files.length ? `총 ${(files.reduce((total, item) => total + item.file.size, 0) / 1024).toFixed(1)}KB · 아래에서 순서를 바꿀 수 있어요` : "TXT 여러 개 선택 가능 · 파일명순으로 자동 병합 · 합계 5MB 이하"}</span>
               </div>
+              {files.map((item, index) => (
+                <div className={styles.filePreview} key={`${item.file.name}-${item.file.lastModified}-preview-${index}`}>
+                  <div className={styles.filePreviewHeader}>
+                    <strong title={item.file.name}>{item.file.name}</strong>
+                    <button type="button" onClick={() => void retryFileEncoding(index)}>다른 인코딩으로 다시 보기</button>
+                  </div>
+                  <pre>{item.failed ? "미리보기를 읽지 못했어요. 아래 버튼으로 다시 시도해 주세요." : <>{item.content.slice(0, 600)}{item.content.length > 600 ? "…" : ""}</>}</pre>
+                </div>
+              ))}
               {files.length > 1 && (
                 <div className={styles.fileOrder}>
                   <span className={styles.fileOrderHint}>병합 순서 · 드래그하거나 화살표로 조정</span>
                   <ol>
                     {files.map((item, index) => (
                       <li
-                        key={`${item.name}-${item.lastModified}-${index}`}
+                        key={`${item.file.name}-${item.file.lastModified}-${index}`}
                         draggable
                         onDragStart={() => setDraggedFileIndex(index)}
                         onDragOver={event => event.preventDefault()}
@@ -803,10 +868,10 @@ export default function Snsd() {
                         className={draggedFileIndex === index ? styles.fileOrderDragging : ""}
                       >
                         <span className={styles.fileOrderNumber}>{index + 1}</span>
-                        <span className={styles.fileOrderName} title={item.name}>{item.name}</span>
+                        <span className={styles.fileOrderName} title={item.file.name}>{item.file.name}</span>
                         <span className={styles.fileOrderActions}>
-                          <button type="button" aria-label={`${item.name} 위로`} disabled={index === 0} onClick={() => moveFile(index, index - 1)}>↑</button>
-                          <button type="button" aria-label={`${item.name} 아래로`} disabled={index === files.length - 1} onClick={() => moveFile(index, index + 1)}>↓</button>
+                          <button type="button" aria-label={`${item.file.name} 위로`} disabled={index === 0} onClick={() => moveFile(index, index - 1)}>↑</button>
+                          <button type="button" aria-label={`${item.file.name} 아래로`} disabled={index === files.length - 1} onClick={() => moveFile(index, index + 1)}>↓</button>
                         </span>
                       </li>
                     ))}
