@@ -114,12 +114,11 @@ function replaceReaderNames(text: string, rules: NameReplacementRule[]) {
     if (alias) {
       const aliasEnd = cursor + alias.from.length;
       const particle = particleAt(text, aliasEnd);
-      const next = text[aliasEnd] ?? "";
-      if (!isNameWordCharacter(next) || particle) {
-        result += alias.to + (particle ? inflectParticle(particle, alias.to) : "");
-        cursor = aliasEnd + particle.length;
-        continue;
-      }
+      // Replace the registered name first even when an unrecognized ending is attached;
+      // only adjust and consume a suffix when it is confidently recognized as a particle.
+      result += alias.to + (particle ? inflectParticle(particle, alias.to) : "");
+      cursor = aliasEnd + particle.length;
+      continue;
     }
     result += text[cursor];
     cursor += 1;
