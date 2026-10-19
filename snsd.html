@@ -5,10 +5,22 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
+    <style>
+      html { background: #fff; }
+      html.dark { background: #0c1016; }
+    </style>
 
     <title>SNSDFF</title>
     <meta name="description" content="SNSDFF에서 작품을 읽고 추천하세요." />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      (() => {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#0c1016");
+        }
+      })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="SNSDFF" />

@@ -5,10 +5,22 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
+    <style>
+      html { background: #fff; }
+      html.dark { background: #0c1016; }
+    </style>
 
     <title>오늘은 뭘 읽을까?</title>
     <meta name="description" content="칼과 윈 포타 추천기" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      (() => {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#0c1016");
+        }
+      })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="SNSDFF" />
