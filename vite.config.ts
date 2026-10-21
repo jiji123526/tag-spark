@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
+    optimizeDeps: {
+      exclude: ["lindera-wasm-web-ko-dic"],
+    },
     server: {
       host: "::",
       port: 8080,

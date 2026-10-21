@@ -2,6 +2,7 @@ import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEv
 import { useParams } from "react-router-dom";
 import { cacheSnsdViewerWork, createSnsdManualChapter, deleteSnsdManualChapter, fetchSnsdManualChapters, fetchSnsdViewerContent, getCachedSnsdViewerWork, getSnsdReadProgress, markSnsdWorkRead, readApiError, saveSnsdReadProgress, SNSD_VIEWER_WORK_CACHE_PREFIX, snsdApiUrl, SnsdManualChapter, SnsdWork, updateSnsdManualChapter } from "@/lib/snsd-api";
 import { detectSnsdChapters, SnsdChapter } from "@/lib/snsd-chapters";
+import { hasHangulBatchim, nameOccurrences, replaceReaderNames, splitKoreanName, type NameReplacementRule } from "@/lib/snsd-name-rewriter";
 import styles from "./SnsdViewer.module.css";
 
 const MenuIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6.75A.75.75 0 0 1 4.75 6h14.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 6.75Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H4.75a.75.75 0 0 1-.75-.75Zm.75 4.5a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H4.75Z" fill="currentColor" /></svg>;
@@ -14,34 +15,7 @@ type SearchRange = {
   globalIndex: number;
 };
 
-type NameReplacementRule = {
-  sourceFull: string;
-  targetFull: string;
-  sourceGiven: string;
-  targetGiven: string;
-  replaceGiven: boolean;
-};
-
 const NAME_REPLACEMENT_KEY_PREFIX = "snsd-name-replacements-";
-const KOREAN_SURNAMES = ["남궁", "황보", "제갈", "사공", "선우", "서문", "독고", "동방", "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍", "유", "고", "문", "양", "손", "배", "백", "허", "남", "심", "노", "하", "곽", "성", "차", "주", "우", "구", "민", "진", "지", "엄", "채", "원", "천"].sort((a, b) => b.length - a.length);
-
-const VARIABLE_PARTICLES: Record<string, "topic" | "subject" | "object" | "and" | "instrumental" | "vocative" | "with" | "copula"> = {
-  "이라고": "copula", "라고": "copula", "이라서": "copula", "라서": "copula", "이라면": "copula", "라면": "copula", "이라도": "copula", "라도": "copula", "이든": "copula", "든": "copula",
-  "이랑": "with", "랑": "with", "으로": "instrumental", "로": "instrumental", "은": "topic", "는": "topic", "이": "subject", "가": "subject", "을": "object", "를": "object", "과": "and", "와": "and", "아": "vocative", "야": "vocative",
-};
-const FIXED_PARTICLES = ["에게서", "한테서", "께서", "으로부터", "에게", "한테", "에서", "부터", "까지", "처럼", "보다", "만큼", "조차", "마저", "밖에", "에게는", "한테는", "에서도", "만", "도", "씨", "님", "의", "께", "씩"];
-const VARIABLE_PARTICLE_NAMES = Object.keys(VARIABLE_PARTICLES).sort((a, b) => b.length - a.length);
-const PARTICLE_SUFFIXES = [...new Set([
-  ...VARIABLE_PARTICLE_NAMES,
-  ...FIXED_PARTICLES,
-  ...VARIABLE_PARTICLE_NAMES.flatMap(head => [...FIXED_PARTICLES, ...VARIABLE_PARTICLE_NAMES].map(tail => `${head}${tail}`)),
-])].sort((a, b) => b.length - a.length);
-
-function splitKoreanName(value: string) {
-  const name = value.trim();
-  const surname = KOREAN_SURNAMES.find(candidate => name.startsWith(candidate) && [...name].length > [...candidate].length) ?? "";
-  return { surname, given: surname ? [...name].slice([...surname].length).join("") : name };
-}
 
 function readNameReplacementRules(workId?: string) {
   if (!workId) return [] as NameReplacementRule[];
@@ -54,93 +28,6 @@ function readNameReplacementRules(workId?: string) {
   } catch {
     return [];
   }
-}
-
-function hasHangulBatchim(value: string) {
-  const last = [...value].at(-1);
-  if (!last) return null;
-  const code = last.charCodeAt(0) - 0xac00;
-  if (code < 0 || code > 11171) return null;
-  const jongseong = code % 28;
-  return { hasBatchim: jongseong !== 0, isRieul: jongseong === 8 };
-}
-
-function inflectParticle(particle: string, targetName: string) {
-  const variablePart = VARIABLE_PARTICLE_NAMES.find(candidate => particle.startsWith(candidate));
-  const kind = variablePart ? VARIABLE_PARTICLES[variablePart] : undefined;
-  const ending = hasHangulBatchim(targetName);
-  if (!kind || !ending) return particle;
-  const withBatchim = ending.hasBatchim;
-  const rest = particle.slice(variablePart.length);
-  let changed = particle;
-  switch (kind) {
-    case "topic": changed = withBatchim ? "은" : "는"; break;
-    case "subject": changed = withBatchim ? "이" : "가"; break;
-    case "object": changed = withBatchim ? "을" : "를"; break;
-    case "and": changed = withBatchim ? "과" : "와"; break;
-    case "vocative": changed = withBatchim ? "아" : "야"; break;
-    case "with": changed = withBatchim ? "이랑" : "랑"; break;
-    case "instrumental": changed = withBatchim && !ending.isRieul ? "으로" : "로"; break;
-    case "copula": {
-      const base = variablePart.replace(/^이/, "");
-      changed = withBatchim ? `이${base}` : base;
-      break;
-    }
-  }
-  return changed + rest;
-}
-
-function isNameWordCharacter(character: string | undefined) {
-  return Boolean(character && /[가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9]/u.test(character));
-}
-
-function particleAt(text: string, offset: number) {
-  return PARTICLE_SUFFIXES.find(particle => text.startsWith(particle, offset)
-    && !isNameWordCharacter(text[offset + particle.length])) ?? "";
-}
-
-function replaceReaderNames(text: string, rules: NameReplacementRule[]) {
-  const aliases = rules.flatMap(rule => [
-    { from: rule.sourceFull, to: rule.targetFull },
-    ...(rule.replaceGiven && rule.sourceGiven && rule.targetGiven ? [{ from: rule.sourceGiven, to: rule.targetGiven }] : []),
-  ]).filter(alias => alias.from && alias.to).sort((a, b) => b.from.length - a.from.length);
-  if (!aliases.length) return text;
-
-  let result = "";
-  let cursor = 0;
-  while (cursor < text.length) {
-    const before = text[cursor - 1] ?? "";
-    const alias = !isNameWordCharacter(before) ? aliases.find(candidate => text.startsWith(candidate.from, cursor)) : undefined;
-    if (alias) {
-      const aliasEnd = cursor + alias.from.length;
-      const particle = particleAt(text, aliasEnd);
-      // Replace the registered name first even when an unrecognized ending is attached;
-      // only adjust and consume a suffix when it is confidently recognized as a particle.
-      result += alias.to + (particle ? inflectParticle(particle, alias.to) : "");
-      cursor = aliasEnd + particle.length;
-      continue;
-    }
-    result += text[cursor];
-    cursor += 1;
-  }
-  return result;
-}
-
-function nameOccurrences(text: string, alias: string, limit = 3) {
-  if (!alias) return [] as string[];
-  const snippets: string[] = [];
-  let cursor = 0;
-  while (snippets.length < limit) {
-    const index = text.indexOf(alias, cursor);
-    if (index < 0) break;
-    const before = text[index - 1] ?? "";
-    const after = text[index + alias.length] ?? "";
-    if (!isNameWordCharacter(before) && (!isNameWordCharacter(after) || particleAt(text, index + alias.length))) {
-      snippets.push(text.slice(Math.max(0, index - 18), Math.min(text.length, index + alias.length + 24)).replace(/\s+/g, " "));
-    }
-    cursor = index + alias.length;
-  }
-  return snippets;
 }
 
 export default function SnsdViewer() {
@@ -181,10 +68,14 @@ export default function SnsdViewer() {
   const renameDidTriggerRef = useRef(false);
   const readerArticleRef = useRef<HTMLElement>(null);
   const searchMatchRefs = useRef<Array<HTMLElement | null>>([]);
+  const nameRewriteWorkerRef = useRef<Worker | null>(null);
+  const nameRewriteRequestRef = useRef(0);
   const paragraphs = useMemo(() => content ? content.split(/\r?\n\s*\r?\n/) : [], [content]);
-  const displayParagraphs = useMemo(() => chapterEditMode
+  const fallbackDisplayParagraphs = useMemo(() => paragraphs.map(paragraph => replaceReaderNames(paragraph, nameRules)), [nameRules, paragraphs]);
+  const [analyzedParagraphs, setAnalyzedParagraphs] = useState<string[] | null>(null);
+  const displayParagraphs = chapterEditMode
     ? paragraphs
-    : paragraphs.map(paragraph => replaceReaderNames(paragraph, nameRules)), [chapterEditMode, nameRules, paragraphs]);
+    : analyzedParagraphs ?? fallbackDisplayParagraphs;
   const normalizedParagraphs = useMemo(() => displayParagraphs.map(paragraph => paragraph.toLocaleLowerCase("ko")), [displayParagraphs]);
   const searchRanges = useMemo(() => {
     const query = submittedSearchQuery.trim().toLocaleLowerCase("ko");
@@ -204,6 +95,32 @@ export default function SnsdViewer() {
   }, [normalizedParagraphs, submittedSearchQuery]);
 
   useEffect(() => setNameRules(readNameReplacementRules(id)), [id]);
+
+  useEffect(() => {
+    nameRewriteWorkerRef.current?.terminate();
+    nameRewriteWorkerRef.current = null;
+    setAnalyzedParagraphs(null);
+    if (chapterEditMode || !paragraphs.length || !nameRules.length) return;
+
+    const requestId = nameRewriteRequestRef.current + 1;
+    nameRewriteRequestRef.current = requestId;
+    const worker = new Worker(new URL("../lib/snsd-name-rewriter.worker.ts", import.meta.url), { type: "module" });
+    nameRewriteWorkerRef.current = worker;
+    worker.onmessage = (event: MessageEvent<{ requestId: number; paragraphs: string[] | null }>) => {
+      if (event.data.requestId !== nameRewriteRequestRef.current || event.data.paragraphs === null) return;
+      setAnalyzedParagraphs(event.data.paragraphs);
+    };
+    worker.postMessage({ requestId, paragraphs, rules: nameRules });
+
+    return () => {
+      worker.terminate();
+      if (nameRewriteWorkerRef.current === worker) nameRewriteWorkerRef.current = null;
+    };
+  }, [chapterEditMode, nameRules, paragraphs]);
+
+  useEffect(() => () => {
+    nameRewriteWorkerRef.current?.terminate();
+  }, []);
 
   useEffect(() => {
     if (!nameRenameOpen) return;
