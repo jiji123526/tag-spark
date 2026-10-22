@@ -96,7 +96,10 @@ export function replaceReaderNames(text: string, rules: NameReplacementRule[], s
       const particle = particleAt(text, aliasEnd);
       // Keep the name replacement even when an ending is not recognized.
       // Only consume a suffix when it is confidently recognized as a particle.
-      result += alias.to + (particle && shouldAdjustParticles ? inflectParticle(particle, alias.to) : particle);
+      const addCallingI = shouldAdjustParticles && !particle
+        && !isNameWordCharacter(text[aliasEnd])
+        && hasHangulBatchim(alias.to)?.hasBatchim;
+      result += alias.to + (particle && shouldAdjustParticles ? inflectParticle(particle, alias.to) : particle) + (addCallingI ? "이" : "");
       cursor = aliasEnd + particle.length;
       continue;
     }

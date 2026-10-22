@@ -1,6 +1,7 @@
 import init, { TokenizerBuilder } from "lindera-wasm-web-ko-dic";
 import {
   type NameReplacementRule,
+  hasHangulBatchim,
   inflectParticle,
   isNameWordCharacter,
   particleAt,
@@ -83,7 +84,8 @@ async function rewriteParagraph(
     const aliasEnd = cursor + alias.from.length;
     const particle = particleAt(paragraph, aliasEnd);
     if (!particle) {
-      result += alias.to;
+      const addCallingI = !isNameWordCharacter(paragraph[aliasEnd]) && hasHangulBatchim(alias.to)?.hasBatchim;
+      result += alias.to + (addCallingI ? "이" : "");
       cursor = aliasEnd;
       continue;
     }
