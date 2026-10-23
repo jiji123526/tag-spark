@@ -95,7 +95,11 @@ async function rewriteParagraph(
     // Analyze only the name plus its attached ending. This keeps the WASM
     // work local and prevents unrelated prose from affecting the decision.
     const recognized = analyzerRecognizesParticle(particle, tokenizer.tokenize(`${alias.from}${particle}`));
-    const shouldInflect = recognized && shouldInflectNameParticle(alias.from, alias.to);
+    // Names configured by the reader can be nicknames or out-of-vocabulary
+    // words, so Lindera may miss the vocative ending even when it is explicit.
+    // particleAt already requires a boundary after the ending; trust 아/야 here.
+    const shouldInflect = (recognized || particleKind(particle) === "vocative")
+      && shouldInflectNameParticle(alias.from, alias.to);
     result += alias.to + (shouldInflect ? inflectParticle(particle, alias.to) : particle);
     cursor = aliasEnd + particle.length;
   }
