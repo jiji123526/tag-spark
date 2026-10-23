@@ -40,6 +40,18 @@ export function hasHangulBatchim(value: string) {
   return { hasBatchim: jongseong !== 0, isRieul: jongseong === 8 };
 }
 
+export function shouldInflectNameParticle(sourceName: string, targetName: string) {
+  const sourceEnding = hasHangulBatchim(sourceName);
+  const targetEnding = hasHangulBatchim(targetName);
+  return Boolean(sourceEnding && targetEnding && sourceEnding.hasBatchim !== targetEnding.hasBatchim);
+}
+
+export function shouldAddCallingI(sourceName: string, targetName: string, isGivenName: boolean) {
+  const sourceEnding = hasHangulBatchim(sourceName);
+  const targetEnding = hasHangulBatchim(targetName);
+  return Boolean(isGivenName && sourceEnding && targetEnding && !sourceEnding.hasBatchim && targetEnding.hasBatchim);
+}
+
 export function particleKind(particle: string) {
   const variablePart = VARIABLE_PARTICLE_NAMES.find(candidate => particle.startsWith(candidate));
   return variablePart ? VARIABLE_PARTICLES[variablePart] : undefined;
@@ -81,8 +93,8 @@ export function particleAt(text: string, offset: number) {
 
 export function replaceReaderNames(text: string, rules: NameReplacementRule[], shouldAdjustParticles = true) {
   const aliases = rules.flatMap(rule => [
-    { from: rule.sourceFull, to: rule.targetFull },
-    ...(rule.replaceGiven && rule.sourceGiven && rule.targetGiven ? [{ from: rule.sourceGiven, to: rule.targetGiven }] : []),
+    { from: rule.sourceFull, to: rule.targetFull, isGivenName: false },
+    ...(rule.replaceGiven && rule.sourceGiven && rule.targetGiven ? [{ from: rule.sourceGiven, to: rule.targetGiven, isGivenName: true }] : []),
   ]).filter(alias => alias.from && alias.to).sort((a, b) => b.from.length - a.from.length);
   if (!aliases.length) return text;
 
@@ -98,8 +110,11 @@ export function replaceReaderNames(text: string, rules: NameReplacementRule[], s
       // Only consume a suffix when it is confidently recognized as a particle.
       const addCallingI = shouldAdjustParticles && !particle
         && !isNameWordCharacter(text[aliasEnd])
-        && hasHangulBatchim(alias.to)?.hasBatchim;
-      result += alias.to + (particle && shouldAdjustParticles ? inflectParticle(particle, alias.to) : particle) + (addCallingI ? "이" : "");
+        && shouldAddCallingI(alias.from, alias.to, alias.isGivenName);
+      const adjustedParticle = particle && shouldAdjustParticles && shouldInflectNameParticle(alias.from, alias.to)
+        ? inflectParticle(particle, alias.to)
+        : particle;
+      result += alias.to + adjustedParticle + (addCallingI ? "이" : "");
       cursor = aliasEnd + particle.length;
       continue;
     }

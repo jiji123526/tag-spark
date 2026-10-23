@@ -1,11 +1,12 @@
 import init, { TokenizerBuilder } from "lindera-wasm-web-ko-dic";
 import {
   type NameReplacementRule,
-  hasHangulBatchim,
   inflectParticle,
   isNameWordCharacter,
   particleAt,
   particleKind,
+  shouldAddCallingI,
+  shouldInflectNameParticle,
 } from "./snsd-name-rewriter";
 
 type LinderaToken = {
@@ -61,9 +62,9 @@ async function rewriteParagraph(
   tokenizer: { tokenize: (text: string) => LinderaToken[] },
 ) {
   const aliases = rules.flatMap(rule => [
-    { from: rule.sourceFull, to: rule.targetFull },
+    { from: rule.sourceFull, to: rule.targetFull, isGivenName: false },
     ...(rule.replaceGiven && rule.sourceGiven && rule.targetGiven
-      ? [{ from: rule.sourceGiven, to: rule.targetGiven }]
+      ? [{ from: rule.sourceGiven, to: rule.targetGiven, isGivenName: true }]
       : []),
   ]).filter(alias => alias.from && alias.to).sort((a, b) => b.from.length - a.from.length);
   if (!aliases.length) return paragraph;
@@ -84,7 +85,8 @@ async function rewriteParagraph(
     const aliasEnd = cursor + alias.from.length;
     const particle = particleAt(paragraph, aliasEnd);
     if (!particle) {
-      const addCallingI = !isNameWordCharacter(paragraph[aliasEnd]) && hasHangulBatchim(alias.to)?.hasBatchim;
+      const addCallingI = !isNameWordCharacter(paragraph[aliasEnd])
+        && shouldAddCallingI(alias.from, alias.to, alias.isGivenName);
       result += alias.to + (addCallingI ? "이" : "");
       cursor = aliasEnd;
       continue;
@@ -93,7 +95,8 @@ async function rewriteParagraph(
     // Analyze only the name plus its attached ending. This keeps the WASM
     // work local and prevents unrelated prose from affecting the decision.
     const recognized = analyzerRecognizesParticle(particle, tokenizer.tokenize(`${alias.from}${particle}`));
-    result += alias.to + (recognized ? inflectParticle(particle, alias.to) : particle);
+    const shouldInflect = recognized && shouldInflectNameParticle(alias.from, alias.to);
+    result += alias.to + (shouldInflect ? inflectParticle(particle, alias.to) : particle);
     cursor = aliasEnd + particle.length;
   }
   return result;
