@@ -13,7 +13,7 @@ const KOREAN_SURNAMES = ["남궁", "황보", "제갈", "사공", "선우", "서�
 const VARIABLE_PARTICLES: Record<string, ParticleKind> = {
   "이잖아요": "copula", "잖아요": "copula", "이잖아": "copula", "잖아": "copula",
   "이네요": "copula", "네요": "copula", "이네": "copula", "네": "copula",
-  "이니": "copula", "니": "copula",
+  "이니": "copula", "니": "copula", "이야": "copula",
   "이라고": "copula", "라고": "copula", "이라서": "copula", "라서": "copula", "이라면": "copula", "라면": "copula", "이라도": "copula", "라도": "copula", "이든": "copula", "든": "copula",
   "이랑": "with", "랑": "with", "으로": "instrumental", "로": "instrumental", "은": "topic", "는": "topic", "이": "subject", "가": "subject", "을": "object", "를": "object", "과": "and", "와": "and", "아": "vocative", "야": "vocative",
 };
@@ -91,6 +91,17 @@ export function particleAt(text: string, offset: number) {
     && !isNameWordCharacter(text[offset + particle.length])) ?? "";
 }
 
+function affectionateNameParticleAt(text: string, offset: number, sourceName: string) {
+  // A consonant-final name can be called with an extra "이" (미영이).
+  // If another particle follows it, treat that first 이 as part of the name:
+  // 미영이가 -> [미영이] + 가, 미영이의 -> [미영이] + 의.
+  if (!hasHangulBatchim(sourceName)?.hasBatchim || !text.startsWith("이", offset)) return "";
+  // Prefer established forms such as 이랑/이야 as a single ending.
+  if (VARIABLE_PARTICLE_NAMES.some(particle => text.startsWith(particle, offset)
+    && !isNameWordCharacter(text[offset + particle.length]))) return "";
+  return particleAt(text, offset + 1);
+}
+
 export function replaceReaderNames(text: string, rules: NameReplacementRule[], shouldAdjustParticles = true) {
   const aliases = rules.flatMap(rule => [
     { from: rule.sourceFull, to: rule.targetFull, isGivenName: false },
@@ -105,6 +116,15 @@ export function replaceReaderNames(text: string, rules: NameReplacementRule[], s
     const alias = !isNameWordCharacter(before) ? aliases.find(candidate => text.startsWith(candidate.from, cursor)) : undefined;
     if (alias) {
       const aliasEnd = cursor + alias.from.length;
+      const affectionateParticle = shouldAdjustParticles
+        ? affectionateNameParticleAt(text, aliasEnd, alias.from)
+        : "";
+      if (affectionateParticle) {
+        result += alias.to + inflectParticle(affectionateParticle, alias.to);
+        cursor = aliasEnd + 1 + affectionateParticle.length;
+        continue;
+      }
+
       const particle = particleAt(text, aliasEnd);
       // Keep the name replacement even when an ending is not recognized.
       // Only consume a suffix when it is confidently recognized as a particle.
