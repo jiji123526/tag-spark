@@ -45,9 +45,15 @@ The app runs at `http://localhost:8080`.
 tag-spark/
 ├── api/                        # Vercel serverless functions
 │   ├── reco-data.js            # Returns works, tags, work_tags
-│   ├── scrape.js               # Cron: scrapes work metadata
+│   ├── scrape.js               # Manual batch scrape endpoint
 │   ├── tags.js                 # Returns all tags
 │   └── works.js                # CRUD for works
+├── scripts/
+│   └── scrape-all.mjs          # Full daily metrics scrape
+├── server/
+│   └── scrape.js               # Shared scrape and metrics logic
+├── .github/workflows/
+│   └── daily-scrape.yml        # Daily GitHub Actions job
 ├── src/
 │   ├── assets/                 # icons, images, illustrations
 │   ├── components/             # UI components (+ shadcn/ui primitives)
@@ -66,7 +72,7 @@ tag-spark/
 │   ├── App.tsx                 # Root component (providers)
 │   ├── routes.tsx              # Route definitions
 │   └── main.tsx                # Entry point
-├── vercel.json                 # Vercel config (cron + rewrites)
+├── vercel.json                 # Vercel config (rewrites)
 ├── vite.config.ts              # Vite config + local API middleware
 └── tailwind.config.ts
 ```
@@ -78,6 +84,7 @@ tag-spark/
 | `npm run dev` | Start dev server with HMR |
 | `npm run build` | Production build |
 | `npm run backfill:posted-at` | Add and backfill scraped publication dates |
+| `npm run scrape:all` | Scrape metrics for every active work |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
 
@@ -87,6 +94,17 @@ tag-spark/
 |----------|-------------|
 | `DATABASE_URL` | Neon Postgres connection string |
 | `VITE_SNSD_API_URL` | Cloudflare Worker base URL used only by `/snsd` |
+
+## Daily metrics scrape
+
+Daily metrics scraping runs through GitHub Actions rather than Vercel Cron.
+The workflow reads all active works from Neon, scrapes them with bounded
+concurrency, retries transient failures, and updates views, likes, comments,
+and publication dates.
+
+Add the Neon connection string to the repository's GitHub Actions secrets as
+`DATABASE_URL`. The workflow runs daily at 03:00 UTC and can also be started
+manually from the Actions tab.
 
 ## SNSD text library
 
