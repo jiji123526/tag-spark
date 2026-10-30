@@ -35,7 +35,7 @@ const MobileHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const sortBtnRef = useRef<HTMLDivElement | null>(null);
-  const [sortKey, setSortKey] = useState<'author_asc' | 'posted_desc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('author_asc');
+  const [sortKey, setSortKey] = useState<'author_asc' | 'posted_desc' | 'views_desc' | 'likes_desc' | 'comments_desc' | 'popular_desc' | null>('posted_desc');
   const [composeOpen, setComposeOpen] = useState(false);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [pencilMenuOpen, setPencilMenuOpen] = useState(false);
